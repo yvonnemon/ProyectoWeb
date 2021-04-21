@@ -6,7 +6,9 @@ import com.yvonne.proyecto.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class UserManager implements CrudManager<User> {
@@ -56,9 +58,17 @@ public class UserManager implements CrudManager<User> {
         return userRepository.findById(id).orElse(null);
     }
 
-    public User getUserByLogin(String user, String pass){
-        String asd = TokenManager.generateToken(user, pass);
+    public Map<Boolean,String> getUserByLogin(String user, String pass){
+        User loginUser = userRepository.findByUsernameAndPassword(user,pass);
+        Map<Boolean,String> response = new HashMap<>();
+        if(loginUser != null){
+            String credentials = TokenManager.generateToken(loginUser);
+            response.put(true,credentials);
+        } else {
+            response.put(false,"wrong credentials");
+        }
 
-        return new User();
+
+        return response;
     }
 }

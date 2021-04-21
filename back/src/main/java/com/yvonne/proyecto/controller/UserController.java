@@ -12,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping( value = "/user")
@@ -28,12 +29,16 @@ public class UserController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity loginUser( @RequestParam("user") String data){
+    public ResponseEntity loginUser( @RequestBody UserDto data){
         //String[] login = data.split("&");
-        User usuario = userManager.getUserByLogin("user","");
-        String asd = "asd";
-        return ResponseEntity.ok(HttpStatus.OK+asd);
-        //ResponseEntity.ok();
+        Map<Boolean,String> credentials = userManager.getUserByLogin(data.getUsername(),data.getPassword());
+        if(credentials.containsKey(true)){
+            return ResponseEntity.ok(HttpStatus.OK + "&" + credentials.get(true));
+
+        } else {
+            return ResponseEntity.ok(HttpStatus.NOT_FOUND);
+
+        }
     }
 
     @PostMapping("/register")

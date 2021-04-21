@@ -69,7 +69,7 @@ export default {
 
     },
     login2: async function() {
-      debugger;
+      
       console.log("hola");
       const data = {
         username: this.user,
@@ -80,7 +80,7 @@ export default {
       const axiospost = await this.$axios.post(url, data, {
         headers: {
           //Authorization: "Bearer " + this.token,
-          "Content-Type": "application/x-www-form-urlencoded"
+          "Content-Type": "application/json"
         }
       });
       //this.token = axiospost.data.jwt;

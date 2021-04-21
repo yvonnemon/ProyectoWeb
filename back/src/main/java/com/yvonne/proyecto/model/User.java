@@ -1,6 +1,7 @@
 package com.yvonne.proyecto.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import javax.persistence.*;
 import java.util.List;
@@ -29,7 +30,7 @@ public class User {
     @Column(name = "username", nullable = false, unique = true)
     private String username;
 
-    //@JsonIgnore
+    @JsonIgnore
     @Column(name = "password", nullable = false)
     private String password;
 
