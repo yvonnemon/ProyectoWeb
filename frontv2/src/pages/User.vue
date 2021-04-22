@@ -49,17 +49,14 @@
         </q-card>
       </q-expansion-item>
 
-      <div
-        class="q-pa-md list-style self-center"
-        style="min-width: 350px"
-      >
+      <div class="q-pa-md list-style self-center" style="min-width: 350px">
         <div class="q-pa-md">
-            <q-table
+          <q-table
             title="Treats"
             :data="data"
             :columns="columns"
-            row-key="name"
-            />
+            row-key="dni"
+          />
         </div>
       </div>
     </div>
@@ -67,7 +64,6 @@
 </template>
 
 <script>
-import { log } from "util";
 const axios = require("axios");
 export default {
   data() {
@@ -76,32 +72,34 @@ export default {
       password: "",
       token: "",
       tab: "list",
+      token: "",
       columns: [
         {
-          name: 'name',
+          name: "dni",
           required: true,
-          label: 'Nombre',
-          align: 'left',
-          field: row => row.name,
+          label: "Dni",
+          align: "left",
+          field: row => row.dni,
           format: val => `${val}`,
           sortable: true
         },
-        { name: 'surname', align: 'center', label: 'Apellidos', field: 'surname', sortable: true },
-        { name: 'email', label: 'Email', field: 'email', sortable: true },
-        { name: 'rol', label: 'Rol', field: 'rol' },
-      ],
-            data: [
         {
-          name: 'Pepe',
-          surname: "pepote",
-          email: "@asdasd",
-          rol: "asd",
-        }
-            ],
+          name: "name",
+          align: "center",
+          label: "Nombre",
+          field: "name",
+          sortable: true
+        },
+        { name: "email", label: "Email", field: "email", align: "center", sortable: true },
+        { name: "username", label: "Usuario", field: "username", align: "center", sortable: true }
+      ],
+      data: []
     };
   },
   async created() {
-    sessionStorage.removeItem("token");
+    this.token = sessionStorage.getItem("Session")
+    console.log(this.token);
+    this.listUsers();
   },
   methods: {
     registrar: function() {
@@ -112,6 +110,19 @@ export default {
         this.$router.push("/main");
       }
     },
+
+    listUsers: async function() {
+
+      let listarPosts = await axios.get("http://localhost:8080/user/users", {
+        method: "GET",
+        headers: new Headers({
+          Authorization: "Bearer " + sessionStorage.getItem("Session")
+        })
+      });
+      this.data = listarPosts.data
+      console.log(listarPosts.data);
+    },
+
     login2: async function() {
       console.log("hola");
       const data = {

@@ -2,8 +2,16 @@ import { RouteConfig } from 'vue-router';
 
 const routes: RouteConfig[] = [
   {
-    path: '/main',
+    path: '/admin',
     component: () => import('layouts/MainLayout.vue'),
+    children: [
+      { path: '', component: () => import('pages/Index.vue') },
+      { path: 'user', component: () => import('pages/User.vue') },
+    ],
+  },
+  {
+    path: '/main',
+    component: () => import('layouts/EmployeeLayout.vue'),
     children: [
       { path: '', component: () => import('pages/Index.vue') },
       { path: 'user', component: () => import('pages/User.vue') },

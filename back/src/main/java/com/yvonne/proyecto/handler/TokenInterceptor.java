@@ -21,13 +21,13 @@ public class TokenInterceptor implements HandlerInterceptor {
         }
 
         System.out.println(auth);
-        System.out.println(auth);
         String token = auth.split(" ")[1];
 
-
-        //TokenManager tokenManager = Utils.getBean(TokenManager.class);
-
-        return TokenManager.validateToken(token);
+        if(!TokenManager.validateToken(token)){
+            response.sendError(403);
+            return false;
+        } else {
+            return true;
+        }
     }
-
 }

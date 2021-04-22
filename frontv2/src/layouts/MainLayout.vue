@@ -12,7 +12,7 @@
       </q-toolbar>
 
       <q-tabs align="left">
-        <q-route-tab to="/main/user" label="Usuarios" />
+        <q-route-tab to="/admin/user" label="Usuarios" />
         <q-route-tab to="/page2" label="Nominas" />
         <q-route-tab to="/page3" label="Vacaciones" />
       </q-tabs>
@@ -38,9 +38,9 @@
 
 <script>
 export default {
-  data () {
+  data() {
     return {
-    }
+    };
   },
     beforeCreate: function() {
       //aqui habria que mandar una peticion al back para ver si el token? esta bien

@@ -19,21 +19,19 @@
       <q-btn color="deep-orange" glossy label="Login" @click="login" />
             <q-btn color="deep-orange" glossy label="asd" @click="login2" />
 
-      <a :href="google"><q-btn color="deep-orange" glossy label="Google"/></a>
     </div>
   </div>
 </template>
 
 <script>
-import { log } from 'util';
+import jwt_decode from "jwt-decode";
 const axios = require("axios");
 export default {
   data() {
     return {
       user: "",
       password: "",
-      token: "",
-      google: "http://localhost:3000/auth/google"
+      token: ""
     };
   },
   async created() {
@@ -69,13 +67,11 @@ export default {
 
     },
     login2: async function() {
-      
-      console.log("hola");
+      console.log("login to back");      
       const data = {
         username: this.user,
         password: this.password
       };
-      console.log(data);
       let url = "http://localhost:8080/user/login";
       const axiospost = await this.$axios.post(url, data, {
         headers: {
@@ -85,9 +81,13 @@ export default {
       });
       //this.token = axiospost.data.jwt;
       console.log(axiospost.data);
-      //sessionStorage.setItem("token", this.token);
+      let asd = jwt_decode(axiospost.data);
+      console.log(asd);
+      this.$token = "asd"
+      let split = axiospost.data.split('&');
+      sessionStorage.setItem("Session", split[1]);
       //sessionStorage.setItem("userid", axiospost.data.userId);
-      //this.$router.push("/posts");
+      this.$router.push("/admin");
     }
   }
 };

@@ -25,15 +25,12 @@ import java.util.Date;
 public class TokenManager implements Serializable {
     @Value("Secretin secretado, este Secreto esta Encriptado")
     private static String SECRETO;
+    private static final Key SECRET = new SecretKeySpec(Base64.getDecoder().decode("U2VjcmV0aW4gc2VjcmV0YWRvLCBlc3RlIFNlY3JldG8gZXN0YSBFbmNyaXB0YWRv"),
+            SignatureAlgorithm.HS256.getJcaName());
 
     public static String generateToken(User user){
 
-        //Gson gson = getGson();
-    //TODO cambiar lo qeu se guarda en el token, los datos
-        SecretKey key = Keys.secretKeyFor(SignatureAlgorithm.HS256);
-        //String encodedSecret = Base64.getEncoder().encode(SECRETO.getBytes(StandardCharsets.UTF_8));
-        byte[] secret = Base64.getDecoder().decode("U2VjcmV0aW4gc2VjcmV0YWRvLCBlc3RlIFNlY3JldG8gZXN0YSBFbmNyaXB0YWRv");
-        //byte[] secret = Base64.getEncoder().encode(SECRETO.getBytes(StandardCharsets.UTF_8));
+        user.setPassword("");
         Date today = new Date();
         Calendar c = Calendar.getInstance();
         c.setTime(today);
@@ -44,7 +41,7 @@ public class TokenManager implements Serializable {
                 .setIssuedAt(today)
                 .setExpiration(c.getTime())
                 .signWith(
-                        Keys.hmacShaKeyFor(secret)
+                        SECRET
                 ).compact();
 
         return jws;
@@ -53,13 +50,16 @@ public class TokenManager implements Serializable {
     public static boolean validateToken(String token){
         System.out.println("token recibido: "+token);
 
-        Key hmacKey = new SecretKeySpec(Base64.getDecoder().decode("U2VjcmV0aW4gc2VjcmV0YWRvLCBlc3RlIFNlY3JldG8gZXN0YSBFbmNyaXB0YWRv"),
-                SignatureAlgorithm.HS256.getJcaName());
-        Jws<Claims> jws = Jwts.parserBuilder().setSigningKey(hmacKey)
-                .build() //esto es el payload
-                .parseClaimsJws(token);
-
-        return true;
+        try {
+            Jws<Claims> jws = Jwts.parserBuilder().setSigningKey(SECRET)
+                    .build() //esto es el payload
+                    .parseClaimsJws(token);
+            return true;
+        } catch (Exception e) {
+            System.out.println("El token no es valido");
+            return false;
+        }
+        //Date fecha = jws.getBody().getExpiration();
     }
 
 }

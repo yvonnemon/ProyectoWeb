@@ -30,7 +30,6 @@ public class UserController {
 
     @PostMapping("/login")
     public ResponseEntity loginUser( @RequestBody UserDto data){
-        //String[] login = data.split("&");
         Map<Boolean,String> credentials = userManager.getUserByLogin(data.getUsername(),data.getPassword());
         if(credentials.containsKey(true)){
             return ResponseEntity.ok(HttpStatus.OK + "&" + credentials.get(true));

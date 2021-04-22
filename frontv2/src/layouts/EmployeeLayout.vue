@@ -10,6 +10,11 @@
           Title
         </q-toolbar-title>
       </q-toolbar>
+
+      <q-tabs align="left">
+        <q-route-tab to="/page2" label="Mis Nominas" />
+        <q-route-tab to="/page3" label="Mis Vacaciones" />
+      </q-tabs>
     </q-header>
 
     <q-page-container>
@@ -32,9 +37,16 @@
 
 <script>
 export default {
-  data () {
+  data() {
     return {
     };
   },
-};
+    beforeCreate: function() {
+      //aqui habria que mandar una peticion al back para ver si el token? esta bien
+      if(!sessionStorage.getItem("Session")){
+          this.$router.push("/");
+      }
+  }
+
+}
 </script>
