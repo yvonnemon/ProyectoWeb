@@ -15,7 +15,7 @@ module.exports = configure((/* ctx */) => ({
   // https://v1.quasar.dev/quasar-cli/supporting-ts
   supportTS: {
     tsCheckerConfig: {
-      eslint: true,
+      eslint: false,
     },
   },
 
