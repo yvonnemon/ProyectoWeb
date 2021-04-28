@@ -16,8 +16,7 @@
         class="form-input"
         type="password"
       />
-      <q-btn color="deep-orange" glossy label="Login" @click="login" />
-            <q-btn color="deep-orange" glossy label="asd" @click="login2" />
+      <q-btn color="deep-orange" glossy label="Login" @click="login2" />
 
     </div>
   </div>

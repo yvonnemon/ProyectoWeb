@@ -1,6 +1,6 @@
 <template>
   <div class="q-pa-md column items-center">
-    <div class="q-gutter-y-md" style="min-width: 350px">
+    <div class="q-gutter-y-md" style="min-width: 70vw; max-width: 70vw" >
       <q-expansion-item
         expand-separator
         icon="perm_identity"
@@ -10,40 +10,79 @@
         <q-card>
           <q-card-section class="row">
             <q-input
-              filled
-              v-model="user"
+              outlined 
+              v-model="name"
               label="Nombre"
               stack-label
-              class="form-input col-6"
+              @keypress="asd"
+              class="form-input col-3"
+              :rules="[val => !!val || 'Campo necesario', val => !val.includes(' ') || 'No puede haber espacios en blanco']"
             />
             <q-input
-              filled
-              v-model="user"
+              outlined 
+              v-model="lastname"
               label="Apellido"
               stack-label
-              class="form-input col-6"
+              @keypress="asd"
+              class="form-input col-3"
+              :rules="[val => !!val || 'Campo necesario']"
             />
-            <q-input
-              filled
-              v-model="user"
-              label="Email"
+             <q-input
+              outlined 
+              v-model="dni"
+              label="Dni"
               stack-label
-              class="form-input col-6"
+              class="form-input col-3"
+              :rules="[val => !!val || 'Campo necesario']"
             />
 
             <q-input
-              filled
-              v-model="password"
-              label="Contraseña"
+              outlined 
+              v-model="email"
+              label="Email"
+              type="email"
               stack-label
-              type="password"
-              class="form-input col-6"
+              class="form-input col-3"
+              :rules="[val => !!val || 'Campo necesario']"
             />
+            <q-input
+              outlined 
+              v-model="telephone"
+              label="Telefono"
+              stack-label
+              class="form-input col-3"
+              mask="###-###-###"
+              :rules="[val => !!val || 'Campo necesario']"
+            />
+
+            <q-input
+              outlined 
+              v-model="user"
+              label="Usuario"
+              stack-label
+              class="form-input col-3"
+              readonly 
+            />
+
+      <q-input v-model="password" outlined :type="isPwd ? 'password' : 'text'"
+       label="Contraseña" stack-label class="form-input col-3" :rules="[val => !!val || 'Campo necesario']">
+        <template v-slot:append>
+          <q-icon
+            :name="isPwd ? 'visibility_off' : 'visibility'"
+            class="cursor-pointer"
+            @click="isPwd = !isPwd"
+          />
+        </template>
+      </q-input>
+      
+            <q-select outlined class="form-input col-3" v-model="selectedRol" :options="roles" label="Rol" />
+
             <q-btn
               color="deep-orange"
+              class="col-1 offset-11"
               glossy
               label="Añadir"
-              @click="registrar"
+              @click="addUser"
             />
           </q-card-section>
         </q-card>
@@ -52,27 +91,67 @@
       <div class="q-pa-md list-style self-center" style="min-width: 350px">
         <div class="q-pa-md">
           <q-table
-            title="Treats"
+            title="Lista de usuarios"
             :data="data"
             :columns="columns"
             row-key="dni"
-          />
-        </div>
+
+            
+          >
+             <template v-slot:header="props">
+        <q-tr :props="props">
+          <q-th auto-width />
+          <q-th
+            v-for="col in props.cols"
+            :key="col.name"
+            :props="props"
+          >
+            {{ col.label }}
+          </q-th>
+        </q-tr>
+      </template>
+
+      <template v-slot:body="props">
+        <q-tr :props="props">
+          <q-td auto-width>
+            <q-btn size="md" color="accent" round dense @click="asd" icon="fasAirFreshner" />
+          </q-td>
+          <q-td
+            v-for="col in props.cols"
+            :key="col.name"
+            :props="props"
+          >
+            {{ col.value }}
+          </q-td>
+        </q-tr>
+
+      </template>
+      </q-table>
+       </div>
       </div>
     </div>
   </div>
 </template>
 
 <script>
+import { fasAirFreshner } from '@quasar/extras/fontawesome-v5';
 const axios = require("axios");
 export default {
   data() {
     return {
-      user: "",
       password: "",
+      name: "",
+      lastname: "",
+      dni: "",
+      user: "",
+      email: "",
+      telephone: "",
+      isPwd: true,
       token: "",
       tab: "list",
       token: "",
+      roles: ["asdmin","asd"],
+      selectedRol: "",
       columns: [
         {
           name: "dni",
@@ -91,8 +170,9 @@ export default {
           sortable: true
         },
         { name: "email", label: "Email", field: "email", align: "center", sortable: true },
-        { name: "username", label: "Usuario", field: "username", align: "center", sortable: true }
-      ],
+        { name: "username", label: "Usuario", field: "username", align: "center", sortable: true },
+        { name: "role", label: "Rol", field: "role", align: "center", sortable: true }
+        ],
       data: []
     };
   },
@@ -102,13 +182,38 @@ export default {
     this.listUsers();
   },
   methods: {
-    registrar: function() {
-      console.log("aosdijkands");
-      console.log(this.user);
-      if (this.user == "pepe" && this.password == "123") {
-        sessionStorage.setItem("Session", "asb123");
-        this.$router.push("/main");
+    asd: function() {
+      console.log(this.name.length);
+      if(this.name.length >= 1){ //empeiza en 0, asi que esto son 2 caracteres
+        this.user = this.name.substring(0,2);
       }
+      if(this.lastname.length >= 1){
+        this.user = this.user.concat(this.lastname.substring(0,2));
+      }
+    },
+    addUser: async function() {
+      console.log(this.token);
+      let phone = this.telephone.replace('-','');
+      phone = parseFloat(phone,10);
+      const data = {
+          dni: this.dni,
+          name: this.name,
+          lastname: this.lastname,
+          telephone: phone,
+          username: this.user,
+          password: this.password,
+          email: this.email,
+          role: 'ADMIN'
+        };
+      console.log(data);
+      let url = "http://localhost:8080/user/insert";
+        const axiospost = await axios.post(url, data, {
+          headers: {
+            Authorization: "Bearer " + this.token,
+            "Content-Type": "application/json"
+          }
+        });
+        console.log(axiospost);
     },
 
     listUsers: async function() {
@@ -123,25 +228,7 @@ export default {
       console.log(listarPosts.data);
     },
 
-    login2: async function() {
-      console.log("hola");
-      const data = {
-        user: this.user,
-        pass: this.password
-      };
-      let url = "http://localhost:3000/auth/login";
-      const axiospost = await axios.post(url, data, {
-        headers: {
-          Authorization: "Bearer " + this.token,
-          "Content-Type": "application/json"
-        }
-      });
-      this.token = axiospost.data.jwt;
-      console.log(axiospost.data);
-      sessionStorage.setItem("token", this.token);
-      sessionStorage.setItem("userid", axiospost.data.userId);
-      this.$router.push("/posts");
-    }
+    
   }
 };
 </script>

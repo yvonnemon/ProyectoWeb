@@ -8,6 +8,7 @@ import com.yvonne.proyecto.model.User;
 import com.yvonne.proyecto.model.UserDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -40,10 +41,14 @@ public class UserController {
         }
     }
 
-    @PostMapping("/register")
-    public String createUser(@RequestBody User user){
-        userManager.create(user);
-        return "usuario creado";
+    @PostMapping(value = "/insert", consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity createUser(  @RequestBody User data){
+        try {
+            userManager.create(data);
+            return ResponseEntity.ok(HttpStatus.OK);
+        } catch (Exception e){
+            return ResponseEntity.ok(HttpStatus.BAD_REQUEST);
+        }
     }
 
     @PutMapping("/update")

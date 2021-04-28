@@ -25,6 +25,7 @@ import java.util.Date;
 public class TokenManager implements Serializable {
     @Value("Secretin secretado, este Secreto esta Encriptado")
     private static String SECRETO;
+
     private static final Key SECRET = new SecretKeySpec(Base64.getDecoder().decode("U2VjcmV0aW4gc2VjcmV0YWRvLCBlc3RlIFNlY3JldG8gZXN0YSBFbmNyaXB0YWRv"),
             SignatureAlgorithm.HS256.getJcaName());
 
