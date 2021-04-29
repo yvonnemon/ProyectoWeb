@@ -14,7 +14,7 @@
               v-model="name"
               label="Nombre"
               stack-label
-              @keypress="asd"
+              @keypress="userrandom"
               class="form-input col-3"
               :rules="[val => !!val || 'Campo necesario', val => !val.includes(' ') || 'No puede haber espacios en blanco']"
             />
@@ -23,7 +23,7 @@
               v-model="lastname"
               label="Apellido"
               stack-label
-              @keypress="asd"
+              @keypress="userrandom"
               class="form-input col-3"
               :rules="[val => !!val || 'Campo necesario']"
             />
@@ -33,7 +33,7 @@
               label="Dni"
               stack-label
               class="form-input col-3"
-              :rules="[val => !!val || 'Campo necesario']"
+              :rules="[val => !!val || 'Campo necesario', val => !val.includes(' ') || 'No puede haber espacios en blanco']"
             />
 
             <q-input
@@ -43,7 +43,7 @@
               type="email"
               stack-label
               class="form-input col-3"
-              :rules="[val => !!val || 'Campo necesario']"
+              :rules="[val => !!val || 'Campo necesario', val => !val.includes(' ') || 'No puede haber espacios en blanco']"
             />
             <q-input
               outlined 
@@ -98,23 +98,12 @@
 
             
           >
-             <template v-slot:header="props">
-        <q-tr :props="props">
-          <q-th auto-width />
-          <q-th
-            v-for="col in props.cols"
-            :key="col.name"
-            :props="props"
-          >
-            {{ col.label }}
-          </q-th>
-        </q-tr>
-      </template>
 
       <template v-slot:body="props">
         <q-tr :props="props">
           <q-td auto-width>
-            <q-btn size="md" color="accent" round dense @click="asd" icon="fasAirFreshner" />
+            <q-btn size="md" color="amber-9" round dense @click="" icon="fas fa-pen" />
+            <q-btn size="md" class="table-actions" color="negative" round dense @click="deleteConfirmFunc(props.row.id)" icon="fas fa-trash-alt" />
           </q-td>
           <q-td
             v-for="col in props.cols"
@@ -122,19 +111,32 @@
             :props="props"
           >
             {{ col.value }}
+
           </q-td>
         </q-tr>
-
       </template>
+      
       </q-table>
        </div>
       </div>
+      <q-dialog v-model="deleteConfirm" persistent>
+      <q-card>
+        <q-card-section class="row items-center">
+          <q-avatar icon="fas fa-user" color="indigo" text-color="white" />
+          <span class="q-ml-sm">¿Esta seguro de querer borrar el usuario?</span>
+        </q-card-section>
+
+        <q-card-actions align="right">
+          <q-btn flat label="Aceptar" color="positive" @click="deleteUser" v-close-popup />
+          <q-btn flat label="Cancelar" color="red" @click="cancelDelete" v-close-popup />
+        </q-card-actions>
+      </q-card>
+    </q-dialog>
     </div>
   </div>
 </template>
 
 <script>
-import { fasAirFreshner } from '@quasar/extras/fontawesome-v5';
 const axios = require("axios");
 export default {
   data() {
@@ -150,14 +152,21 @@ export default {
       token: "",
       tab: "list",
       token: "",
+      deleteConfirm: false,
+      deletingId: "",
       roles: ["asdmin","asd"],
       selectedRol: "",
       columns: [
+                {
+          name: "",
+          label: "Acciones",
+          align: "center",
+        },
         {
           name: "dni",
           required: true,
           label: "Dni",
-          align: "left",
+          align: "center",
           field: row => row.dni,
           format: val => `${val}`,
           sortable: true
@@ -182,7 +191,7 @@ export default {
     this.listUsers();
   },
   methods: {
-    asd: function() {
+    userrandom: function() {
       console.log(this.name.length);
       if(this.name.length >= 1){ //empeiza en 0, asi que esto son 2 caracteres
         this.user = this.name.substring(0,2);
@@ -191,6 +200,7 @@ export default {
         this.user = this.user.concat(this.lastname.substring(0,2));
       }
     },
+
     addUser: async function() {
       console.log(this.token);
       let phone = this.telephone.replace('-','');
@@ -228,6 +238,30 @@ export default {
       console.log(listarPosts.data);
     },
 
+    cancelDelete: function(){
+      console.log("cancelado");
+      this.deletingId = "";
+    },
+
+    deleteConfirmFunc: function (id) {
+      this.deletingId = id;
+      this.deleteConfirm = true;
+    },
+
+    deleteUser: async function() {
+        console.log(this.deletingId);
+            let borrado = await axios.delete('http://localhost:8080/user/delete',{
+              headers: {
+                Authorization: "Bearer " + this.token,
+              "Content-Type": "application/json"
+              },
+		          data: {
+                id: this.deletingId
+              }
+            })        
+      console.log('borrasion');
+      this.listUsers();
+    },
     
   }
 };
