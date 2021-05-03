@@ -1,25 +1,34 @@
 <template>
   <div class="q-pa-md column items-center">
-    <div class="q-gutter-y-md" style="min-width: 70vw; max-width: 70vw" >
+    <div class="q-gutter-y-md" style="min-width: 70vw; max-width: 70vw">
       <q-expansion-item
         expand-separator
         icon="perm_identity"
         label="Añadir usuario"
         class="form-style"
+        v-model="expanded"
       >
         <q-card>
           <q-card-section class="row">
+            <q-form
+            class="row"
+              @submit="addUser"
+              @reset="onFormReset"
+                >
             <q-input
-              outlined 
+              outlined
               v-model="name"
               label="Nombre"
               stack-label
               @keypress="userrandom"
               class="form-input col-3"
-              :rules="[val => !!val || 'Campo necesario', val => !val.includes(' ') || 'No puede haber espacios en blanco']"
+              :rules="[
+                val => !!val || 'Campo necesario',
+                val => !val.includes(' ') || 'No puede haber espacios en blanco'
+              ]"
             />
             <q-input
-              outlined 
+              outlined
               v-model="lastname"
               label="Apellido"
               stack-label
@@ -27,63 +36,85 @@
               class="form-input col-3"
               :rules="[val => !!val || 'Campo necesario']"
             />
-             <q-input
-              outlined 
+            <q-input
+              outlined
               v-model="dni"
               label="Dni"
               stack-label
               class="form-input col-3"
-              :rules="[val => !!val || 'Campo necesario', val => !val.includes(' ') || 'No puede haber espacios en blanco']"
+              :rules="[
+                val => !!val || 'Campo necesario',
+                val => !val.includes(' ') || 'No puede haber espacios en blanco'
+              ]"
             />
 
             <q-input
-              outlined 
+              outlined
               v-model="email"
               label="Email"
               type="email"
               stack-label
               class="form-input col-3"
-              :rules="[val => !!val || 'Campo necesario', val => !val.includes(' ') || 'No puede haber espacios en blanco']"
+              :rules="[
+                val => !!val || 'Campo necesario',
+                val => !val.includes(' ') || 'No puede haber espacios en blanco',
+                val => val.includes('@') || 'Dirección no válida',
+              ]"
             />
             <q-input
-              outlined 
+              outlined
               v-model="telephone"
               label="Telefono"
               stack-label
               class="form-input col-3"
-              mask="###-###-###"
+              mask="### ### ###"
               :rules="[val => !!val || 'Campo necesario']"
             />
 
             <q-input
-              outlined 
+              outlined
               v-model="user"
               label="Usuario"
               stack-label
               class="form-input col-3"
-              readonly 
+              readonly
             />
 
-      <q-input v-model="password" outlined :type="isPwd ? 'password' : 'text'"
-       label="Contraseña" stack-label class="form-input col-3" :rules="[val => !!val || 'Campo necesario']">
-        <template v-slot:append>
-          <q-icon
-            :name="isPwd ? 'visibility_off' : 'visibility'"
-            class="cursor-pointer"
-            @click="isPwd = !isPwd"
-          />
-        </template>
-      </q-input>
-      
-            <q-select outlined class="form-input col-3" v-model="selectedRol" :options="roles" label="Rol" />
+            <q-input
+              v-model="password"
+              outlined
+              :type="isPwd ? 'password' : 'text'"
+              label="Contraseña"
+              stack-label
+              class="form-input col-3"
+              :rules="[val => !!val || 'Campo necesario']"
+            >
+              <template v-slot:append>
+                <q-icon
+                  :name="isPwd ? 'visibility_off' : 'visibility'"
+                  class="cursor-pointer"
+                  @click="isPwd = !isPwd"
+                />
+              </template>
+            </q-input>
 
+            <q-select
+              outlined
+              class="form-input col-3"
+              v-model="selectedRol"
+              :options="roles"
+              label="Rol"
+              :rules="[val => !!val || 'Campo necesario']"
+            />
+            <q-btn label="Reset" type="reset" color="amber-14" outline class="col-1 offset-9 form-buttons"  />
             <q-btn
-              color="deep-orange"
-              class="col-1 offset-11"
+              color="green-8"
+              class="col-1 form-buttons"
               glossy
+              type="submit"
               label="Añadir"
-              @click="addUser"
             />
+            </q-form>
           </q-card-section>
         </q-card>
       </q-expansion-item>
@@ -95,43 +126,64 @@
             :data="data"
             :columns="columns"
             row-key="dni"
-
-            
+            :pagination="pagination"
           >
-
-      <template v-slot:body="props">
-        <q-tr :props="props">
-          <q-td auto-width>
-            <q-btn size="md" color="amber-9" round dense @click="" icon="fas fa-pen" />
-            <q-btn size="md" class="table-actions" color="negative" round dense @click="deleteConfirmFunc(props.row.id)" icon="fas fa-trash-alt" />
-          </q-td>
-          <q-td
-            v-for="col in props.cols"
-            :key="col.name"
-            :props="props"
-          >
-            {{ col.value }}
-
-          </q-td>
-        </q-tr>
-      </template>
-      
-      </q-table>
-       </div>
+            <template v-slot:body="props">
+              <q-tr :props="props">
+                <q-td auto-width>
+                  <q-btn
+                    size="md"
+                    color="amber-9"
+                    round
+                    dense
+                    @click="updateData(props.row)"
+                    icon="fas fa-pen"
+                  />
+                  <q-btn
+                    size="md"
+                    class="table-actions"
+                    color="negative"
+                    round
+                    dense
+                    @click="deleteConfirmFunc(props.row.id)"
+                    icon="fas fa-trash-alt"
+                  />
+                </q-td>
+                <q-td v-for="col in props.cols" :key="col.name" :props="props">
+                  {{ col.value }}
+                </q-td>
+              </q-tr>
+            </template>
+          </q-table>
+        </div>
       </div>
       <q-dialog v-model="deleteConfirm" persistent>
-      <q-card>
-        <q-card-section class="row items-center">
-          <q-avatar icon="fas fa-user" color="indigo" text-color="white" />
-          <span class="q-ml-sm">¿Esta seguro de querer borrar el usuario?</span>
-        </q-card-section>
+        <q-card>
+          <q-card-section class="row items-center">
+            <q-avatar icon="fas fa-user" color="indigo" text-color="white" />
+            <span class="q-ml-sm"
+              >¿Esta seguro de querer borrar el usuario?</span
+            >
+          </q-card-section>
 
-        <q-card-actions align="right">
-          <q-btn flat label="Aceptar" color="positive" @click="deleteUser" v-close-popup />
-          <q-btn flat label="Cancelar" color="red" @click="cancelDelete" v-close-popup />
-        </q-card-actions>
-      </q-card>
-    </q-dialog>
+          <q-card-actions align="right">
+            <q-btn
+              flat
+              label="Aceptar"
+              color="positive"
+              @click="deleteUser"
+              v-close-popup
+            />
+            <q-btn
+              flat
+              label="Cancelar"
+              color="red"
+              @click="cancelDelete"
+              v-close-popup
+            />
+          </q-card-actions>
+        </q-card>
+      </q-dialog>
     </div>
   </div>
 </template>
@@ -152,15 +204,16 @@ export default {
       token: "",
       tab: "list",
       token: "",
+      expanded: false,
       deleteConfirm: false,
-      deletingId: "",
-      roles: ["asdmin","asd"],
+      modifyingId: "",
+      roles: ["Administrador", "Empleado"],
       selectedRol: "",
       columns: [
-                {
+        {
           name: "",
           label: "Acciones",
-          align: "center",
+          align: "center"
         },
         {
           name: "dni",
@@ -178,34 +231,82 @@ export default {
           field: "name",
           sortable: true
         },
-        { name: "email", label: "Email", field: "email", align: "center", sortable: true },
-        { name: "username", label: "Usuario", field: "username", align: "center", sortable: true },
-        { name: "role", label: "Rol", field: "role", align: "center", sortable: true }
-        ],
-      data: []
+        {
+          name: "email",
+          label: "Email",
+          field: "email",
+          align: "center",
+          sortable: true
+        },
+        {
+          name: "username",
+          label: "Usuario",
+          field: "username",
+          align: "center",
+          sortable: true
+        },
+        {
+          name: "role",
+          label: "Rol",
+          field: "role",
+          align: "center",
+          sortable: true
+        }
+      ],
+      data: [],
+      pagination: {
+        sortBy: 'desc',
+        descending: false,
+        rowsPerPage: 10
+      },
     };
   },
   async created() {
-    this.token = sessionStorage.getItem("Session")
+    this.token = sessionStorage.getItem("Session");
     console.log(this.token);
     this.listUsers();
   },
   methods: {
+    onFormReset: function(){
+        this.dni = "";
+        this.name = "";
+        this.lastname = "";
+        this.telephone = "";
+        this.user = "";
+        this.password = "";
+        this.email = "";
+        this.selectedRol = "";
+
+    },
+
     userrandom: function() {
       console.log(this.name.length);
-      if(this.name.length >= 1){ //empeiza en 0, asi que esto son 2 caracteres
-        this.user = this.name.substring(0,2);
+      if (this.name.length >= 1) {
+        //empeiza en 0, asi que esto son 2 caracteres
+        this.user = this.name.substring(0, 2);
       }
-      if(this.lastname.length >= 1){
-        this.user = this.user.concat(this.lastname.substring(0,2));
+      if (this.lastname.length >= 1) {
+        this.user = this.user.concat(this.lastname.substring(0, 2));
       }
     },
 
     addUser: async function() {
-      console.log(this.token);
-      let phone = this.telephone.replace('-','');
-      phone = parseFloat(phone,10);
-      const data = {
+      if (this.modifyingId){
+        console.log("UPDATE");
+        this.updateUser();
+      } else {
+        console.log(this.token);
+        let phone = this.telephone.replaceAll(" ", "");
+        phone = parseInt(phone, 10);
+        console.log(phone);
+        let rol;
+        if(this.selectedRol == 'Administrador') {
+          rol = 'ADMIN';
+        } else {
+          rol = 'EMPLOYEE';
+        }
+
+        const data = {
           dni: this.dni,
           name: this.name,
           lastname: this.lastname,
@@ -213,10 +314,10 @@ export default {
           username: this.user,
           password: this.password,
           email: this.email,
-          role: 'ADMIN'
+          role: rol
         };
-      console.log(data);
-      let url = "http://localhost:8080/user/insert";
+        console.log(data);
+        let url = "http://localhost:8080/user/insert";
         const axiospost = await axios.post(url, data, {
           headers: {
             Authorization: "Bearer " + this.token,
@@ -224,45 +325,97 @@ export default {
           }
         });
         console.log(axiospost);
+        this.listUsers();
+      }
     },
 
     listUsers: async function() {
-
       let listarPosts = await axios.get("http://localhost:8080/user/users", {
         method: "GET",
         headers: new Headers({
           Authorization: "Bearer " + sessionStorage.getItem("Session")
         })
       });
-      this.data = listarPosts.data
+      this.data = listarPosts.data;
       console.log(listarPosts.data);
     },
 
-    cancelDelete: function(){
+    cancelDelete: function() {
       console.log("cancelado");
-      this.deletingId = "";
+      this.modifyingId = "";
     },
 
-    deleteConfirmFunc: function (id) {
-      this.deletingId = id;
+    deleteConfirmFunc: function(id) {
+      this.modifyingId = id;
       this.deleteConfirm = true;
     },
 
     deleteUser: async function() {
-        console.log(this.deletingId);
-            let borrado = await axios.delete('http://localhost:8080/user/delete',{
-              headers: {
-                Authorization: "Bearer " + this.token,
-              "Content-Type": "application/json"
-              },
-		          data: {
-                id: this.deletingId
-              }
-            })        
-      console.log('borrasion');
+      console.log(this.modifyingId);
+      let borrado = await axios.delete("http://localhost:8080/user/delete", {
+        headers: {
+          Authorization: "Bearer " + this.token,
+          "Content-Type": "application/json"
+        },
+        data: {
+          id: this.modifyingId
+        }
+      });
+      console.log("borrasion");
       this.listUsers();
     },
-    
+
+    updateData: function(data) {
+      console.log(data);
+      let rol;
+      this.modifyingId = data.id;
+      this.expanded = true;
+      this.name = data.name;
+      this.lastname = data.lastname;
+      this.dni = data.dni;
+      this.email = data.email;
+      this.telephone = data.telephone;
+      this.user = data.username;
+     // this.selectedRol = data.role;
+
+      if(data.role == 'ADMIN') {
+        this.selectedRol = 'Administrador';
+      } else {
+        this.selectedRol = 'Empleado';
+      }
+    },
+
+    updateUser: async function(){
+      let phone = this.telephone.replaceAll(" ", "");
+        phone = parseInt(phone, 10);
+        let rol;
+        if(this.selectedRol == 'Administrador') {
+          rol = 'ADMIN';
+        } else {
+          rol = 'EMPLOYEE';
+        }
+
+      const data = {
+        id: this.modifyingId,
+        dni: this.dni,
+        name: this.name,
+        lastname: this.lastname,
+        telephone: phone,
+        username: this.user,
+        password: this.password,
+        email: this.email,
+        role: rol
+      };
+
+      let url = "http://localhost:8080/user/update";
+      const axiospost = await axios.put(url, data, {
+        headers: {
+          Authorization: "Bearer " + this.token,
+          "Content-Type": "application/json"
+        }
+      });
+        this.listUsers();
+    }
   }
 };
 </script>

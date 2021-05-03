@@ -35,6 +35,7 @@ public class UserManager implements CrudManager<User> {
     @Override
     public Boolean update(User user) {
         if( userRepository.existsById(user.getId()) ){
+
             User updatedUser = userRepository.findById(user.getId()).orElse(null);
 
             updatedUser.setDni(user.getDni());
@@ -46,6 +47,7 @@ public class UserManager implements CrudManager<User> {
             updatedUser.setEmail(user.getEmail());
 
             userRepository.save(updatedUser);
+
             return true;
         } else {
             return false;

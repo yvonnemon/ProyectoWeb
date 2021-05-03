@@ -16,7 +16,7 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
-@RequestMapping( value = "/user")
+@RequestMapping(value = "/user")
 public class UserController {
     @Autowired
     private UserManager userManager;
@@ -25,14 +25,14 @@ public class UserController {
     private Gson gson;
 
     @GetMapping("/users")
-    public List<User> getAllUsers(){
+    public List<User> getAllUsers() {
         return userManager.getAll();
     }
 
     @PostMapping("/login")
-    public ResponseEntity loginUser( @RequestBody UserDto data){
-        Map<Boolean,String> credentials = userManager.getUserByLogin(data.getUsername(),data.getPassword());
-        if(credentials.containsKey(true)){
+    public ResponseEntity loginUser(@RequestBody UserDto data) {
+        Map<Boolean, String> credentials = userManager.getUserByLogin(data.getUsername(), data.getPassword());
+        if (credentials.containsKey(true)) {
             return ResponseEntity.ok(HttpStatus.OK + "&" + credentials.get(true));
 
         } else {
@@ -42,38 +42,45 @@ public class UserController {
     }
 
     @PostMapping(value = "/insert", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity createUser(  @RequestBody User data){
+    public ResponseEntity createUser(@RequestBody User data) {
         try {
             userManager.create(data);
+            return ResponseEntity.ok(HttpStatus.OK);
+        } catch (Exception e) {
+            return ResponseEntity.ok(HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @PutMapping(value = "/update", consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity updateUser(@RequestBody User user) {
+        try {
+            userManager.update(user);
             return ResponseEntity.ok(HttpStatus.OK);
         } catch (Exception e){
             return ResponseEntity.ok(HttpStatus.BAD_REQUEST);
         }
     }
 
-    @PutMapping("/update")
-    public String updateUser(@RequestBody User user){
-
-        Boolean done = userManager.update(user);
-        if(done){
-            return "usuario actualizado";
-        } else {
-            return "hubo un error";
-        }
-    }
-
     @DeleteMapping("/delete")
-    public String deleteUser(@RequestBody String id){
-        JsonObject jsonObject = gson.fromJson(id, JsonObject.class);
+    public ResponseEntity deleteUser(@RequestBody String id) {
 
-        String x = jsonObject.get("id").toString();
+            JsonObject jsonObject = gson.fromJson(id, JsonObject.class);
 
-        if(userManager.getById(Integer.parseInt(x)) != null){
-            userManager.delete(userManager.getById(Integer.parseInt(x)));
-            return "usuario borrado";
-        } else {
-            return "no existe el usuario";
-        }
+            String x = jsonObject.get("id").toString();
+
+            if (userManager.getById(Integer.parseInt(x)) != null) {
+
+            try {
+                userManager.delete(userManager.getById(Integer.parseInt(x)));
+                return ResponseEntity.ok(HttpStatus.OK);
+            } catch (Exception e) {
+                return ResponseEntity.ok(HttpStatus.BAD_REQUEST);
+            }
+            } else {
+                return ResponseEntity.ok(HttpStatus.BAD_REQUEST);
+            }
+
     }
 }
+
 
