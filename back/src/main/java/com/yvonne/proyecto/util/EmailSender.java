@@ -1,5 +1,7 @@
 package com.yvonne.proyecto.util;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.stereotype.Component;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -19,6 +21,7 @@ import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
 
+@Component
 public class EmailSender {
 
 
@@ -57,8 +60,6 @@ public class EmailSender {
             } );*/
             Properties props = System.getProperties();
             props.put("mail.smtp.host", "smtp.gmail.com");  //El servidor SMTP de Google
-           // props.put("mail.smtp.user", "practicayvonne@gmail.com");
-           // props.put("mail.smtp.clave", "practica123");    //La clave de la cuenta
             props.put("mail.smtp.auth", "true");    //Usar autenticación mediante usuario y clave
             props.put("mail.smtp.starttls.enable", "true"); //Para conectar de manera segura al servidor SMTP
             props.put("mail.smtp.port", "587"); //El puerto SMTP seguro de Google
@@ -69,7 +70,7 @@ public class EmailSender {
                 @Override
                 protected PasswordAuthentication getPasswordAuthentication()
                 {
-                    return new PasswordAuthentication( "practicayvonne@gmail.com", "practica123" );
+                    return new PasswordAuthentication( mail, pass );
                 }
             } );
            /// Session session = Session.getDefaultInstance(props);
