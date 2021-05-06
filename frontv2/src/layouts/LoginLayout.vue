@@ -7,7 +7,7 @@
           <q-avatar>
             <img src="https://cdn.quasar.dev/logo/svg/quasar-logo.svg">
           </q-avatar>
-          Title
+          Inter-net
         </q-toolbar-title>
       </q-toolbar>
     </q-header>
@@ -22,7 +22,7 @@
           <q-avatar>
             <img src="https://cdn.quasar.dev/logo/svg/quasar-logo.svg">
           </q-avatar>
-          Title
+          Inter-net
         </q-toolbar-title>
       </q-toolbar>
     </q-footer>

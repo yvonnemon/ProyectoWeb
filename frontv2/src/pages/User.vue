@@ -21,7 +21,7 @@
               label="Nombre"
               stack-label
               @keypress="userrandom"
-              class="form-input col-3"
+              class="form-input col-sm-3 col-xs-12"
               :rules="[
                 val => !!val || 'Campo necesario',
                 val => !val.includes(' ') || 'No puede haber espacios en blanco'
@@ -33,7 +33,7 @@
               label="Apellido"
               stack-label
               @keypress="userrandom"
-              class="form-input col-3"
+              class="form-input col-sm-3 col-xs-12"
               :rules="[val => !!val || 'Campo necesario']"
             />
             <q-input
@@ -41,7 +41,7 @@
               v-model="dni"
               label="Dni"
               stack-label
-              class="form-input col-3"
+              class="form-input col-sm-3 col-xs-12"
               :rules="[
                 val => !!val || 'Campo necesario',
                 val => !val.includes(' ') || 'No puede haber espacios en blanco'
@@ -54,7 +54,7 @@
               label="Email"
               type="email"
               stack-label
-              class="form-input col-3"
+              class="form-input col-sm-3 col-xs-12"
               :rules="[
                 val => !!val || 'Campo necesario',
                 val => !val.includes(' ') || 'No puede haber espacios en blanco',
@@ -66,7 +66,7 @@
               v-model="telephone"
               label="Telefono"
               stack-label
-              class="form-input col-3"
+              class="form-input col-sm-3 col-xs-12"
               mask="### ### ###"
               :rules="[val => !!val || 'Campo necesario']"
             />
@@ -76,7 +76,7 @@
               v-model="user"
               label="Usuario"
               stack-label
-              class="form-input col-3"
+              class="form-input col-sm-3 col-xs-12"
               readonly
             />
 
@@ -86,7 +86,7 @@
               :type="isPwd ? 'password' : 'text'"
               label="Contraseña"
               stack-label
-              class="form-input col-3"
+              class="form-input col-sm-3 col-xs-12"
               :rules="[val => !!val || 'Campo necesario']"
             >
               <template v-slot:append>
@@ -100,16 +100,16 @@
 
             <q-select
               outlined
-              class="form-input col-3"
+              class="form-input col-sm-3 col-xs-12"
               v-model="selectedRol"
               :options="roles"
               label="Rol"
               :rules="[val => !!val || 'Campo necesario']"
             />
-            <q-btn label="Reset" type="reset" color="amber-14" outline class="col-1 offset-9 form-buttons"  />
+            <q-btn label="Limpar" type="reset" color="amber-14" outline class="col-sm-1 offset-sm-9 form-buttons col-xs-12 offset-xs-auto" id="resetButton"  />
             <q-btn
               color="green-8"
-              class="col-1 form-buttons"
+              class="col-sm-1 form-buttons col-xs-12 offset-xs-auto"
               glossy
               type="submit"
               label="Añadir"
@@ -119,7 +119,7 @@
         </q-card>
       </q-expansion-item>
 
-      <div class="q-pa-md list-style self-center" style="min-width: 350px">
+      <div class="q-pa-md list-style self-center" >
         <div class="q-pa-md">
           <q-table
             title="Lista de usuarios"
@@ -312,7 +312,7 @@ export default {
           lastname: this.lastname,
           telephone: phone,
           username: this.user,
-          password: this.password,
+          password: "",
           email: this.email,
           role: rol
         };
@@ -326,6 +326,8 @@ export default {
         });
         console.log(axiospost);
         this.listUsers();
+                document.getElementById("resetButton").click();
+
       }
     },
 
@@ -415,6 +417,8 @@ export default {
         }
       });
         this.listUsers();
+        document.getElementById("resetButton").click();
+        //this.onFormReset();
     }
   }
 };

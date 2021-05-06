@@ -38,7 +38,7 @@ public class TokenManager implements Serializable {
         c.add(Calendar.DATE, 1);
         String jws = Jwts.builder()
                 .claim("user", user)
-                .claim("role",user.getPassword())
+                .claim("role",user.getRole())
                 .setIssuedAt(today)
                 .setExpiration(c.getTime())
                 .signWith(

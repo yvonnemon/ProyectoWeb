@@ -37,17 +37,23 @@
 </template>
 
 <script>
+import jwt_decode from "jwt-decode";
 export default {
   data() {
     return {
     };
   },
     beforeCreate: function() {
-      //aqui habria que mandar una peticion al back para ver si el token? esta bien
+      let token;
       if(!sessionStorage.getItem("Session")){
           this.$router.push("/");
-      }
-  }
+      } else {
+        token = sessionStorage.getItem("Session");
+        let decoded = jwt_decode(token);
+        if(decoded.role != "ADMIN"){
+          this.$router.push("/");
+        }
+      }  }
 
 }
 </script>

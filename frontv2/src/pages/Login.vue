@@ -1,23 +1,27 @@
 <template>
   <div class="column items-center">
     <div class="q-pa-md" style="min-width: 300px">
+      <q-form
+            class="row"
+              @submit="login"
+                >
       <q-input
-        filled
+        outlined
         v-model="user"
         label="Usuario"
         stack-label
-        class="form-input"
+        class="form-input col-12"
       />
       <q-input
-        filled
+        outlined
         v-model="password"
         label="Contraseña"
         stack-label
-        class="form-input"
+        class="form-input col-12"
         type="password"
       />
-      <q-btn color="deep-orange" glossy label="Login" @click="login2" />
-
+      <q-btn color="indigo-13" glossy label="Login" type="submit" class="col-sm-8 offset-sm-2 col-xs-12"/>
+    </q-form>
     </div>
   </div>
 </template>
@@ -34,38 +38,11 @@ export default {
     };
   },
   async created() {
-    sessionStorage.removeItem("token");
-    let separar;
-    if (window.location.href.includes("?")) {
-      separar = window.location.href.split("?");
-    }
-
-    if (separar != undefined) {
-      let datos = separar[1];
-      console.log(datos);
-
-      let datos2 = datos.split("&");
-      console.log(datos2);
-
-      let usergoogle = datos2[1];
-      let tokengoogle = datos2[0];
-      this.token = tokengoogle;
-      sessionStorage.setItem("token", this.token);
-      sessionStorage.setItem("user", usergoogle.replace("%40", "@"));
-      this.$router.push("/posts");
-    }
+    sessionStorage.removeItem("Session");
+    
   },
   methods: {
-    login: function() {
-      console.log("aosdijkands");
-      console.log(this.user);
-      if (this.user == "pepe" && this.password == "123") {
-        sessionStorage.setItem("Session", 'asb123');
-        this.$router.push("/main");
-      }
-
-    },
-    login2: async function() {
+    login: async function() {
       console.log("login to back");      
       const data = {
         username: this.user,
@@ -74,19 +51,25 @@ export default {
       let url = "http://localhost:8080/user/login";
       const axiospost = await this.$axios.post(url, data, {
         headers: {
-          //Authorization: "Bearer " + this.token,
           "Content-Type": "application/json"
         }
       });
       //this.token = axiospost.data.jwt;
       console.log(axiospost.data);
-      let asd = jwt_decode(axiospost.data);
-      console.log(asd);
+      let decodedtoken = jwt_decode(axiospost.data);
+      console.log(decodedtoken);
+      console.log(decodedtoken.role);
       this.$token = "asd"
       let split = axiospost.data.split('&');
       sessionStorage.setItem("Session", split[1]);
+      if(decodedtoken.role === "ADMIN"){
+          this.$router.push("/admin");
+      } else if(decodedtoken.role === "EMPLOYEE"){
+          this.$router.push("/main");
+
+      }
       //sessionStorage.setItem("userid", axiospost.data.userId);
-      this.$router.push("/admin");
+     // this.$router.push("/admin");
     }
   }
 };

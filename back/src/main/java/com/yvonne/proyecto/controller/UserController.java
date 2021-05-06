@@ -28,6 +28,13 @@ public class UserController {
     public List<User> getAllUsers() {
         return userManager.getAll();
     }
+    @PostMapping("/user")
+    public User getUser(@RequestBody String id) {
+        JsonObject jsonObject = gson.fromJson(id, JsonObject.class);
+        String x = jsonObject.get("id").toString();
+
+        return userManager.getById(Integer.parseInt(x));
+    }
 
     @PostMapping("/login")
     public ResponseEntity loginUser(@RequestBody UserDto data) {

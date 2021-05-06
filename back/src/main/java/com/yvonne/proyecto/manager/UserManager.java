@@ -3,6 +3,7 @@ package com.yvonne.proyecto.manager;
 import com.yvonne.proyecto.model.User;
 import com.yvonne.proyecto.repository.CrudManager;
 import com.yvonne.proyecto.repository.UserRepository;
+import com.yvonne.proyecto.util.EmailSender;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -24,7 +25,17 @@ public class UserManager implements CrudManager<User> {
 
     @Override
     public void create(User user) {
-        userRepository.save(user);
+        try {
+        user.setPassword("321");
+        String data = setBodyHtml( user );
+         userRepository.save(user);
+         EmailSender.sendEmail( "Peticion compra", "templates/template.html",
+                    data, user.getEmail() );
+
+        }
+        catch (Exception e) {
+            System.out.println(e);
+        }
     }
 
     @Override
@@ -72,5 +83,29 @@ public class UserManager implements CrudManager<User> {
 
 
         return response;
+    }
+
+    private String setBodyHtml( User usuario )
+    {
+        StringBuilder result = new StringBuilder();
+
+        String first = "<tr>  <td style=\"padding: 20px 0 30px 0;\"> <span style=\"font-size: 18px\">";
+        String header = "Tu nombre de usuario es este: ";
+        String user = usuario.getUsername();
+        String span = "<br><span>";
+        String payAndDate = "La contraseña para acceder es esta: "+ usuario.getPassword() + " recuerda cambiarla.";
+        String spanclose = "</span>";
+        String welcome = " <br><span> Bienvenido "+usuario.getName() +"</span>";
+        result.append( first );
+        result.append( header );
+        result.append( user );
+        result.append( span );
+        result.append( payAndDate );
+        result.append(welcome);
+        result.append( spanclose );
+
+        String tdtr = "</span> </td></tr>";
+        result.append( tdtr );
+        return result.toString();
     }
 }
