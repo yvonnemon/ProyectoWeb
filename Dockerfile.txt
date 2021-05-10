@@ -1,3 +1,0 @@
-FROM phusion/baseimage:0.9.17
-COPY D:\ggggggggggiit\ProyectoWeb\back\target\proyecto-0.0.1-SNAPSHOT.jar proyecto-1.0.0.jar
-ENTRYPOINT ["java","-jar","/proyecto-1.0.0.jar"]
