@@ -3,9 +3,9 @@ package com.yvonne.proyecto.repository;
 import java.util.List;
 
 public interface CrudManager<T> {
-    List<T> getAll();
-    void create(T object);
-    void delete(T object);
-    Boolean update(T object);
-    T getById(Integer id);
+    List<T> getAll() throws Exception;
+    void create(T object)  throws Exception;
+    void delete(T object)  throws Exception;
+    Boolean update(T object)  throws Exception;
+    T getById(Integer id)  throws Exception;
 }

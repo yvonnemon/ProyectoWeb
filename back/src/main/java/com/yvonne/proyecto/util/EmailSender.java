@@ -24,12 +24,30 @@ import javax.mail.internet.MimeMultipart;
 @Component
 public class EmailSender {
 
-
     @Value("${spring.datasource.email}")
-    private static String mail;
+    private String mail;
 
     @Value("${spring.datasource.pass}")
-    private static String pass;
+    private String pass;
+
+
+    private static String MAIL;
+    private static String PASS;
+
+    @Value("${spring.datasource.email}")
+    public void setMail(String mail){
+        EmailSender.MAIL = mail;
+    }
+    @Value("${spring.datasource.pass}")
+    public void setPass(String pass){
+        EmailSender.PASS = pass;
+    }
+
+//    @Value("${spring.datasource.email}")
+//    private static String mail;
+//
+//    @Value("${spring.datasource.pass}")
+//    private static String pass;
 
    // private static final String MAIL = mail;
   //  private static final String PASS = pass;
@@ -38,26 +56,8 @@ public class EmailSender {
     {
     }
 
-    public static boolean sendEmail( String subject, String HTMLTemplateUrl, String dataAsBody, String userEmail )
-    {
+    public static void sendEmail( String subject, String HTMLTemplateUrl, String dataAsBody, String userEmail ) throws Exception {
 
-        try
-        {
-           /* Properties prop = new Properties();
-            prop.put( "mail.smtp.auth", true );
-            prop.put( "mail.smtp.starttls.enable", "true" );
-            prop.put( "mail.smtp.host", EJBProperties.getPropertieValue( "mail.server.smtp" ) );
-            prop.put( "mail.smtp.port", EJBProperties.getPropertieValue( "mail.server.port" ) );
-            prop.put( "mail.smtp.ssl.trust", "*" );
-
-            Session session = Session.getInstance( prop, new Authenticator()
-            {
-                @Override
-                protected PasswordAuthentication getPasswordAuthentication()
-                {
-                    return new PasswordAuthentication( MAIL, PASS );
-                }
-            } );*/
             Properties props = System.getProperties();
             props.put("mail.smtp.host", "smtp.gmail.com");  //El servidor SMTP de Google
             props.put("mail.smtp.auth", "true");    //Usar autenticación mediante usuario y clave
@@ -65,12 +65,11 @@ public class EmailSender {
             props.put("mail.smtp.port", "587"); //El puerto SMTP seguro de Google
             props.put( "mail.smtp.ssl.trust", "*" );
 
-            Session session = Session.getInstance( props, new Authenticator()
-            {
+            Session session = Session.getInstance( props, new Authenticator() {
+
                 @Override
-                protected PasswordAuthentication getPasswordAuthentication()
-                {
-                    return new PasswordAuthentication( mail, pass );
+                protected PasswordAuthentication getPasswordAuthentication() {
+                    return new PasswordAuthentication( MAIL, PASS );
                 }
             } );
            /// Session session = Session.getDefaultInstance(props);
@@ -102,14 +101,7 @@ public class EmailSender {
             message.setContent( multipart );
 
             Transport.send( message );
-            return true;
-        }
-        catch ( MessagingException | IOException e )
-        {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-            return false;
-        }
+
 
     }
 

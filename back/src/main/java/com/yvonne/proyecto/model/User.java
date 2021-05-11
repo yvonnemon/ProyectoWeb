@@ -41,6 +41,12 @@ public class User {
     @Column(name = "role", nullable = false)
     private Role role;
 
+    @OneToMany(mappedBy="user")
+    private List<Calendar> vacation;
+
+    @OneToMany(mappedBy="user")
+    private List<Document> documents;
+
     public User() {
     }
 

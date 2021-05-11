@@ -28,6 +28,7 @@ public class UserController {
     public List<User> getAllUsers() {
         return userManager.getAll();
     }
+
     @PostMapping("/user")
     public User getUser(@RequestBody String id) {
         JsonObject jsonObject = gson.fromJson(id, JsonObject.class);

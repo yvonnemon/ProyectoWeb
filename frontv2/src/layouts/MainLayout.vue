@@ -13,8 +13,8 @@
 
       <q-tabs align="left">
         <q-route-tab to="/admin/user" label="Usuarios" class="nav-font"/>
-        <q-route-tab to="/page2" label="Nominas" class="nav-font"/>
-        <q-route-tab to="/page3" label="Vacaciones" class="nav-font"/>
+        <q-route-tab to="/page3" label="Nominas" class="nav-font"/>
+        <q-route-tab to="/admin/vacation" label="Vacaciones" class="nav-font"/>
       </q-tabs>
     </q-header>
 

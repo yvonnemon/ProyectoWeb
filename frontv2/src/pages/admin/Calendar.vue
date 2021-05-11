@@ -1,131 +1,13 @@
 <template>
   <div class="q-pa-md column items-center">
     <div class="q-gutter-y-md" style="min-width: 70vw; max-width: 70vw">
-      <q-expansion-item
-        expand-separator
-        icon="perm_identity"
-        label="Añadir usuario"
-        class="form-style"
-        v-model="expanded"
-      >
-        <q-card>
-          <q-card-section class="row">
-            <q-form
-            class="row"
-              @submit="addUser"
-              @reset="onFormReset"
-                >
-            <q-input
-              outlined
-              v-model="name"
-              label="Nombre"
-              stack-label
-              @keypress="userrandom"
-              class="form-input col-sm-3 col-xs-12"
-              :rules="[
-                val => !!val || 'Campo necesario',
-                val => !val.includes(' ') || 'No puede haber espacios en blanco'
-              ]"
-            />
-            <q-input
-              outlined
-              v-model="lastname"
-              label="Apellido"
-              stack-label
-              @keypress="userrandom"
-              class="form-input col-sm-3 col-xs-12"
-              :rules="[val => !!val || 'Campo necesario']"
-            />
-            <q-input
-              outlined
-              v-model="dni"
-              label="Dni"
-              stack-label
-              class="form-input col-sm-3 col-xs-12"
-              :rules="[
-                val => !!val || 'Campo necesario',
-                val => !val.includes(' ') || 'No puede haber espacios en blanco'
-              ]"
-            />
-
-            <q-input
-              outlined
-              v-model="email"
-              label="Email"
-              type="email"
-              stack-label
-              class="form-input col-sm-3 col-xs-12"
-              :rules="[
-                val => !!val || 'Campo necesario',
-                val => !val.includes(' ') || 'No puede haber espacios en blanco',
-                val => val.includes('@') || 'Dirección no válida',
-              ]"
-            />
-            <q-input
-              outlined
-              v-model="telephone"
-              label="Telefono"
-              stack-label
-              class="form-input col-sm-3 col-xs-12"
-              mask="### ### ###"
-              :rules="[val => !!val || 'Campo necesario']"
-            />
-
-            <q-input
-              outlined
-              v-model="user"
-              label="Usuario"
-              stack-label
-              class="form-input col-sm-3 col-xs-12"
-              readonly
-            />
-
-            <q-input
-              v-model="password"
-              outlined
-              :type="isPwd ? 'password' : 'text'"
-              label="Contraseña"
-              stack-label
-              class="form-input col-sm-3 col-xs-12"
-              :rules="[val => !!val || 'Campo necesario']"
-            >
-              <template v-slot:append>
-                <q-icon
-                  :name="isPwd ? 'visibility_off' : 'visibility'"
-                  class="cursor-pointer"
-                  @click="isPwd = !isPwd"
-                />
-              </template>
-            </q-input>
-
-            <q-select
-              outlined
-              class="form-input col-sm-3 col-xs-12"
-              v-model="selectedRol"
-              :options="roles"
-              label="Rol"
-              :rules="[val => !!val || 'Campo necesario']"
-            />
-            <q-btn label="Limpar" type="reset" color="amber-14" outline class="col-sm-1 offset-sm-9 form-buttons col-xs-12 offset-xs-auto" id="resetButton"  />
-            <q-btn
-              color="green-8"
-              class="col-sm-1 form-buttons col-xs-12 offset-xs-auto"
-              glossy
-              type="submit"
-              label="Añadir"
-            />
-            </q-form>
-          </q-card-section>
-        </q-card>
-      </q-expansion-item>
-
       <div class="q-pa-md list-style self-center" >
         <div class="q-pa-md">
           <q-table
-            title="Lista de usuarios"
+            title="Vacaciones de los empleados"
             :data="data"
             :columns="columns"
-            row-key="dni"
+            row-key="id"
             :pagination="pagination"
           >
             <template v-slot:body="props">
@@ -169,16 +51,16 @@
           <q-card-actions align="right">
             <q-btn
               flat
-              label="Aceptar"
-              color="positive"
-              @click="deleteUser"
+              label="Cancelar"
+              color="red"
+              @click="cancelDelete"
               v-close-popup
             />
             <q-btn
               flat
-              label="Cancelar"
-              color="red"
-              @click="cancelDelete"
+              label="Aceptar"
+              color="positive"
+              @click="deleteUser"
               v-close-popup
             />
           </q-card-actions>
@@ -187,7 +69,6 @@
     </div>
   </div>
 </template>
-
 <script>
 const axios = require("axios");
 export default {
@@ -216,42 +97,50 @@ export default {
           align: "center"
         },
         {
-          name: "dni",
-          required: true,
-          label: "Dni",
+          name: "user",
           align: "center",
-          field: row => row.dni,
-          format: val => `${val}`,
+          label: "Empleado",
+          field: row => row.user.name +' '+ row.user.lastname,
+          sortable: true
+        },
+
+        {
+          name: "startDate",
+          align: "center",
+          label: "Fecha inicio",
+          field: "startDate",
           sortable: true
         },
         {
-          name: "name",
-          align: "center",
-          label: "Nombre",
-          field: "name",
-          sortable: true
-        },
-        {
-          name: "email",
-          label: "Email",
-          field: "email",
-          align: "center",
-          sortable: true
-        },
-        {
-          name: "username",
-          label: "Usuario",
-          field: "username",
+          name: "endDate",
+          label: "Fecha fin",
+          field: "endDate",
           align: "center",
           sortable: true
         },
         {
-          name: "role",
-          label: "Rol",
-          field: "role",
+          name: "comment",
+          label: "Comentarios",
+          field: "comment",
           align: "center",
           sortable: true
-        }
+        },
+        {
+          name: "approveDate",
+          label: "Fecha aprobacion",
+          field: "approveDate",
+          align: "center",
+          sortable: true
+        },
+        {
+          name: "status",
+          label: "Estado",
+          field: row => this.text(row.status),
+          align: "center",
+          sortable: true
+        },
+
+
       ],
       data: [],
       pagination: {
@@ -267,6 +156,22 @@ export default {
     this.listUsers();
   },
   methods: {
+
+    text: function(filtro){
+        console.log(filtro);
+        let result;
+        if(filtro === "PENDING"){
+            result = "Pendiente";
+        } else if(filtro === "APPROVED") {
+            result = "Aprobado";
+        } else if(filtro === "DENIED") {
+            result = "Denegado";
+        } else if (filtro === "CANCELED") {
+            result = "Cancelado";
+        }
+       return result;
+    },
+
     onFormReset: function(){
         this.dni = "";
         this.name = "";
@@ -332,7 +237,7 @@ export default {
     },
 
     listUsers: async function() {
-      let listarPosts = await axios.get("http://localhost:8080/user/users", {
+      let listarPosts = await axios.get("http://localhost:8080/calendar/vacations", {
         method: "GET",
         headers: new Headers({
           Authorization: "Bearer " + sessionStorage.getItem("Session")
@@ -365,6 +270,7 @@ export default {
       });
       console.log("borrasion");
       this.listUsers();
+      this.modifyingId = "";
     },
 
     updateData: function(data) {
@@ -417,10 +323,12 @@ export default {
         }
       });
         this.listUsers();
+              this.modifyingId = "";
+
         document.getElementById("resetButton").click();
         //this.onFormReset();
     }
   }
 };
 </script>
-<style></style>
+

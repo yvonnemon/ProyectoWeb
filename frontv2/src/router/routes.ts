@@ -6,7 +6,9 @@ const routes: RouteConfig[] = [
     component: () => import('layouts/MainLayout.vue'),
     children: [
       { path: '', component: () => import('pages/Index.vue') },
-      { path: 'user', component: () => import('pages/User.vue') },
+      { path: 'user', component: () => import('src/pages/admin/User.vue') },
+      { path: 'vacation', component: () => import('src/pages/admin/Calendar.vue') },
+
     ],
   },
   {
@@ -14,8 +16,7 @@ const routes: RouteConfig[] = [
     component: () => import('layouts/EmployeeLayout.vue'),
     children: [
       { path: '', component: () => import('pages/Index.vue') },
-      { path: 'user', component: () => import('pages/User.vue') },
-      { path: 'form', component: () => import('pages/Employee.vue') },
+      { path: 'form', component: () => import('src/pages/employee/Employee.vue') },
 
     ],
   },

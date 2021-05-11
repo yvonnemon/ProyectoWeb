@@ -13,39 +13,35 @@ import java.util.Map;
 
 @Service
 public class UserManager implements CrudManager<User> {
+
     @Autowired
     UserRepository userRepository;
 
-
-
     @Override
     public List<User> getAll() {
-        return (List<User>)userRepository.findAll();
+        return (List<User>) userRepository.findAll();
     }
 
     @Override
-    public void create(User user) {
-        try {
-        user.setPassword("321");
-        String data = setBodyHtml( user );
-         userRepository.save(user);
-         EmailSender.sendEmail( "Peticion compra", "templates/template.html",
-                    data, user.getEmail() );
+    public void create(User user) throws Exception{
 
-        }
-        catch (Exception e) {
-            System.out.println(e);
-        }
+            user.setPassword("321");
+            String data = setBodyHtml(user);
+            userRepository.save(user);
+            EmailSender.sendEmail("Nuevo registro", "templates/template.html",
+                    data, user.getEmail());
+
+
     }
 
     @Override
     public void delete(User user) {
-       userRepository.delete(user);
+        userRepository.delete(user);
     }
 
     @Override
     public Boolean update(User user) {
-        if( userRepository.existsById(user.getId()) ){
+        if (userRepository.existsById(user.getId())) {
 
             User updatedUser = userRepository.findById(user.getId()).orElse(null);
 
@@ -71,41 +67,40 @@ public class UserManager implements CrudManager<User> {
         return userRepository.findById(id).orElse(null);
     }
 
-    public Map<Boolean,String> getUserByLogin(String user, String pass){
-        User loginUser = userRepository.findByUsernameAndPassword(user,pass);
-        Map<Boolean,String> response = new HashMap<>();
-        if(loginUser != null){
+    public Map<Boolean, String> getUserByLogin(String user, String pass) {
+        User loginUser = userRepository.findByUsernameAndPassword(user, pass);
+        Map<Boolean, String> response = new HashMap<>();
+        if (loginUser != null) {
             String credentials = TokenManager.generateToken(loginUser);
-            response.put(true,credentials);
+            response.put(true, credentials);
         } else {
-            response.put(false,"wrong credentials");
+            response.put(false, "wrong credentials");
         }
 
 
         return response;
     }
 
-    private String setBodyHtml( User usuario )
-    {
+    private String setBodyHtml(User usuario) {
         StringBuilder result = new StringBuilder();
 
         String first = "<tr>  <td style=\"padding: 20px 0 30px 0;\"> <span style=\"font-size: 18px\">";
         String header = "Tu nombre de usuario es este: ";
         String user = usuario.getUsername();
         String span = "<br><span>";
-        String payAndDate = "La contraseña para acceder es esta: "+ usuario.getPassword() + " recuerda cambiarla.";
+        String payAndDate = "La contraseña para acceder es esta: " + usuario.getPassword() + " recuerda cambiarla.";
         String spanclose = "</span>";
-        String welcome = " <br><span> Bienvenido "+usuario.getName() +"</span>";
-        result.append( first );
-        result.append( header );
-        result.append( user );
-        result.append( span );
-        result.append( payAndDate );
+        String welcome = " <br><span> Bienvenido " + usuario.getName() + "</span>";
+        result.append(first);
+        result.append(header);
+        result.append(user);
+        result.append(span);
+        result.append(payAndDate);
         result.append(welcome);
-        result.append( spanclose );
+        result.append(spanclose);
 
         String tdtr = "</span> </td></tr>";
-        result.append( tdtr );
+        result.append(tdtr);
         return result.toString();
     }
 }
