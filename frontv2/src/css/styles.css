@@ -43,3 +43,7 @@
 .fondo {
     background-color: #e2edff;
 }
+
+.logout {
+    cursor: pointer;
+}

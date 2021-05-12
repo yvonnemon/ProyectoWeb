@@ -12,6 +12,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.xml.ws.Response;
 import java.util.List;
 import java.util.Map;
 
@@ -38,14 +39,13 @@ public class UserController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity loginUser(@RequestBody UserDto data) {
+    public ResponseEntity<String> loginUser(@RequestBody UserDto data) {
         Map<Boolean, String> credentials = userManager.getUserByLogin(data.getUsername(), data.getPassword());
         if (credentials.containsKey(true)) {
             return ResponseEntity.ok(HttpStatus.OK + "&" + credentials.get(true));
 
         } else {
-            return ResponseEntity.ok(HttpStatus.NOT_FOUND);
-
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Sus credenciales no son correctas");
         }
     }
 
@@ -55,22 +55,26 @@ public class UserController {
             userManager.create(data);
             return ResponseEntity.ok(HttpStatus.OK);
         } catch (Exception e) {
-            return ResponseEntity.ok(HttpStatus.BAD_REQUEST);
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Uno de los campos esta repetido");
         }
     }
 
     @PutMapping(value = "/update", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity updateUser(@RequestBody User user) {
+    public ResponseEntity<String> updateUser(@RequestBody User user) {
         try {
-            userManager.update(user);
-            return ResponseEntity.ok(HttpStatus.OK);
+            Boolean update = userManager.update(user);
+            if(update){
+                return ResponseEntity.status(HttpStatus.OK).body("Usuario actualizado");
+            } else {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Error");
+            }
         } catch (Exception e){
-            return ResponseEntity.ok(HttpStatus.BAD_REQUEST);
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Error");
         }
     }
 
     @DeleteMapping("/delete")
-    public ResponseEntity deleteUser(@RequestBody String id) {
+    public ResponseEntity<String> deleteUser(@RequestBody String id) {
 
             JsonObject jsonObject = gson.fromJson(id, JsonObject.class);
 
@@ -78,16 +82,15 @@ public class UserController {
 
             if (userManager.getById(Integer.parseInt(x)) != null) {
 
-            try {
-                userManager.delete(userManager.getById(Integer.parseInt(x)));
-                return ResponseEntity.ok(HttpStatus.OK);
-            } catch (Exception e) {
-                return ResponseEntity.ok(HttpStatus.BAD_REQUEST);
-            }
+                try {
+                    userManager.delete(userManager.getById(Integer.parseInt(x)));
+                    return ResponseEntity.status(HttpStatus.OK).body("Usuario borrado");
+                } catch (Exception e) {
+                    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Hubo un error borrando el usuario");
+                }
             } else {
-                return ResponseEntity.ok(HttpStatus.BAD_REQUEST);
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Usuario no encontrado");
             }
-
     }
 }
 

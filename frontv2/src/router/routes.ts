@@ -17,6 +17,8 @@ const routes: RouteConfig[] = [
     children: [
       { path: '', component: () => import('pages/Index.vue') },
       { path: 'form', component: () => import('src/pages/employee/Employee.vue') },
+      { path: 'vacation', component: () => import('src/pages/employee/Vacation.vue') },
+
 
     ],
   },

@@ -1,5 +1,5 @@
 package com.yvonne.proyecto.model;
 
-public enum DocumentStatus {
+public enum VacationStatus {
     PENDING, APPROVED, DENIED, CANCELED
 }

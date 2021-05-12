@@ -4,6 +4,7 @@ import com.yvonne.proyecto.model.User;
 import com.yvonne.proyecto.repository.CrudManager;
 import com.yvonne.proyecto.repository.UserRepository;
 import com.yvonne.proyecto.util.EmailSender;
+import com.yvonne.proyecto.util.Util;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -25,11 +26,12 @@ public class UserManager implements CrudManager<User> {
     @Override
     public void create(User user) throws Exception{
 
-            user.setPassword("321");
-            String data = setBodyHtml(user);
-            userRepository.save(user);
-            EmailSender.sendEmail("Nuevo registro", "templates/template.html",
-                    data, user.getEmail());
+        String pass = Util.randomString(7);
+        user.setPassword(pass);
+        String data = setBodyHtml(user);
+        userRepository.save(user);
+        EmailSender.sendEmail("Nuevo registro", "templates/template.html",
+                data, user.getEmail());
 
 
     }
@@ -40,7 +42,7 @@ public class UserManager implements CrudManager<User> {
     }
 
     @Override
-    public Boolean update(User user) {
+    public Boolean update(User user){
         if (userRepository.existsById(user.getId())) {
 
             User updatedUser = userRepository.findById(user.getId()).orElse(null);

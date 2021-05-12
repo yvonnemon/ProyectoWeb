@@ -29,7 +29,9 @@
             <img src="https://cdn.quasar.dev/logo/svg/quasar-logo.svg">
           </q-avatar>
           Inter-net
+
         </q-toolbar-title>
+        <span class="logout" @click="logout"><i class="fas fa-sign-out-alt"></i> Log out</span>
       </q-toolbar>
     </q-footer>
 
@@ -53,7 +55,15 @@ export default {
         if(decoded.role != "ADMIN"){
           this.$router.push("/");
         }
-      }  }
+      }  
+    },
+    methods: {
+      logout: function(){
+        sessionStorage.removeItem("Session");
+        this.$router.push("/");
+
+      }
+    }
 
 }
 </script>

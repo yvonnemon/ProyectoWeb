@@ -63,4 +63,12 @@ public class TokenManager implements Serializable {
         //Date fecha = jws.getBody().getExpiration();
     }
 
+    public static User getTokenUser(String token){
+        Base64.Decoder decoder = Base64.getDecoder();
+
+        String[] chunks = token.split("\\.");
+        Object payload = new String(decoder.decode(chunks[1]));
+        return null; //TODO
+    }
+
 }

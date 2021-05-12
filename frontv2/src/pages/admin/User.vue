@@ -10,116 +10,123 @@
       >
         <q-card>
           <q-card-section class="row">
-            <q-form
-            class="row"
-              @submit="addUser"
-              @reset="onFormReset"
-                >
-            <q-input
-              outlined
-              v-model="name"
-              label="Nombre"
-              stack-label
-              @keypress="userrandom"
-              class="form-input col-sm-3 col-xs-12"
-              :rules="[
-                val => !!val || 'Campo necesario',
-                val => !val.includes(' ') || 'No puede haber espacios en blanco'
-              ]"
-            />
-            <q-input
-              outlined
-              v-model="lastname"
-              label="Apellido"
-              stack-label
-              @keypress="userrandom"
-              class="form-input col-sm-3 col-xs-12"
-              :rules="[val => !!val || 'Campo necesario']"
-            />
-            <q-input
-              outlined
-              v-model="dni"
-              label="Dni"
-              stack-label
-              class="form-input col-sm-3 col-xs-12"
-              :rules="[
-                val => !!val || 'Campo necesario',
-                val => !val.includes(' ') || 'No puede haber espacios en blanco'
-              ]"
-            />
+            <q-form class="row" @submit="addUser" @reset="onFormReset">
+              <q-input
+                outlined
+                v-model="name"
+                label="Nombre"
+                stack-label
+                @keypress="userrandom"
+                class="form-input col-sm-3 col-xs-12"
+                :rules="[
+                  val => !!val || 'Campo necesario',
+                  val =>
+                    !val.includes(' ') || 'No puede haber espacios en blanco'
+                ]"
+              />
+              <q-input
+                outlined
+                v-model="lastname"
+                label="Apellido"
+                stack-label
+                @keypress="userrandom"
+                class="form-input col-sm-3 col-xs-12"
+                :rules="[val => !!val || 'Campo necesario']"
+              />
+              <q-input
+                outlined
+                v-model="dni"
+                label="Dni"
+                stack-label
+                @keypress="userrandom"
+                class="form-input col-sm-3 col-xs-12"
+                :rules="[
+                  val => !!val || 'Campo necesario',
+                  val =>
+                    !val.includes(' ') || 'No puede haber espacios en blanco'
+                ]"
+              />
 
-            <q-input
-              outlined
-              v-model="email"
-              label="Email"
-              type="email"
-              stack-label
-              class="form-input col-sm-3 col-xs-12"
-              :rules="[
-                val => !!val || 'Campo necesario',
-                val => !val.includes(' ') || 'No puede haber espacios en blanco',
-                val => val.includes('@') || 'Dirección no válida',
-              ]"
-            />
-            <q-input
-              outlined
-              v-model="telephone"
-              label="Telefono"
-              stack-label
-              class="form-input col-sm-3 col-xs-12"
-              mask="### ### ###"
-              :rules="[val => !!val || 'Campo necesario']"
-            />
+              <q-input
+                outlined
+                v-model="email"
+                label="Email"
+                type="email"
+                stack-label
+                class="form-input col-sm-3 col-xs-12"
+                :rules="[
+                  val => !!val || 'Campo necesario',
+                  val =>
+                    !val.includes(' ') || 'No puede haber espacios en blanco',
+                  val => val.includes('@') || 'Dirección no válida'
+                ]"
+              />
+              <q-input
+                outlined
+                v-model="telephone"
+                label="Telefono"
+                stack-label
+                class="form-input col-sm-3 col-xs-12"
+                mask="### ### ###"
+                :rules="[val => !!val || 'Campo necesario']"
+              />
 
-            <q-input
-              outlined
-              v-model="user"
-              label="Usuario"
-              stack-label
-              class="form-input col-sm-3 col-xs-12"
-              readonly
-            />
+              <q-input
+                outlined
+                v-model="user"
+                label="Usuario"
+                stack-label
+                class="form-input col-sm-3 col-xs-12"
+                readonly
+              />
 
-            <q-input
-              v-model="password"
-              outlined
-              :type="isPwd ? 'password' : 'text'"
-              label="Contraseña"
-              stack-label
-              class="form-input col-sm-3 col-xs-12"
-              :rules="[val => !!val || 'Campo necesario']"
-            >
-              <template v-slot:append>
-                <q-icon
-                  :name="isPwd ? 'visibility_off' : 'visibility'"
-                  class="cursor-pointer"
-                  @click="isPwd = !isPwd"
-                />
-              </template>
-            </q-input>
+              <q-input
+                v-model="password"
+                outlined
+                :type="isPwd ? 'password' : 'text'"
+                label="Contraseña"
+                stack-label
+                class="form-input col-sm-3 col-xs-12"
+                :rules="[val => !!val || 'Campo necesario']"
+              >
+                <template v-slot:append>
+                  <q-icon
+                    :name="isPwd ? 'visibility_off' : 'visibility'"
+                    class="cursor-pointer"
+                    @click="isPwd = !isPwd"
+                  />
+                </template>
+              </q-input>
 
-            <q-select
-              outlined
-              class="form-input col-sm-3 col-xs-12"
-              v-model="selectedRol"
-              :options="roles"
-              label="Rol"
-              :rules="[val => !!val || 'Campo necesario']"
-            />
-            <q-btn label="Limpar" type="reset" color="amber-14" outline class="col-sm-1 offset-sm-9 form-buttons col-xs-12 offset-xs-auto" id="resetButton"  />
-            <q-btn
-              color="green-8"
-              class="col-sm-1 form-buttons col-xs-12 offset-xs-auto"
-              glossy
-              type="submit"
-              label="Añadir"
-            />
+              <q-select
+                outlined
+                class="form-input col-sm-3 col-xs-12"
+                v-model="selectedRol"
+                :options="roles"
+                label="Rol"
+                :rules="[val => !!val || 'Campo necesario']"
+              />
+              <q-btn
+                label="Limpar"
+                type="reset"
+                color="amber-14"
+                outline
+                class="col-sm-1 offset-sm-9 form-buttons col-xs-12 offset-xs-auto"
+                id="resetButton"
+              />
+              <q-btn
+                color="green-8"
+                class="col-sm-1 form-buttons col-xs-12 offset-xs-auto"
+                glossy
+                type="submit"
+                label="Añadir"
+              />
             </q-form>
           </q-card-section>
         </q-card>
       </q-expansion-item>
 
-      <div class="q-pa-md list-style self-center" >
+      <div class="q-pa-md list-style self-center">
         <div class="q-pa-md">
           <q-table
             title="Lista de usuarios"
@@ -248,17 +255,17 @@ export default {
         {
           name: "role",
           label: "Rol",
-          field: "role",
+          field: row => this.translate(row.role),
           align: "center",
           sortable: true
         }
       ],
       data: [],
       pagination: {
-        sortBy: 'desc',
+        sortBy: "desc",
         descending: false,
         rowsPerPage: 10
-      },
+      }
     };
   },
   async created() {
@@ -267,16 +274,28 @@ export default {
     this.listUsers();
   },
   methods: {
-    onFormReset: function(){
-        this.dni = "";
-        this.name = "";
-        this.lastname = "";
-        this.telephone = "";
-        this.user = "";
-        this.password = "";
-        this.email = "";
-        this.selectedRol = "";
 
+    translate: function(texto) {
+        console.log(texto);
+        let result;
+        if(texto === "ADMIN"){
+            result = "Adminsitrador";
+            return result;
+        } else if(texto === "EMPLOYEE") {
+            result = "Empleado";
+            return result;
+        }
+      },
+
+    onFormReset: function() {
+      this.dni = "";
+      this.name = "";
+      this.lastname = "";
+      this.telephone = "";
+      this.user = "";
+      this.password = "";
+      this.email = "";
+      this.selectedRol = "";
     },
 
     userrandom: function() {
@@ -288,10 +307,13 @@ export default {
       if (this.lastname.length >= 1) {
         this.user = this.user.concat(this.lastname.substring(0, 2));
       }
+      if (this.dni.length >= 1) {
+        this.user = this.user.concat(this.dni);
+      }
     },
 
     addUser: async function() {
-      if (this.modifyingId){
+      if (this.modifyingId) {
         console.log("UPDATE");
         this.updateUser();
       } else {
@@ -300,10 +322,10 @@ export default {
         phone = parseInt(phone, 10);
         console.log(phone);
         let rol;
-        if(this.selectedRol == 'Administrador') {
-          rol = 'ADMIN';
+        if (this.selectedRol == "Administrador") {
+          rol = "ADMIN";
         } else {
-          rol = 'EMPLOYEE';
+          rol = "EMPLOYEE";
         }
 
         const data = {
@@ -326,8 +348,7 @@ export default {
         });
         console.log(axiospost);
         this.listUsers();
-                document.getElementById("resetButton").click();
-
+        document.getElementById("resetButton").click();
       }
     },
 
@@ -352,20 +373,37 @@ export default {
       this.deleteConfirm = true;
     },
 
-    deleteUser: async function() {
-      console.log(this.modifyingId);
-      let borrado = await axios.delete("http://localhost:8080/user/delete", {
-        headers: {
-          Authorization: "Bearer " + this.token,
-          "Content-Type": "application/json"
-        },
-        data: {
-          id: this.modifyingId
-        }
+    showNotif() {
+      this.$q.notify({
+        message: "Hubo un error",
+        color: "negative"
       });
-      console.log("borrasion");
-      this.listUsers();
-      this.modifyingId = "";
+    },
+
+    deleteUser: async function() {
+      let fail = false;
+      console.log(this.modifyingId);
+      let borrado = await axios
+        .delete("http://localhost:8080/user/delete", {
+          headers: {
+            Authorization: "Bearer " + this.token,
+            "Content-Type": "application/json"
+          },
+          data: {
+            id: this.modifyingId
+          }
+        })
+        .then(response => {
+          this.listUsers();
+          this.modifyingId = "";
+          console.log("borrasion");
+        })
+        .catch(function(error) {
+          fail = true;
+        });
+      if (fail) {
+        this.showNotif();
+      }
     },
 
     updateData: function(data) {
@@ -379,24 +417,25 @@ export default {
       this.email = data.email;
       this.telephone = data.telephone;
       this.user = data.username;
-     // this.selectedRol = data.role;
+      // this.selectedRol = data.role;
 
-      if(data.role == 'ADMIN') {
-        this.selectedRol = 'Administrador';
+      if (data.role == "ADMIN") {
+        this.selectedRol = "Administrador";
       } else {
-        this.selectedRol = 'Empleado';
+        this.selectedRol = "Empleado";
       }
     },
 
-    updateUser: async function(){
+    updateUser: async function() {
+      let fail = false;
       let phone = this.telephone.replaceAll(" ", "");
-        phone = parseInt(phone, 10);
-        let rol;
-        if(this.selectedRol == 'Administrador') {
-          rol = 'ADMIN';
-        } else {
-          rol = 'EMPLOYEE';
-        }
+      phone = parseInt(phone, 10);
+      let rol;
+      if (this.selectedRol == "Administrador") {
+        rol = "ADMIN";
+      } else {
+        rol = "EMPLOYEE";
+      }
 
       const data = {
         id: this.modifyingId,
@@ -411,17 +450,24 @@ export default {
       };
 
       let url = "http://localhost:8080/user/update";
-      const axiospost = await axios.put(url, data, {
-        headers: {
-          Authorization: "Bearer " + this.token,
-          "Content-Type": "application/json"
-        }
-      });
-        this.listUsers();
-              this.modifyingId = "";
-
-        document.getElementById("resetButton").click();
-        //this.onFormReset();
+      const axiospost = await axios
+        .put(url, data, {
+          headers: {
+            Authorization: "Bearer " + this.token,
+            "Content-Type": "application/json"
+          }
+        })
+        .then(response => {
+          this.listUsers();
+          this.modifyingId = "";
+          document.getElementById("resetButton").click();
+        })
+        .catch(function(error) {
+          fail = true;
+        });
+      if (fail) {
+        this.showNotif();
+      }
     }
   }
 };

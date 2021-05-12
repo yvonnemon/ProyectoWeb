@@ -35,15 +35,18 @@ public class User {
     @Column(name = "password", nullable = false)
     private String password;
 
-    @Column(name = "email", nullable = false, unique = true)
+    //se le quito el unique para poder hacer pruebas
+    @Column(name = "email", nullable = false)
     private String email;
 
     @Column(name = "role", nullable = false)
     private Role role;
 
+    @Transient
     @OneToMany(mappedBy="user")
     private List<Calendar> vacation;
 
+    @Transient
     @OneToMany(mappedBy="user")
     private List<Document> documents;
 

@@ -1,27 +1,45 @@
 <template>
   <div class="column items-center">
     <div class="q-pa-md" style="min-width: 300px">
-      <q-form
-            class="row"
-              @submit="login"
-                >
-      <q-input
-        outlined
-        v-model="user"
-        label="Usuario"
-        stack-label
-        class="form-input col-12"
-      />
-      <q-input
-        outlined
-        v-model="password"
-        label="Contraseña"
-        stack-label
-        class="form-input col-12"
-        type="password"
-      />
-      <q-btn color="indigo-13" glossy label="Login" type="submit" class="col-sm-8 offset-sm-2 col-xs-12"/>
-    </q-form>
+      <q-form class="row" @submit="login">
+        <q-input
+          outlined
+          v-model="user"
+          label="Usuario"
+          stack-label
+          class="form-input col-12"
+        />
+        <q-input
+          outlined
+          v-model="password"
+          label="Contraseña"
+          stack-label
+          class="form-input col-12"
+          type="password"
+        />
+        <q-btn
+          color="indigo-13"
+          glossy
+          label="Login"
+          type="submit"
+          class="col-sm-6 offset-sm-2 col-xs-12"
+        />
+      </q-form>
+      <q-dialog v-model="alert">
+        <q-card>
+          <q-card-section>
+            <div class="text-h6">Error</div>
+          </q-card-section>
+
+          <q-card-section class="q-pt-none">
+            Las credenciales no son correctas
+          </q-card-section>
+
+          <q-card-actions align="right">
+            <q-btn flat label="OK" color="primary" v-close-popup />
+          </q-card-actions>
+        </q-card>
+      </q-dialog>
     </div>
   </div>
 </template>
@@ -34,42 +52,43 @@ export default {
     return {
       user: "",
       password: "",
-      token: ""
+      token: "",
+      alert: false
     };
   },
   async created() {
     sessionStorage.removeItem("Session");
-    
   },
   methods: {
     login: async function() {
-      console.log("login to back");      
+      let alert = false;
+      console.log("login to back");
       const data = {
         username: this.user,
         password: this.password
       };
       let url = "http://localhost:8080/user/login";
-      const axiospost = await this.$axios.post(url, data, {
-        headers: {
-          "Content-Type": "application/json"
-        }
-      });
-      //this.token = axiospost.data.jwt;
-      console.log(axiospost.data);
-      let decodedtoken = jwt_decode(axiospost.data);
-      console.log(decodedtoken);
-      console.log(decodedtoken.role);
-      this.$token = "asd"
-      let split = axiospost.data.split('&');
-      sessionStorage.setItem("Session", split[1]);
-      if(decodedtoken.role === "ADMIN"){
-          this.$router.push("/admin");
-      } else if(decodedtoken.role === "EMPLOYEE"){
-          this.$router.push("/main");
-
-      }
-      //sessionStorage.setItem("userid", axiospost.data.userId);
-     // this.$router.push("/admin");
+      const axiospost = await this.$axios
+        .post(url, data, {
+          headers: {
+            "Content-Type": "application/json"
+          }
+        })
+        .then(response => {
+          let decodedtoken = jwt_decode(response.data);
+          this.$token = "asd";
+          let split = response.data.split("&");
+          sessionStorage.setItem("Session", split[1]);
+          if (decodedtoken.role === "ADMIN") {
+            this.$router.push("/admin");
+          } else if (decodedtoken.role === "EMPLOYEE") {
+            this.$router.push("/main");
+          }
+        })
+        .catch(function(error) {
+          alert = true;
+        });
+      this.alert = alert;
     }
   }
 };

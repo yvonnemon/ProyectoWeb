@@ -4,7 +4,7 @@
       <div class="q-pa-md list-style self-center" >
         <div class="q-pa-md">
           <q-table
-            title="Vacaciones de los empleados"
+            title="Historial de vacaciones"
             :data="data"
             :columns="columns"
             row-key="id"
@@ -171,11 +171,10 @@ export default {
 
 
     listCalendar: async function() {
-      let listarPosts = await axios.get("http://localhost:8080/calendar/vacations", {
-        method: "GET",
-        headers: new Headers({
+      let listarPosts = await axios.get("http://localhost:8080/calendar/users", {
+        headers:{
           Authorization: "Bearer " + sessionStorage.getItem("Session")
-        })
+        }
       });
       this.data = listarPosts.data;
       console.log(listarPosts.data);

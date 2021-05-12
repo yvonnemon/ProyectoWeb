@@ -14,7 +14,7 @@
       <q-tabs align="left">
         <q-route-tab to="/main/form" label="Mis Datos" />
         <q-route-tab to="/page2" label="Mis Nominas" />
-        <q-route-tab to="/page3" label="Mis Vacaciones" />
+        <q-route-tab to="/main/vacation" label="Mis Vacaciones" />
       </q-tabs>
     </q-header>
 
@@ -30,6 +30,8 @@
           </q-avatar>
           Inter-net
         </q-toolbar-title>
+        <span class="logout" @click="logout"><i class="fas fa-sign-out-alt"></i> Log out</span>
+
       </q-toolbar>
     </q-footer>
 
@@ -54,7 +56,15 @@ export default {
           this.$router.push("/");
         }
       }
-  }
+  },
+      methods: {
+      logout: function(){
+        sessionStorage.removeItem("Session");
+        this.$router.push("/");
+
+      }
+    }
+
 
 }
 </script>

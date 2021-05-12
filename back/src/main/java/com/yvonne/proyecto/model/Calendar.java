@@ -23,12 +23,8 @@ public class Calendar {
     @Column(name = "end_date", nullable = false)
     private LocalDateTime endDate;
 
-    @JsonFormat(pattern="dd-MM-yyyy HH:mm:ss")
-    @Column(name = "approve_date")
-    private LocalDateTime approveDate;
-
     @Column(name = "status", nullable = false)
-    private DocumentStatus status;
+    private VacationStatus status;
 
     @Column(name = "comment", nullable = true)
     private String comment;
@@ -69,19 +65,11 @@ public class Calendar {
         this.comment = comment;
     }
 
-    public LocalDateTime getApproveDate() {
-        return approveDate;
-    }
-
-    public void setApproveDate(LocalDateTime approveDate) {
-        this.approveDate = approveDate;
-    }
-
-    public DocumentStatus getStatus() {
+    public VacationStatus getStatus() {
         return status;
     }
 
-    public void setStatus(DocumentStatus status) {
+    public void setStatus(VacationStatus status) {
         this.status = status;
     }
 
