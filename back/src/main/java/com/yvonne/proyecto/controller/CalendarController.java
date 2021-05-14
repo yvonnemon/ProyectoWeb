@@ -4,18 +4,18 @@ import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.yvonne.proyecto.manager.CalendarManager;
 import com.yvonne.proyecto.manager.TokenManager;
-import com.yvonne.proyecto.manager.UserManager;
 import com.yvonne.proyecto.model.Calendar;
 import com.yvonne.proyecto.model.User;
 import com.yvonne.proyecto.model.VacationStatus;
+import com.yvonne.proyecto.model.dto.CalendarDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
-import java.util.Base64;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.List;
 
 @RestController
@@ -25,7 +25,6 @@ public class CalendarController {
     @Autowired
     CalendarManager calendarManager;
 
-    private static final String AUTHORIZATION_HEADER = "Authorization";
     @Autowired
     private Gson gson;
 
@@ -34,14 +33,47 @@ public class CalendarController {
         return calendarManager.getAll();
     }
     @GetMapping("/users")
-    public List<Calendar> getAllFromUser(HttpServletRequest request) throws Exception {
+    public ResponseEntity<List<Calendar>> getAllFromUser(HttpServletRequest request) throws Exception {
         String auth = request.getHeader("Authorization");
         String token = auth.split(" ")[1];
-        User asd = TokenManager.getTokenUser(token);
+        User user = TokenManager.getTokenUser(token);
 
-        return calendarManager.getAll();
+        try {
+             List<Calendar> list = calendarManager.getAllFromUser(user);
+
+            return ResponseEntity.status(HttpStatus.OK).body(list);
+
+        } catch (Exception e)
+        {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
+        }
+
     }
 
+    @PostMapping("/insert")
+    public ResponseEntity<String> insertVacation(@RequestBody CalendarDto data, HttpServletRequest request) {
+        String auth = request.getHeader("Authorization");
+        String token = auth.split(" ")[1];
+
+        Calendar calendar = new Calendar();
+        LocalDateTime from = LocalDateTime.ofInstant(data.getStartDate().toInstant(), ZoneId.systemDefault());
+        LocalDateTime to = LocalDateTime.ofInstant(data.getEndDate().toInstant(), ZoneId.systemDefault());
+        calendar.setStartDate(from);
+        calendar.setEndDate(to);
+        calendar.setComment(data.getComment());
+        calendar.setUser(TokenManager.getTokenUser(token));
+
+        try {
+            calendarManager.create(calendar);
+            return ResponseEntity.status(HttpStatus.OK).body("Vacaciones solicitadas");
+
+        } catch (Exception e)
+        {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.toString());
+
+        }
+
+    }
 
     @PutMapping("/update")
     public ResponseEntity updateStatus(@RequestBody String data) throws Exception {

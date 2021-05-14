@@ -1,4 +1,4 @@
-package com.yvonne.proyecto.model;
+package com.yvonne.proyecto.model.dto;
 
 import javax.persistence.Column;
 

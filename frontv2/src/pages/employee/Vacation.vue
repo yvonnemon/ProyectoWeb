@@ -1,6 +1,50 @@
 <template>
   <div class="q-pa-md column items-center">
-    <div class="q-gutter-y-md" style="min-width: 70vw; max-width: 70vw">
+    <div class="q-gutter-y-md" style="min-width: 60vw; max-width: 60vw">
+
+      <q-expansion-item
+        expand-separator
+        icon="perm_identity"
+        label="Solicitar vacaciones"
+        class="form-style"
+        v-model="expanded"
+      >
+        <q-card>
+          <q-card-section class="row overflow-auto">
+            <q-form class="row" @submit="insert" @reset="onFormReset">
+              <q-date class="form-input col-sm-4 offset-sm-4 col-xs-12 offset-xs-auto" 
+              v-model="dates" range :options='optionsFn' subtitle="Solicitando"/>
+
+              <q-input
+                outlined
+                v-model="comment"
+                label="Comentario"
+                stack-label
+                autogrow
+                class="form-input col-sm-4 col-xs-12 offset-sm-4"
+                
+              />
+
+              <q-btn
+                label="Limpar"
+                type="reset"
+                color="amber-14"
+                outline
+                class="col-sm-1 offset-sm-9 form-buttons col-xs-12 offset-xs-auto"
+                id="resetButton"
+              />
+              <q-btn
+                color="green-8"
+                class="col-sm-1 form-buttons col-xs-12 offset-auto"
+                glossy
+                type="submit"
+                label="Solicitar"
+              />
+            </q-form>
+          </q-card-section>
+        </q-card>
+      </q-expansion-item>
+
       <div class="q-pa-md list-style self-center" >
         <div class="q-pa-md">
           <q-table
@@ -13,15 +57,6 @@
             <template v-slot:body="props">
               <q-tr :props="props">
                 <q-td auto-width>
-                  <q-btn
-                    size="md"
-                    color="indigo-6"
-                    round
-                    dense
-                    @click="updateButton(props.row)"
-                    :disable="props.row.status =='CANCELED'"
-                    icon="fas fa-pen"
-                  />
                   <q-btn
                     size="md"
                     class="table-actions"
@@ -73,6 +108,7 @@
 </template>
 <script>
 const axios = require("axios");
+import { date } from 'quasar'
 export default {
   data() {
     return {
@@ -80,6 +116,8 @@ export default {
       expanded: false,
       deleteConfirm: false,
       modifyingId: "",
+      comment: "",
+      dates: { from: '', to: '' },
       columns: [
         {
           name: "",
@@ -99,7 +137,9 @@ export default {
           align: "center",
           label: "Fecha inicio",
           field: "startDate",
-          sortable: true
+          sortable: true,
+          sortOrder: 'ad'
+
         },
         {
           name: "endDate",
@@ -155,6 +195,10 @@ export default {
        return result;
     },
 
+    optionsFn (fecha) {
+      return fecha >= date.formatDate(Date.now(), 'YYYY/MM/DD') 
+    },
+
     showNotif() {
       this.$q.notify({
         message: "Hubo un error",
@@ -169,15 +213,56 @@ export default {
       });
     },
 
+    onFormReset: function() {
+      this.dates.to = '';
+      this.dates.from = '';
+      this.comment = '';
+    },
 
-    listCalendar: async function() {
+    insert: async function() {
+        let dateFrom = new Date();
+        dateFrom = Date.parse(this.dates.from);
+
+        let dateTo = new Date();
+        dateTo = Date.parse(this.dates.to);
+
+        const data = {
+          comment: this.comment,
+          startDate: dateFrom,
+          endDate: dateTo
+        };
+        console.log(data);
+        let url = "http://localhost:8080/calendar/insert";
+        const axiospost = await axios.post(url, data, {
+          headers: {
+            Authorization: "Bearer " + this.token,
+            "Content-Type": "application/json"
+          }
+        });
+        console.log(axiospost);
+        this.listCalendar();
+        document.getElementById("resetButton").click();
+        this.expanded = false;
+    },
+
+    listCalendar: async function() {//TODO catch error
+      let fail = false;
       let listarPosts = await axios.get("http://localhost:8080/calendar/users", {
         headers:{
           Authorization: "Bearer " + sessionStorage.getItem("Session")
         }
-      });
-      this.data = listarPosts.data;
-      console.log(listarPosts.data);
+      }).then(response => {
+        console.log(response.data);
+          this.data = response.data;
+          this.showNotifOK();
+        })
+        .catch(function(error) {
+          fail = true;
+        });
+      if (fail) {
+        this.showNotif();
+      }
+;
     },
 
     cancelDelete: function() {
@@ -214,29 +299,6 @@ export default {
       if (fail) {
         this.showNotif();
       }
-    },
-
-    radio: function(status) {
-      this.$q.dialog({
-        title: 'Cambiar estado',
-        message: 'Elija el estado que quiere:',
-        options: {
-          type: 'radio',
-          model: "DENIED",
-          items: [
-            { label: 'Denegado', value: 'DENIED' },
-            { label: 'Aceptado', value: 'APPROVED' },
-            { label: 'Pendiente', value: 'PENDING' }
-          ]
-        },
-        cancel: true,
-        persistent: true
-      }).onOk(data => {
-         console.log('>>>> OK, received', data)
-         this.update(data);
-      }).onCancel(() => {
-          console.log('>>>> Cancel')
-      })
     },
 
     update: async function(status){

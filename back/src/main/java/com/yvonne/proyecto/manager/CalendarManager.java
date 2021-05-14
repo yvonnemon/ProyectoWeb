@@ -9,10 +9,6 @@ import com.yvonne.proyecto.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import javax.servlet.http.HttpServletRequest;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.util.Date;
 import java.util.List;
 
 @Service
@@ -26,12 +22,23 @@ public class CalendarManager implements CrudManager<Calendar> {
 
     @Override
     public List<Calendar> getAll() throws Exception {
-        return (List<Calendar>) calendarRepository.findAll();
+        try{
+            return (List<Calendar>) calendarRepository.findAll();
+
+        } catch (Exception e){
+            System.out.println(e);
+            return null;
+        }
     }
 
     @Override
     public void create(Calendar vacation) throws Exception {
-
+        try {
+            vacation.setStatus(VacationStatus.PENDING);
+            calendarRepository.save(vacation);
+        } catch (Exception e){
+            System.out.println(e);
+        }
     }
 
     @Override
@@ -56,6 +63,7 @@ public class CalendarManager implements CrudManager<Calendar> {
     }
 
     public List<Calendar> getAllFromUser(User user) throws Exception {
-        return (List<Calendar>) calendarRepository.findAll();
+
+        return calendarRepository.findByUser(user);
     }
 }

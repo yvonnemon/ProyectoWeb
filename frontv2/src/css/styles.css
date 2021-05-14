@@ -12,12 +12,13 @@
     margin-top: 10px ;
     margin-bottom: 10px ;
     border-radius: 10px ;
-    background-color: rgba(131, 131, 131, 0.247) !important;
+    background-color: rgba(255, 255, 255, 0.692) !important;
 }
 
 
 .list-style {
     box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+    background-color: white;
 }
 
 .table-actions {
