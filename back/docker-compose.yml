@@ -1,0 +1,39 @@
+version: '3'
+services:
+  mysql-bbdd:
+    image: mysql:8.0.22
+    environment:
+      - MYSQL_ROOT_PASSWORD=pepe123
+      - MYSQL_USER=pepe
+      - MYSQL_PASSWORD=pepe123
+      - MYSQL_DATABASE=proyecto
+    volumes:
+      - C:\Users\Yvonne\Desktop\datos_bbss:/var/lib/mysql
+    ports:
+      - 3306:3306
+    networks:
+      - red
+  proyecto-back:
+    container_name: proyecto-back
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: proyecto-back:latest
+    ports:
+      - 8080:8080
+    depends_on:
+      - mysql-bbdd
+    environment:
+      - WAIT_HOSTS=mysql:3306
+      - DATABASE_HOST=mysql-bbdd
+      - DATABASE_USER=pepe
+      - DATABASE_PASSWORD=pepe123
+      - DATABASE_NAME=proyecto
+      - DATABASE_PORT=3306
+      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql-bbdd:3306/proyecto?useSSL=false&createDatabaseIfNotExist=true&useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
+      - SPRING_DATASOURCE_USERNAME=pepe
+      - SPRING_DATASOURCE_PASSWORD=pepe123
+    networks:
+      - red
+networks:
+  red:
