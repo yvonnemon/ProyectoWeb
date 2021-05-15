@@ -16,7 +16,7 @@ services:
   proyecto-back:
     container_name: proyecto-back
     build:
-      context: .
+      context: back/
       dockerfile: Dockerfile
     image: proyecto-back:latest
     ports:
