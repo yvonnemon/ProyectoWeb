@@ -8,6 +8,7 @@ const routes: RouteConfig[] = [
       { path: '', component: () => import('pages/Index.vue') },
       { path: 'user', component: () => import('src/pages/admin/User.vue') },
       { path: 'vacation', component: () => import('src/pages/admin/Calendar.vue') },
+      { path: 'document', component: () => import('src/pages/admin/Document.vue') },
 
     ],
   },

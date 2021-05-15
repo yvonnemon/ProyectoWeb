@@ -18,7 +18,7 @@ services:
     build:
       context: back/
       dockerfile: Dockerfile
-    image: proyecto-back:latest
+    image: yvonnemon/proyecto-back:latest
     ports:
       - 8080:8080
     depends_on:
@@ -33,6 +33,18 @@ services:
       - SPRING_DATASOURCE_URL=jdbc:mysql://mysql-bbdd:3306/proyecto?useSSL=false&createDatabaseIfNotExist=true&useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
       - SPRING_DATASOURCE_USERNAME=pepe
       - SPRING_DATASOURCE_PASSWORD=pepe123
+    networks:
+      - red
+  proyecto-front:
+    container_name: proyecto-front
+    build:
+       context: frontv2/
+       dockerfile: Dockerfile
+    image: yvonnemon/proyecto-front:latest
+    ports:
+    - 8081:81
+    volumes:
+    - .:/app
     networks:
       - red
 networks:

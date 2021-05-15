@@ -1,6 +1,8 @@
 package com.yvonne.proyecto.manager;
 
+import com.yvonne.proyecto.model.Role;
 import com.yvonne.proyecto.model.User;
+import com.yvonne.proyecto.model.dto.UserDto;
 import com.yvonne.proyecto.repository.CrudManager;
 import com.yvonne.proyecto.repository.UserRepository;
 import com.yvonne.proyecto.util.EmailSender;
@@ -8,6 +10,7 @@ import com.yvonne.proyecto.util.Util;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -32,8 +35,6 @@ public class UserManager implements CrudManager<User> {
         userRepository.save(user);
         EmailSender.sendEmail("Nuevo registro", "templates/template.html",
                 data, user.getEmail());
-
-
     }
 
     @Override
@@ -81,6 +82,20 @@ public class UserManager implements CrudManager<User> {
 
 
         return response;
+    }
+
+    public List<UserDto> getAllEmployee(){
+
+        List<User> users = userRepository.findByRole(Role.EMPLOYEE);
+        List<UserDto> result = new ArrayList<>();
+        for (int i = 0; i < users.size(); i++) {
+            UserDto user = new UserDto();
+            User u = users.get(i);
+            user.setFullName(u.getName()+" "+u.getLastname());
+            user.setId(u.getId());
+            result.add(user);
+        }
+        return result;
     }
 
     private String setBodyHtml(User usuario) {

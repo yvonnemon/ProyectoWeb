@@ -1,6 +1,8 @@
 package com.yvonne.proyecto.util;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Component;
 
 import java.io.BufferedReader;
@@ -22,6 +24,8 @@ import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
 
 @Component
+@Configuration
+@PropertySource("classpath:variables.properties")
 public class EmailSender {
 
     @Value("${spring.datasource.email}")
