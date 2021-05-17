@@ -24,7 +24,6 @@ import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
 
 @Component
-@Configuration
 @PropertySource("classpath:variables.properties")
 public class EmailSender {
 
@@ -46,15 +45,6 @@ public class EmailSender {
     public void setPass(String pass){
         EmailSender.PASS = pass;
     }
-
-//    @Value("${spring.datasource.email}")
-//    private static String mail;
-//
-//    @Value("${spring.datasource.pass}")
-//    private static String pass;
-
-   // private static final String MAIL = mail;
-  //  private static final String PASS = pass;
 
     private EmailSender()
     {

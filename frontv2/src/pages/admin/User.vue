@@ -313,6 +313,8 @@ export default {
     },
 
     addUser: async function() {
+      let fail = false;
+
       if (this.modifyingId) {
         console.log("UPDATE");
         this.updateUser();
@@ -338,6 +340,7 @@ export default {
           email: this.email,
           role: rol
         };
+
         console.log(data);
         let url = "http://localhost:8080/user/insert";
         const axiospost = await axios.post(url, data, {
@@ -345,22 +348,40 @@ export default {
             Authorization: "Bearer " + this.token,
             "Content-Type": "application/json"
           }
+        }).then(response => {
+          console.log(response);
+          this.listUsers();
+          document.getElementById("resetButton").click();
+        })
+        .catch(function(error) {
+          console.log(error);
+          fail = true;
         });
-        console.log(axiospost);
-        this.listUsers();
-        document.getElementById("resetButton").click();
+      if (fail) {
+        this.showNotif();
+      };
       }
     },
 
     listUsers: async function() {
+      let fail = false;
+
       let listarPosts = await axios.get("http://localhost:8080/user/users", {
         method: "GET",
         headers: new Headers({
           Authorization: "Bearer " + sessionStorage.getItem("Session")
         })
-      });
-      this.data = listarPosts.data;
-      console.log(listarPosts.data);
+      }).then(response => {
+        this.data = response.data;
+        console.log(response.data);
+        })
+        .catch(function(error) {
+          console.log(error);
+          fail = true;
+        });
+      if (fail) {
+        this.showNotif();
+      };
     },
 
     cancelDelete: function() {
@@ -463,6 +484,7 @@ export default {
           document.getElementById("resetButton").click();
         })
         .catch(function(error) {
+          console.log(error);
           fail = true;
         });
       if (fail) {

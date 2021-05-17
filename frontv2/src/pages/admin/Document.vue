@@ -9,8 +9,12 @@
         v-model="expanded"
       >
         <q-card>
-          <q-card-section >
-            <q-form class="row overflow-auto" @submit="addFile" @reset="onFormReset">
+          <q-card-section>
+            <q-form
+              class="row overflow-auto"
+              @submit="addFile"
+              @reset="onFormReset"
+            >
               <q-file
                 v-model="files"
                 label="Seleccionar archivos"
@@ -19,6 +23,9 @@
                 :counter-label="counterLabelFn"
                 max-files="5"
                 multiple
+                accept=".pdf"
+                @rejected="onRejected"
+                :rules="[val => !!val || 'Campo necesario']"
                 class="form-input col-sm-3 offset-sm-3  col-xs-12 offset-xs-auto"
               >
                 <template v-slot:prepend>
@@ -62,15 +69,24 @@
       <div class="q-pa-md list-style self-center">
         <div class="q-pa-md">
           <q-table
-            title="Lista de usuarios"
-            :data="data"
+            title="Lista de archivos"
+            :data="allFiles"
             :columns="columns"
-            row-key="dni"
+            row-key="id"
             :pagination="pagination"
           >
             <template v-slot:body="props">
               <q-tr :props="props">
                 <q-td auto-width>
+                  <q-btn
+                    size="md"
+                    class="table-actions"
+                    color="secondary"
+                    round
+                    dense
+                    @click="downloadFile(props.row.id, props.row.name)"
+                    icon="fas fa-file-download"
+                  />
                   <q-btn
                     size="md"
                     class="table-actions"
@@ -110,7 +126,7 @@
               flat
               label="Aceptar"
               color="positive"
-              @click="deleteUser"
+              @click="deleteFile"
               v-close-popup
             />
           </q-card-actions>
@@ -130,9 +146,9 @@ export default {
       expanded: false,
       deleteConfirm: false,
       modifyingId: "",
-      selectedRol: "",
       files: null,
       employee: "",
+      allFiles: [],
       columns: [
         {
           name: "",
@@ -144,7 +160,7 @@ export default {
           required: true,
           label: "Dni",
           align: "center",
-          field: row => row.dni,
+          field: row => row.user.dni,
           format: val => `${val}`,
           sortable: true
         },
@@ -152,27 +168,14 @@ export default {
           name: "name",
           align: "center",
           label: "Nombre",
-          field: "name",
-          sortable: true
-        },
-        {
-          name: "email",
-          label: "Email",
-          field: "email",
-          align: "center",
+          field: row => this.cleanName(row.name),
           sortable: true
         },
         {
           name: "username",
           label: "Usuario",
-          field: "username",
-          align: "center",
-          sortable: true
-        },
-        {
-          name: "role",
-          label: "Rol",
-          field: row => this.translate(row.role),
+          field: row => row.user.name + " " + row.user.lastname,
+          format: val => `${val}`,
           align: "center",
           sortable: true
         }
@@ -190,25 +193,24 @@ export default {
     this.token = sessionStorage.getItem("Session");
     console.log(this.token);
     this.listEmployees();
+    this.listFiles();
   },
   methods: {
-    asd: function(algo) {
-      console.log(algo);
+    cleanName: function(string) {
+      let result = string.split("_");
+      return result[1];
     },
+
+    //el texto debajo del input de archivos
     counterLabelFn({ totalSize, filesNumber, maxFiles }) {
       return `${filesNumber} files of ${maxFiles} | ${totalSize}`;
     },
 
     onFormReset: function() {
-      this.dni = "";
-      this.name = "";
-      this.lastname = "";
-      this.telephone = "";
-      this.user = "";
-      this.password = "";
-      this.email = "";
-      this.selectedRol = "";
+      this.files = null;
+      this.employee = "";
     },
+
     showNotifOK() {
       this.$q.notify({
         message: "Actualizado correctamente",
@@ -217,35 +219,71 @@ export default {
     },
 
     addFile: async function() {
+      let fail = false;
+
       console.log(this.files);
-      const data = {
-          userid: this.employee,
-          files: this.files
+      let fileArray = [];
+      let thefile;
+      for (let i = 0; i < this.files.length; i++) {
+        const fileString = await this.getFile(this.files[i]);
+
+        let extension = this.files[i].name.split(".");
+
+        thefile = {
+          docName: extension[0],
+          ext: "." + extension[extension.length - 1],
+          byteData: fileString
+        };
+        fileArray.push(thefile);
+      }
+      console.log(fileArray);
+      let data = {
+        fileArray,
+        user: this.employee
       };
 
       console.log(data);
-      /*  console.log(data);
-        let url = "http://localhost:8080/user/insert";
-        const axiospost = await axios.post(url, data, {
-          headers: {
-            Authorization: "Bearer " + this.token,
-            "Content-Type": "application/json"
-          }
+      let url = "http://localhost:8080/document/insert";
+      const axiospost = await axios.post(url, data, {
+        headers: {
+          Authorization: "Bearer " + this.token,
+          "Content-Type": "application/json"
+        }
+      }).then(response => {
+          this.listFiles();
+          document.getElementById("resetButton").click();
+          this.expanded = false;
+        })
+        .catch(function(error) {
+          console.log(error);
+          fail = true;
         });
-        console.log(axiospost);
-        this.listUsers();
-        document.getElementById("resetButton").click();*/
+      if (fail) {
+        this.showNotif();
+      };
+    },
+
+    //esto convierte el archivo en un string de bytes
+    getFile(file) {
+      return new Promise(resolve => {
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = function() {
+          resolve(reader.result.toString());
+        };
+      });
     },
 
     listEmployees: async function() {
       let fail = false;
 
-      let listarPosts = await axios
+      let listar = await axios
         .get("http://localhost:8080/user/employee", {
           method: "GET",
-          headers: new Headers({
-            Authorization: "Bearer " + sessionStorage.getItem("Session")
-          })
+          headers: {
+            Authorization: "Bearer " + this.token,
+            "Content-Type": "application/json"
+          }
         })
         .then(response => {
           this.employees = response.data;
@@ -256,7 +294,29 @@ export default {
           fail = true;
         });
       if (fail) {
-          
+        this.showNotif();
+      }
+    },
+
+    listFiles: async function() {
+      let fail = false;
+
+      let listar = await axios
+        .get("http://localhost:8080/document/documents", {
+          method: "GET",
+          headers: {
+            Authorization: "Bearer " + this.token,
+            "Content-Type": "application/json"
+          }
+        })
+        .then(response => {
+          this.allFiles = response.data;
+        })
+        .catch(function(error) {
+          console.log(error);
+          fail = true;
+        });
+      if (fail) {
         this.showNotif();
       }
     },
@@ -278,11 +338,47 @@ export default {
       });
     },
 
-    deleteUser: async function() {
+    downloadFile: async function(id, name) {
+      let cleanName = name.split(/([0-9]{17}_)/);
       let fail = false;
-      console.log(this.modifyingId);
       let borrado = await axios
-        .delete("http://localhost:8080/user/delete", {
+        .post("http://localhost:8080/document/download", {
+          headers: {
+            Authorization: "Bearer " + this.token,
+            "Content-Type": "application/json"
+          },
+          data: id
+        }) 
+        .then(res => {
+          const byteCharacters = atob(res.data);
+          const byteNumbers = new Array(byteCharacters.length);
+          for (let i = 0; i < byteCharacters.length; i++) {
+            byteNumbers[i] = byteCharacters.charCodeAt(i);
+          }
+          const byteArray = new Uint8Array(byteNumbers);
+          const blob = new Blob([byteArray], {
+            type: "application/octet-stream"
+          });
+          const fileUrl = window.URL.createObjectURL(blob);
+          var anchor = document.createElement("a");
+          anchor.download = cleanName[2];
+          anchor.href = fileUrl;
+          anchor.click();
+        })
+        .catch(function(error) {
+          console.log(error);
+          fail = true;
+        });
+      if (fail) {
+        console.log("delete error?");
+        this.showNotif();
+      }
+    },
+
+    deleteFile: async function() {
+      let fail = false;
+      let borrado = await axios
+        .delete("http://localhost:8080/document/delete", {
           headers: {
             Authorization: "Bearer " + this.token,
             "Content-Type": "application/json"
@@ -292,7 +388,7 @@ export default {
           }
         })
         .then(response => {
-          this.listUsers();
+          this.listFiles();
           this.modifyingId = "";
           console.log("borrasion");
         })
@@ -301,9 +397,16 @@ export default {
           fail = true;
         });
       if (fail) {
-          console.log("delete error?");
+        console.log("delete error?");
         this.showNotif();
       }
+    },
+
+    onRejected(rejectedEntries) {
+      this.$q.notify({
+        type: "negative",
+        message: `Hay ${rejectedEntries.length} archivos extra.`
+      });
     }
   }
 };

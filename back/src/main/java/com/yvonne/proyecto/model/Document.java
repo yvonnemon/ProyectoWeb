@@ -1,5 +1,8 @@
 package com.yvonne.proyecto.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import javax.persistence.*;
 
 @Entity
@@ -11,9 +14,10 @@ public class Document {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @Column(name = "comment", nullable = false, unique = true)
+    @Column(name = "name", nullable = false, unique = true)
     private String name;
 
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     @Column(name = "path", nullable = false, unique = true)
     private String path;
 

@@ -216,11 +216,28 @@ export default {
           Authorization: "Bearer " + this.token,
           "Content-Type": "application/json"
         }
-      });
-        //this.onFormReset();
+      }).then(response => {
+        this.showNotifOk();
+        })
+        .catch(function(error) {
+          console.log(error);
+          fail = true;
+        });
+      if (fail) {
+          console.log("delete error?");
         this.showNotif();
+      };
+        //this.onFormReset();
     },
-    showNotif () {
+
+    showNotif() {
+      this.$q.notify({
+        message: "Hubo un error",
+        color: "negative"
+      });
+    },
+
+    showNotifOk () {
       const notif = this.$q.notify({
         group: false, // required to be updatable
         timeout: 0, // we want to be in control when it gets dismissed

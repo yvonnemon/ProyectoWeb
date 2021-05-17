@@ -2,12 +2,17 @@ package com.yvonne.proyecto.manager;
 
 import com.yvonne.proyecto.model.Document;
 import com.yvonne.proyecto.model.User;
+import com.yvonne.proyecto.model.dto.DocumentDto;
 import com.yvonne.proyecto.model.dto.FileObject;
 import com.yvonne.proyecto.repository.CrudManager;
 import com.yvonne.proyecto.repository.DocumentRepository;
 import com.yvonne.proyecto.util.Util;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.dom4j.DocumentException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
@@ -18,14 +23,24 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
+import java.util.Map;
 
 @Service
+@PropertySource("classpath:variables.properties")
 public class DocumentManager implements CrudManager<Document> {
 
     @Autowired
     private DocumentRepository documentRepository;
 
+    @Autowired
+    private UserManager userManager;
+
     private static final String FILE_NAME_REGEX = "([0-9]{17}+_)";
+
+    @Value("${spring.datasource.filepath}")
+    private String FILE_PATH;
+
+    private static final Logger LOG = LogManager.getLogger(Document.class);
 
     @Override
     public void create(Document doc) throws Exception {
@@ -33,7 +48,7 @@ public class DocumentManager implements CrudManager<Document> {
     }
 
     //subir el documento
-  /*  public List<Document> generateNewDocument( Document document ) throws CrudServiceException
+    public List<Document> generateNewDocument( DocumentDto document ) throws Exception
     {
         List<Document> result = new ArrayList<>();
         try
@@ -41,32 +56,17 @@ public class DocumentManager implements CrudManager<Document> {
             result = fileGenerator( document ); //ya vi el proceso, eso crea el documento 'fisicamente'
             for ( int i = 0; i < result.size(); i++ )
             {
-                if ( i % document.getEmployees().size() == 0 )//?????
-                {
-                    Document newDocument = create( result.get( i ) ); //si no voy mal, esto es el createentity
-                    for ( int j = 0; j < document.getEmployees().size(); j++ )
-                    {
-                        // por cada archivo y empleado, se crea un registro en bbdd|| ESTO NO HACE FALTA TODO
-                        EmployeeEntity employeeId = employeeService
-                                .getEmployeeByNif( document.getEmployees().get( j ) );
-                        DocumentEmployeeEntity entity = new DocumentEmployeeEntity(); //esta es la del muchos a muchos, sobra
-                        entity.setDocument( newDocument );
-                        entity.setEmployee( employeeId );
-
-                        documentEmployeeService.create( entity );
-                    }
-                }
+                create( result.get( i ) ); //si no voy mal, esto es el createentity
             }
         }
-        catch ( CrudServiceException e )
+        catch ( Exception e )
         {
             LOG.error( "ERROR: el archivo a guardar no existe " + e.getMessage(), e );
         }
-
         return result;
     }
 
-    @Override
+    /*@Override
     public List<DocumentDto> getAllFromUser( String user ) throws CrudServiceException
     {
         EmployeeEntity employee = employeeService.obtainSessionUser( user );
@@ -77,49 +77,29 @@ public class DocumentManager implements CrudManager<Document> {
         result.forEach( ( k, v ) -> v.setDocPath( null ) );
 
         return new ArrayList<>( result.values() );
-    }
+    }*/
 
-    @Override
-    public List<DocumentDto> getAllFiles() throws CrudServiceException
+    public byte[] downloadFile( Integer docCode ) throws IOException
     {
-        List<Document> allDocs = documentEmployeeService.getAllDocuments();
 
-        // Map<Object, List<DocumentDto>> documentsDto = allDocs.stream().map( d -> simplifiedFor( d ) ).distinct()
-        // .collect( Collectors.groupingBy( d -> String.valueOf( d.getDocName() ) ) );
+        Document file = documentRepository.findById( docCode ).orElse(null);
+        String path = file.getPath();
+         //   decryptDocument( path );
 
-        Map<String, DocumentDto> result = oneOfEachFile( allDocs );
-
-        result.forEach( ( k, v ) -> v.setDocPath( null ) );
-
-        return new ArrayList<>( result.values() );
-    }
-
-    @Override
-    public byte[] downloadFile( Integer docCode ) throws CrudServiceException, IOException
-    {
-        Document file = obtainByPrimaryKey( docCode );
-        String path = file.getDocPath();
-        // comprobar si es un pdf, porque estara encriptado si lo es
-        if ( file.getDocPath().contains( "pdf" ) )
-        {
-            decryptDocument( path );
-        }
         byte[] pdfToByteArray = Files.readAllBytes( Paths.get( path ) );
 
-        if ( file.getDocPath().contains( "pdf" ) )
-        {
-            try
+           /* try
             {
                 encryptDocument( path );
             }
             catch ( IOException | DocumentException e )
             {
                 LOG.error( "ERROR: el archivo no existe " + e.getMessage(), e );
-            }
-        }
-        return pdfToByteArray;
+            }*/
+        //por algun motivo, no me lo devuelve en base 64, asi que:
+        return Base64.getEncoder().encode(pdfToByteArray);
     }
-
+/*
     @Override
     public byte[] downloadAllFiles( String user ) throws CrudServiceException, IOException
     {
@@ -187,82 +167,9 @@ public class DocumentManager implements CrudManager<Document> {
         }
     }*/
 
-   /* private Map<String, DocumentDto> oneOfEachFile( List<DocumentEntity> documents )
-    {
-        Map<String, DocumentDto> result = new LinkedHashMap<>();
-        for ( DocumentEntity documentEntity : documents )
-        {
-            // mas facil de ver con este metodo
-            DocumentDto onlyOneDoc = fromEntityToDto( documentEntity );
 
-            List<Integer> empCodes = documentEmployeeService.getAllUsersWithDocument( documentEntity.getDocCode() );
-            String[] fixedName = documentEntity.getDocName().split( FILE_NAME_REGEX );
 
-            onlyOneDoc.setEmployees( employeeList( empCodes ) );
-            onlyOneDoc.setDocName( fixedName[1] );
-            result.put( fixedName[1], onlyOneDoc );
-
-        }
-        return result;
-    }
-*/
-   /* private List<Document> fileGenerator( DocumentDto dto ) throws CrudServiceException
-    {
-        List<Document> result = new ArrayList<>();
-        //fileObject es el archivo en si
-        List<FileObject> recivedFiles = dto.getFileArray(); //esto podria ser reemplazable con una lista en el parametro de entrada?
-        String createdPath;
-        for ( FileObject recivedFile : recivedFiles )
-        {
-            String[] fileByteData = recivedFile.getByteData().split( "," );
-
-            String randomName = Util.generateRandomDate() + "_";
-
-                //este bucle es innecesario proque solo van a un empleado
-                Document entity = new Document();
-
-                User employeeId = documento.getUser(); //mmmmmmm no estoy segura, el usuario tiene que venir por parametro
-                String path = EJBConstants.FILE_PATH + employeeId.getEmpNif(); //solo el path? no queiro hacer subdirectorios
-
-                createdPath = path + "/" + randomName + recivedFile.getDocName() + recivedFile.getExt(); //esta ya esta bien
-
-                File f = new File( createdPath ); //se crea el archivo el este path
-
-                try (
-                        FileOutputStream writtenFile = new FileOutputStream( f ) ) //el try 'escribe' el achivo
-                {
-                    // como el ultimo siempre es el archivo, se hace asi
-                    String encodedTextFile = fileByteData[fileByteData.length - 1];
-
-                    byte[] decodedString = Base64.getDecoder().decode( encodedTextFile );
-                    writtenFile.write( decodedString );
-                }
-                catch ( IOException e )
-                {
-                    LOG.error( "ERROR: el archivo a guardar no existe " + e.getMessage(), e );
-                    throw new CrudServiceException();
-                }
-                if ( recivedFile.getExt().equals( ".pdf" ) ) //esto se deberia hacer igualmente? solo pensaba aceptar pdf
-                {
-                    try
-                    {
-                        encryptDocument( createdPath );
-                    }
-                    catch ( IOException | DocumentException e )
-                    {
-                        LOG.error( "ERROR: el archivo no existe " + e.getMessage(), e );
-                    }
-                }
-                //esto ya esta
-                entity.setName( randomName + recivedFile.getDocName() + recivedFile.getExt() );
-                entity.setPath( f.getPath() );
-                result.add( entity );
-
-        }
-        return result; //devuelve una lista de documentos, con su nombre y path
-    }
-
-    private void encryptDocument( String path ) throws IOException, DocumentException
+  /*  private void encryptDocument( String path ) throws IOException, DocumentException
     {
         PasswordManager pwdManager = PasswordManager.readFile();
 
@@ -307,7 +214,7 @@ public class DocumentManager implements CrudManager<Document> {
             LOG.error( "ERROR: el archivo no existe " + e.getMessage(), e );
         }
     }
-
+/*
     private void fileRename( String oldFile, String newFile )
     {
         File file = new File( oldFile );
@@ -315,64 +222,26 @@ public class DocumentManager implements CrudManager<Document> {
 
         File decryptedFile = new File( newFile );
         decryptedFile.renameTo( file );
-    }
-
-    private boolean deleteFileFromDir( List<Integer> empId, String path, String fileName )
-    {
-        boolean deleted = false;
-
-        for ( Integer userid : empId )
-        {
-            try
-            {
-                EmployeeEntity emp = employeeService.obtainByPrimaryKey( userid );
-                String fixedPath = path + emp.getEmpNif() + fileName;
-                File file = new File( fixedPath );
-                if ( file.delete() )
-                {
-                    System.out.print( "deleted file from directory" );
-                    deleted = true;
-                }
-                else
-                {
-                    deleted = false;
-                }
-            }
-            catch ( CrudServiceException e )
-            {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }
-
-        }
-
-        return deleted;
-
-    }
-
-    private DocumentDto fromEntityToDto( Document document )
-    {
-        DocumentDto d = new DocumentDto();
-        d.setDocCode( document.getDocCode() );
-        d.setDocCreDat( document.getDocCreDat() );
-        d.setDocCreUse( document.getDocCreUse() );
-        d.setDocModDat( document.getDocModDat() );
-        d.setDocModUse( document.getDocModUse() );
-
-        d.setDocPath( document.getDocPath() );
-
-        d.setDocName( document.getDocName().split( FILE_NAME_REGEX )[1] );
-
-        return d;
     }*/
+
+
 
     @Override
     public List<Document> getAll() throws Exception {
-        return null;
+        List<Document> allDocs = (List<Document>) documentRepository.findAll();
+
+        return allDocs;
     }
 
     @Override
     public void delete(Document object) throws Exception {
+        try {
+            deleteFileFromDir(object);
+            documentRepository.delete(object);
+        } catch (Exception e) {
+            LOG.error( "ERROR: el archivo  no existe " + e.getMessage(), e );
+
+        }
 
     }
 
@@ -383,6 +252,85 @@ public class DocumentManager implements CrudManager<Document> {
 
     @Override
     public Document getById(Integer id) throws Exception {
-        return null;
+        return documentRepository.findById(id).orElse(null);
     }
+
+    private boolean deleteFileFromDir(Document doc ) {
+
+            boolean deleted = false;
+                try
+                {
+                    File file = new File( doc.getPath() );
+                    if ( file.delete() ) {
+                        System.out.print( "deleted file from directory" );
+                        deleted = true;
+                    }
+                    else
+                    {
+                        deleted = false;
+                    }
+                }
+                catch ( Exception e )
+                {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
+
+        return deleted;
+    }
+
+    private List<Document> fileGenerator( DocumentDto dto ) throws Exception    {
+        List<Document> result = new ArrayList<>();
+        //fileObject es el archivo en si
+        List<FileObject> recivedFiles = dto.getFileArray(); //esto podria ser reemplazable con una lista en el parametro de entrada?
+        String createdPath;
+        for ( FileObject recivedFile : recivedFiles )
+        {
+            String[] fileByteData = recivedFile.getByteData().split( "," );
+
+            String randomName = Util.generateRandomDate() + "_";
+
+            //este bucle es innecesario proque solo van a un empleado
+            Document entity = new Document();
+
+            User employeeId = userManager.getById(dto.getUser().getId()); //mmmmmmm no estoy segura, el usuario tiene que venir por parametro
+            entity.setUser(employeeId);
+            String path = FILE_PATH +'\\'+ employeeId.getDni(); //solo el path? no queiro hacer subdirectorios
+
+            if(recivedFile.getDocName().contains("_")){
+                String wrongChars = recivedFile.getDocName().replaceAll("_", "-");
+                createdPath = path + '-' + randomName + wrongChars + recivedFile.getExt(); //esta ya esta bien
+
+            } else {
+                createdPath = path + '-' + randomName + recivedFile.getDocName() + recivedFile.getExt(); //esta ya esta bien
+
+            }
+
+            File f = new File( createdPath ); //se crea el archivo el este path
+
+            try (
+                    FileOutputStream writtenFile = new FileOutputStream( f ) ) //el try 'escribe' el achivo
+            {
+                // como el ultimo siempre es el archivo, se hace asi
+                String encodedTextFile = fileByteData[fileByteData.length - 1];
+
+                byte[] decodedString = Base64.getDecoder().decode( encodedTextFile );
+                writtenFile.write( decodedString );
+
+                //encryptDocument( createdPath );  no se di deberia hacer esto o no
+            }
+            catch ( IOException e )
+            {
+                LOG.error( "ERROR: el archivo a guardar no existe " + e.getMessage(), e );
+                throw new Exception();
+            }
+            //esto ya esta
+            entity.setName( randomName + recivedFile.getDocName() + recivedFile.getExt() );
+            entity.setPath( f.getPath() );
+            result.add( entity );
+
+        }
+        return result; //devuelve una lista de documentos, con su nombre y path
+    }
+
 }

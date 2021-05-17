@@ -238,11 +238,19 @@ export default {
             Authorization: "Bearer " + this.token,
             "Content-Type": "application/json"
           }
+        }).then(response => {
+          console.log(response);
+          this.listCalendar();
+          document.getElementById("resetButton").click();
+          this.expanded = false;
+        })
+        .catch(function(error) {
+          fail = true;
+          console.log(error);
         });
-        console.log(axiospost);
-        this.listCalendar();
-        document.getElementById("resetButton").click();
-        this.expanded = false;
+      if (fail) {
+        this.showNotif();
+      };
     },
 
     listCalendar: async function() {//TODO catch error
@@ -258,11 +266,11 @@ export default {
         })
         .catch(function(error) {
           fail = true;
+          console.log(error);
         });
       if (fail) {
         this.showNotif();
-      }
-;
+      };
     },
 
     cancelDelete: function() {

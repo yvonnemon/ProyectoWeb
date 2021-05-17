@@ -171,14 +171,25 @@ export default {
 
 
     listCalendar: async function() {
+      let fail = false;
       let listarPosts = await axios.get("http://localhost:8080/calendar/vacations", {
         method: "GET",
         headers: new Headers({
           Authorization: "Bearer " + sessionStorage.getItem("Session")
         })
-      });
-      this.data = listarPosts.data;
-      console.log(listarPosts.data);
+      }).then(response => {
+        console.log(response);
+        this.data = response.data;
+        console.log(response.data);
+        })
+        .catch(function(error) {
+          console.log(error);
+          fail = true;
+        });
+
+      if (fail) {
+        this.showNotif();
+      };
     },
 
     cancelDelete: function() {
@@ -256,12 +267,14 @@ export default {
           }
         })
         .then(response => {
+          console.log(response);
           this.showNotifOK();
           this.listCalendar();
           this.modifyingId = "";
         })
         .catch(function(error) {
           fail = true;
+          console.log(error);
         });
       if (fail) {
         this.showNotif();
