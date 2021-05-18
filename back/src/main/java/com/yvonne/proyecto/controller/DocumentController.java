@@ -4,7 +4,9 @@ import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.yvonne.proyecto.controller.crud.CrudController;
 import com.yvonne.proyecto.manager.DocumentManager;
+import com.yvonne.proyecto.manager.TokenManager;
 import com.yvonne.proyecto.model.Document;
+import com.yvonne.proyecto.model.User;
 import com.yvonne.proyecto.model.dto.DocumentDto;
 import org.apache.logging.log4j.LogManager;
 import org.apache.tomcat.util.codec.binary.Base64;
@@ -15,6 +17,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.apache.logging.log4j.Logger;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 @RestController
@@ -33,6 +36,21 @@ public class DocumentController{
     public ResponseEntity<List<Document>> getAll() throws Exception {
         try {
             List<Document> result = documentManager.getAll();
+            return ResponseEntity.status(HttpStatus.OK).body(result);
+
+        } catch (Exception e){
+            LOG.error( "ERROR: no se pudieron recuperar los archivos " + e.getMessage(), e );
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+        }
+    }
+    @GetMapping("/userdocs")
+    public ResponseEntity<List<Document>> getAllFromUser(HttpServletRequest request) throws Exception {
+        String auth = request.getHeader("Authorization");
+        String token = auth.split(" ")[1];
+        User user = TokenManager.getTokenUser(token);
+
+        try {
+            List<Document> result = documentManager.getAllFromUser(user);
             return ResponseEntity.status(HttpStatus.OK).body(result);
 
         } catch (Exception e){

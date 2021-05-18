@@ -13,7 +13,7 @@
 
       <q-tabs align="left">
         <q-route-tab to="/main/form" label="Mis Datos" />
-        <q-route-tab to="/page2" label="Mis Nominas" />
+        <q-route-tab to="/main/document" label="Mis Nominas" />
         <q-route-tab to="/main/vacation" label="Mis Vacaciones" />
       </q-tabs>
     </q-header>

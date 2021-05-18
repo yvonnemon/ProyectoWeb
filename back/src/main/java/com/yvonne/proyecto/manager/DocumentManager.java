@@ -233,16 +233,26 @@ public class DocumentManager implements CrudManager<Document> {
         return allDocs;
     }
 
+    public List<Document> getAllFromUser(User user) throws Exception {
+        List<Document> allDocs = (List<Document>) documentRepository.findDocumentByUser(user);
+
+        return allDocs;
+    }
+
+
     @Override
     public void delete(Document object) throws Exception {
         try {
-            deleteFileFromDir(object);
-            documentRepository.delete(object);
+            boolean borradofisico = deleteFileFromDir(object);
+            if(borradofisico){
+                documentRepository.delete(object);
+            } else {
+                throw new Exception("ERROR: el archivo  no existe "); //TODO
+            }
         } catch (Exception e) {
             LOG.error( "ERROR: el archivo  no existe " + e.getMessage(), e );
-
+            throw new Exception("ERROR: el archivo  no existe ");
         }
-
     }
 
     @Override
@@ -272,7 +282,6 @@ public class DocumentManager implements CrudManager<Document> {
                 }
                 catch ( Exception e )
                 {
-                    // TODO Auto-generated catch block
                     e.printStackTrace();
                 }
 
