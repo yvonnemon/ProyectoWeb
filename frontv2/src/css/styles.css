@@ -48,3 +48,12 @@
 .logout {
     cursor: pointer;
 }
+
+.mainpage {
+    padding-top: 10px;
+    background-color: #e2edff;
+}
+
+.q-table__middle.scroll {
+    min-height: 290px;
+}

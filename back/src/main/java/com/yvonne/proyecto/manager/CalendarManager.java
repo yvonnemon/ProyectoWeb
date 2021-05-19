@@ -7,8 +7,14 @@ import com.yvonne.proyecto.repository.CalendarRepository;
 import com.yvonne.proyecto.repository.CrudManager;
 import com.yvonne.proyecto.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.GetMapping;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.List;
 
 @Service
@@ -60,6 +66,22 @@ public class CalendarManager implements CrudManager<Calendar> {
     @Override
     public Calendar getById(Integer id) throws Exception {
         return calendarRepository.findById(id).orElse(null);
+    }
+
+    public List<Calendar> getMonthly(){
+        LocalDateTime currentdate = LocalDateTime.now();
+                //LocalDate.of(currentdate.getYear(), currentdate.getMonth(),1);
+        return calendarRepository.findCalendarByStartDateAfter(LocalDateTime.of(currentdate.getYear(),currentdate.getMonthValue(),1,0,0));
+    }
+
+    public List<Calendar> getPending(){
+        return calendarRepository.findCalendarByStatus(VacationStatus.PENDING);
+    }
+
+    public List<Calendar> getNext(User user) throws Exception {
+        Pageable limit = PageRequest.of(0,5);
+
+        return calendarRepository.findCalendarByStatusAndUserOrderByIdDesc(VacationStatus.APPROVED, user,limit );
     }
 
     public List<Calendar> getAllFromUser(User user) throws Exception {

@@ -65,6 +65,7 @@ public class TokenManager implements Serializable {
             return true;
         } catch (Exception e) {
             System.out.println("El token no es valido");
+            System.out.println(e);
             return false;
         }
         //Date fecha = jws.getBody().getExpiration();
