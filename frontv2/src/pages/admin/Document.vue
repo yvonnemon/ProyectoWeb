@@ -279,7 +279,6 @@ export default {
 
       let listar = await axios
         .get("http://localhost:8080/user/employee", {
-          method: "GET",
           headers: {
             Authorization: "Bearer " + this.token,
             "Content-Type": "application/json"
@@ -303,7 +302,6 @@ export default {
 
       let listar = await axios
         .get("http://localhost:8080/document/documents", {
-          method: "GET",
           headers: {
             Authorization: "Bearer " + this.token,
             "Content-Type": "application/json"

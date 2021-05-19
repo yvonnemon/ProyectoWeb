@@ -32,6 +32,32 @@ public class CalendarController {
     public List<Calendar> getAllVacacions() throws Exception {
         return calendarManager.getAll();
     }
+    @GetMapping("/monthly")
+    public List<Calendar> getMonthly() throws Exception {
+        return calendarManager.getMonthly();
+    }
+
+    @GetMapping("/pending")
+    public List<Calendar> getPending() throws Exception {
+        return calendarManager.getPending();
+    }
+
+    @GetMapping("/next")
+    public ResponseEntity<List<Calendar>> getNext(HttpServletRequest request) throws Exception {
+        String auth = request.getHeader("Authorization");
+        String token = auth.split(" ")[1];
+        try {
+            User user = TokenManager.getTokenUser(token);
+            List<Calendar> result = calendarManager.getNext(user);
+            return ResponseEntity.status(HttpStatus.OK).body(result);
+
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
+        }
+    }
+
+
+
     @GetMapping("/users")
     public ResponseEntity<List<Calendar>> getAllFromUser(HttpServletRequest request) throws Exception {
         String auth = request.getHeader("Authorization");
@@ -40,14 +66,11 @@ public class CalendarController {
 
         try {
              List<Calendar> list = calendarManager.getAllFromUser(user);
-
             return ResponseEntity.status(HttpStatus.OK).body(list);
-
         } catch (Exception e)
         {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
         }
-
     }
 
     @PostMapping("/insert")
@@ -66,13 +89,10 @@ public class CalendarController {
         try {
             calendarManager.create(calendar);
             return ResponseEntity.status(HttpStatus.OK).body("Vacaciones solicitadas");
-
         } catch (Exception e)
         {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.toString());
-
         }
-
     }
 
     @PutMapping("/update")

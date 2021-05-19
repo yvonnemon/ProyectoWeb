@@ -30,6 +30,9 @@ public class User {
     @Column(name = "username", nullable = false, unique = true)
     private String username;
 
+    @Column(name = "address", nullable = false)
+    private String address;
+
     //@JsonIgnore
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     @Column(name = "password", nullable = false)
@@ -43,14 +46,22 @@ public class User {
     private Role role;
 
     @Transient
-    @OneToMany(mappedBy="user")
+    @OneToMany(mappedBy="user", cascade = CascadeType.REMOVE)
     private List<Calendar> vacation;
 
     @Transient
-    @OneToMany(mappedBy="user")
+    @OneToMany(mappedBy="user", cascade = CascadeType.REMOVE)
     private List<Document> documents;
 
     public User() {
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String adress) {
+        this.address = adress;
     }
 
     public Integer getId() {

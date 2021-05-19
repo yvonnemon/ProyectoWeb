@@ -13,6 +13,8 @@ import org.dom4j.DocumentException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
@@ -65,19 +67,6 @@ public class DocumentManager implements CrudManager<Document> {
         }
         return result;
     }
-
-    /*@Override
-    public List<DocumentDto> getAllFromUser( String user ) throws CrudServiceException
-    {
-        EmployeeEntity employee = employeeService.obtainSessionUser( user );
-        List<Document> docsByCurrentUser = documentEmployeeService.getAllDocumentsByUser( employee.getEmpCode() );
-
-        Map<String, DocumentDto> result = oneOfEachFile( docsByCurrentUser );
-
-        result.forEach( ( k, v ) -> v.setDocPath( null ) );
-
-        return new ArrayList<>( result.values() );
-    }*/
 
     public byte[] downloadFile( Integer docCode ) throws IOException
     {
@@ -144,29 +133,7 @@ public class DocumentManager implements CrudManager<Document> {
         }
         return byteArrayOutputStream.toByteArray();
     }
-
-    public void deleteDocById( Integer id )
-    {
-        try
-        {
-            Document doc = obtainByPrimaryKey( id );
-
-            List<Integer> dirs = documentEmployeeService.getAllUsersWithDocument( id );
-            String path = EJBConstants.FILE_PATH;
-            boolean deleted = deleteFileFromDir( dirs, path, "\\" + doc.getDocName() );
-            if ( deleted )
-            {
-                documentEmployeeService.deleteById( id );
-                deleteById( id );
-            }
-        }
-        catch ( CrudServiceException e )
-        {
-            LOG.error( "ERROR: el archivo a borrar no existe " + e.getMessage(), e );
-
-        }
-    }*/
-
+    */
 
 
   /*  private void encryptDocument( String path ) throws IOException, DocumentException
@@ -223,18 +190,26 @@ public class DocumentManager implements CrudManager<Document> {
         File decryptedFile = new File( newFile );
         decryptedFile.renameTo( file );
     }*/
-
-
-
     @Override
     public List<Document> getAll() throws Exception {
-        List<Document> allDocs = (List<Document>) documentRepository.findAll();
+        return (List<Document>) documentRepository.findAll();
+    }
+
+    public List<Document> getAllFromUser(User user) throws Exception {
+
+        return documentRepository.findDocumentByUser(user);
+    }
+
+    public List<Document> getLasts() throws Exception {
+        Pageable limit = PageRequest.of(0,5);
+        List<Document> allDocs = (List<Document>) documentRepository.findAllByOrderByIdDesc(limit);
 
         return allDocs;
     }
 
-    public List<Document> getAllFromUser(User user) throws Exception {
-        List<Document> allDocs = (List<Document>) documentRepository.findDocumentByUser(user);
+    public List<Document> getUserLasts(User user) throws Exception {
+        Pageable limit = PageRequest.of(0,5);
+        List<Document> allDocs = (List<Document>) documentRepository.findDocumentByUserOrderByIdDesc(user,limit);
 
         return allDocs;
     }

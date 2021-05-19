@@ -81,22 +81,13 @@
               />
 
               <q-input
-                v-model="password"
                 outlined
-                :type="isPwd ? 'password' : 'text'"
-                label="Contraseña"
+                v-model="address"
+                label="Direccion"
                 stack-label
                 class="form-input col-sm-3 col-xs-12"
                 :rules="[val => !!val || 'Campo necesario']"
-              >
-                <template v-slot:append>
-                  <q-icon
-                    :name="isPwd ? 'visibility_off' : 'visibility'"
-                    class="cursor-pointer"
-                    @click="isPwd = !isPwd"
-                  />
-                </template>
-              </q-input>
+              />
 
               <q-select
                 outlined
@@ -214,6 +205,7 @@ export default {
       expanded: false,
       deleteConfirm: false,
       modifyingId: "",
+      address: "",
       roles: ["Administrador", "Empleado"],
       selectedRol: "",
       columns: [
@@ -274,18 +266,17 @@ export default {
     this.listUsers();
   },
   methods: {
-
     translate: function(texto) {
-        console.log(texto);
-        let result;
-        if(texto === "ADMIN"){
-            result = "Adminsitrador";
-            return result;
-        } else if(texto === "EMPLOYEE") {
-            result = "Empleado";
-            return result;
-        }
-      },
+      console.log(texto);
+      let result;
+      if (texto === "ADMIN") {
+        result = "Adminsitrador";
+        return result;
+      } else if (texto === "EMPLOYEE") {
+        result = "Empleado";
+        return result;
+      }
+    },
 
     onFormReset: function() {
       this.dni = "";
@@ -296,6 +287,7 @@ export default {
       this.password = "";
       this.email = "";
       this.selectedRol = "";
+      this.address = "";
     },
 
     userrandom: function() {
@@ -338,42 +330,47 @@ export default {
           username: this.user,
           password: "",
           email: this.email,
+          address: this.address,
           role: rol
         };
 
         console.log(data);
         let url = "http://localhost:8080/user/insert";
-        const axiospost = await axios.post(url, data, {
-          headers: {
-            Authorization: "Bearer " + this.token,
-            "Content-Type": "application/json"
-          }
-        }).then(response => {
-          console.log(response);
-          this.listUsers();
-          document.getElementById("resetButton").click();
-        })
-        .catch(function(error) {
-          console.log(error);
-          fail = true;
-        });
-      if (fail) {
-        this.showNotif();
-      };
+        const axiospost = await axios
+          .post(url, data, {
+            headers: {
+              Authorization: "Bearer " + this.token,
+              "Content-Type": "application/json"
+            }
+          })
+          .then(response => {
+            console.log(response);
+            this.listUsers();
+            document.getElementById("resetButton").click();
+          })
+          .catch(function(error) {
+            console.log(error);
+            fail = true;
+          });
+        if (fail) {
+          this.showNotif();
+        }
       }
     },
 
     listUsers: async function() {
       let fail = false;
 
-      let listarPosts = await axios.get("http://localhost:8080/user/users", {
-        method: "GET",
-        headers: new Headers({
-          Authorization: "Bearer " + sessionStorage.getItem("Session")
+      let listarPosts = await axios
+        .get("http://localhost:8080/user/users", {
+          headers: {
+            Authorization: "Bearer " + this.token,
+            "Content-Type": "application/json"
+          }
         })
-      }).then(response => {
-        this.data = response.data;
-        console.log(response.data);
+        .then(response => {
+          this.data = response.data;
+          console.log(response.data);
         })
         .catch(function(error) {
           console.log(error);
@@ -381,7 +378,7 @@ export default {
         });
       if (fail) {
         this.showNotif();
-      };
+      }
     },
 
     cancelDelete: function() {

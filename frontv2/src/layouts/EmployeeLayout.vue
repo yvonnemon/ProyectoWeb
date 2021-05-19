@@ -12,10 +12,12 @@
       </q-toolbar>
 
       <q-tabs align="left">
+        <q-route-tab to="/main" label="Inicio" />
         <q-route-tab to="/main/form" label="Mis Datos" />
         <q-route-tab to="/main/document" label="Mis Nominas" />
         <q-route-tab to="/main/vacation" label="Mis Vacaciones" />
       </q-tabs>
+
     </q-header>
 
     <q-page-container>
@@ -44,18 +46,6 @@ export default {
   data() {
     return {
     };
-  },
-    beforeCreate: function() {
-      let token;
-      if(!sessionStorage.getItem("Session")){
-          this.$router.push("/");
-      } else {
-        token = sessionStorage.getItem("Session");
-        let decoded = jwt_decode(token);
-        if(decoded.role != "EMPLOYEE"){
-          this.$router.push("/");
-        }
-      }
   },
       methods: {
       logout: function(){

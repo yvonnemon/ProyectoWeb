@@ -43,13 +43,42 @@ public class DocumentController{
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
         }
     }
+
+    @GetMapping("/admin")
+    public ResponseEntity<List<Document>> getLasts() throws Exception {
+        try {
+            List<Document> result = documentManager.getLasts();
+            return ResponseEntity.status(HttpStatus.OK).body(result);
+
+        } catch (Exception e){
+            LOG.error( "ERROR: no se pudieron recuperar los archivos " + e.getMessage(), e );
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+        }
+    }
+
+    @GetMapping("/employee")
+    public ResponseEntity<List<Document>> getUserLasts(HttpServletRequest request) throws Exception {
+        String auth = request.getHeader("Authorization");
+        String token = auth.split(" ")[1];
+
+        try {
+            User user = TokenManager.getTokenUser(token);
+            List<Document> result = documentManager.getUserLasts(user);
+            return ResponseEntity.status(HttpStatus.OK).body(result);
+
+        } catch (Exception e){
+            LOG.error( "ERROR: no se pudieron recuperar los archivos " + e.getMessage(), e );
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+        }
+    }
+
     @GetMapping("/userdocs")
     public ResponseEntity<List<Document>> getAllFromUser(HttpServletRequest request) throws Exception {
         String auth = request.getHeader("Authorization");
         String token = auth.split(" ")[1];
-        User user = TokenManager.getTokenUser(token);
 
         try {
+            User user = TokenManager.getTokenUser(token);
             List<Document> result = documentManager.getAllFromUser(user);
             return ResponseEntity.status(HttpStatus.OK).body(result);
 

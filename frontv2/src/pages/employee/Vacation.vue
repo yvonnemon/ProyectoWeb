@@ -64,7 +64,7 @@
                     round
                     dense
                     @click="deleteConfirmFunc(props.row.id)"
-                    :disable="props.row.status =='CANCELED'"
+                    :disable="props.row.status =='CANCELED' || props.row.status =='DENIED'"
                     icon="fas fa-trash-alt"
                   />
                 </q-td>
@@ -206,9 +206,9 @@ export default {
       });
     },
 
-    showNotifOK() {
+    showNotifOK(msg) {
       this.$q.notify({
-        message: "Actualizado correctamente",
+        message: msg,
         color: "positive"
       });
     },
@@ -262,7 +262,6 @@ export default {
       }).then(response => {
         console.log(response.data);
           this.data = response.data;
-          this.showNotifOK();
         })
         .catch(function(error) {
           fail = true;
@@ -325,7 +324,7 @@ export default {
           }
         })
         .then(response => {
-          this.showNotifOK();
+          this.showNotifOK("Solicitud modificada");
           this.listCalendar();
           this.modifyingId = "";
         })
