@@ -173,10 +173,10 @@ export default {
     listCalendar: async function() {
       let fail = false;
       let listarPosts = await axios.get("http://localhost:8080/calendar/vacations", {
-        method: "GET",
-        headers: new Headers({
-          Authorization: "Bearer " + sessionStorage.getItem("Session")
-        })
+          headers: {
+            Authorization: "Bearer " + this.token,
+            "Content-Type": "application/json"
+          }
       }).then(response => {
         console.log(response);
         this.data = response.data;

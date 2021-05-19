@@ -41,6 +41,8 @@
         </q-card>
       </q-dialog>
     </div>
+          <div id="g-signin2" style="background-color: pink;" @data-onsuccess="onSignIn"></div>
+
   </div>
 </template>
 
@@ -58,6 +60,23 @@ export default {
   },
   async created() {
     sessionStorage.removeItem("Session");
+    //this.init();
+  },
+   mounted() {
+    window.onSignIn = this.onSignIn();
+
+    //this.render();
+      /*  window.gapi.signin2.render('g-signin2', {
+        scope: 'https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/userinfo.profile',
+        width: 250,
+        height: 50,
+        longtitle: true,
+        theme: 'dark',
+        onsuccess: this.onSignIn
+    })*/
+
+    this.init();
+
   },
   methods: {
     login: async function() {
@@ -89,8 +108,68 @@ export default {
           alert = true;
         });
       this.alert = alert;
+    },
+    /******************************************************************************login? */
+
+      onSignIn(user) {
+        console.log("lasdfjkansdfnasd");
+        console.log(user);
+      /*const access_token = user.uc.access_token;
+      //la linea esta de arriba, en el momendo que entregue la practica, era user.Zi.access_token, y por algun motivo
+      //que desconozco, al hacerlo ahora para reentregarla, pasa a ser user.uc.access_token
+      localStorage.setItem("access_token", access_token);
+      document.querySelector("#g-signin2").style.visibility = "hidden";
+      sessionStorage.setItem("authok",true);
+      location.reload();*/
+      },
+
+//TODO
+      init: function() { //onload esto 
+      console.log(window.gapi);
+      console.log(" ^^^window.gapi");
+      //storageremove();
+      if (!localStorage.getItem("access_token")) {
+          window.gapi.load('auth2', () => {
+            this.render()
+              let auth2 = window.gapi.auth2.getAuthInstance({
+                  client_id: process.env.GOOGLE_ID,
+                  scope: 'https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/userinfo.profile'
+              });
+          });
+          //this.render();
+
+      } else {
+          document.querySelector("#g-signin2").style.display = "none";
+          sessionStorage.setItem("authok",true);
+      }
+    },
+
+   render: async function() {
+        window.gapi.signin2.render('g-signin2', {
+            scope: 'https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/userinfo.profile',
+            width: 250,
+            height: 50,
+            longtitle: true,
+            theme: 'dark',
+            onsuccess: this.onSignIn
+        })
+             console.log("render gapi");
+
+        console.log(window.gapi);
     }
+
   }
 };
+
+
+
+
+function signOut() {
+    let auth2 = gapi.auth2.getAuthInstance();
+    auth2.signOut().then(function () {
+        console.log('User signed out.');
+    });
+}
+
 </script>
 <style></style>

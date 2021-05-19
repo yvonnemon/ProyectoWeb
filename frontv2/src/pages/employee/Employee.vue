@@ -90,15 +90,16 @@
               </template>
             </q-input>
 
-            <q-select
+            <q-input
               outlined
+              v-model="address"
+              label="Dirección"
+              stack-label
+              @keypress="userrandom"
               class="form-input col-sm-6 col-xs-12"
-              v-model="selectedRol"
-              :options="roles"
-              label="Rol"
               :rules="[val => !!val || 'Campo necesario']"
-              readonly
             />
+
             <q-btn
               color="green-8"
               class="col-sm-2 offset-sm-10 form-buttons col-xs-12 offset-xs-auto"
@@ -126,6 +127,7 @@ export default {
       user: "",
       email: "",
       telephone: "",
+      address:"",
       isPwd: true,
       token: "",
       tab: "list",
@@ -157,7 +159,6 @@ export default {
       let theUser = jwt_decode(this.token);
       console.log(theUser.user.id);
       let userinfo = await axios.post("http://localhost:8080/user/user", {
-        method: "GET",
         headers:{
           Authorization: "Bearer " + this.token,
           "Content-Type": "application/json"
@@ -179,6 +180,8 @@ export default {
       this.email = data.email;
       this.telephone = data.telephone;
       this.user = data.username;
+            this.address = data.address;
+
      // this.selectedRol = data.role;
 
       if(data.role == 'ADMIN') {
@@ -189,6 +192,8 @@ export default {
     },
 
     updateUser: async function(){
+                let fail = false;
+
       let phone = this.telephone.replaceAll(" ", "");
         phone = parseInt(phone, 10);
         let rol;

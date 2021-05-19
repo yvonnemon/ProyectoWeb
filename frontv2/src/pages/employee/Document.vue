@@ -120,7 +120,6 @@ export default {
 
       let listar = await axios
         .get("http://localhost:8080/document/userdocs", {
-          method: "GET",
           headers: {
             Authorization: "Bearer " + this.token,
             "Content-Type": "application/json"
