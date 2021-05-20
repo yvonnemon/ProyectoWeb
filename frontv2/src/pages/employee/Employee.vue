@@ -140,6 +140,7 @@ export default {
   },
   async created() {
     this.token = sessionStorage.getItem("Session");
+    this.gtoken = sessionStorage.getItem("gtoken")
     console.log(this.token);
     this.getUser();
   },
@@ -160,7 +161,8 @@ export default {
       console.log(theUser.user.id);
       let userinfo = await axios.post("http://localhost:8080/user/user", {
         headers:{
-          Authorization: "Bearer " + this.token,
+            Authorization: "Bearer " + this.token,
+            Gauth: "Bearer " + this.gtoken,
           "Content-Type": "application/json"
         },
         id: theUser.user.id
@@ -218,7 +220,8 @@ export default {
       let url = "http://localhost:8080/user/update";
       const axiospost = await axios.put(url, data, {
         headers: {
-          Authorization: "Bearer " + this.token,
+            Authorization: "Bearer " + this.token,
+            Gauth: "Bearer " + this.gtoken,
           "Content-Type": "application/json"
         }
       }).then(response => {

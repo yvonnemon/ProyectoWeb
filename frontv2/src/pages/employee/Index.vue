@@ -59,6 +59,7 @@ export default {
     return {
       allFiles: [],
       token: "",
+      gtoken: "",
       columns: [
         {
           name: "dni",
@@ -128,11 +129,12 @@ export default {
 
   async created() {
     this.token = sessionStorage.getItem("Session");
-
+    this.gtoken = sessionStorage.getItem("gtoken")
      await axios
         .get("http://localhost:8080/document/employee", {
           headers: {
             Authorization: "Bearer " + this.token,
+            Gauth: "Bearer " + this.gtoken,
             "Content-Type": "application/json"
           }
         })
@@ -155,6 +157,7 @@ export default {
       let listarPosts = await axios.get("http://localhost:8080/calendar/next", {
           headers: {
             Authorization: "Bearer " + this.token,
+            Gauth: "Bearer " + this.gtoken,
             "Content-Type": "application/json"
           }
       }).then(response => {

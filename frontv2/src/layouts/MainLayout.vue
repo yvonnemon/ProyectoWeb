@@ -48,6 +48,8 @@ export default {
   methods: {
     logout: function() {
       sessionStorage.removeItem("Session");
+      sessionStorage.removeItem("gtoken");
+
       this.$router.push("/");
     }
   }

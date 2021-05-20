@@ -22,9 +22,12 @@
           glossy
           label="Login"
           type="submit"
-          class="col-sm-6 offset-sm-2 col-xs-12"
+          class="col-sm-6 offset-sm-3 col-xs-12"
         />
       </q-form>
+           <div id="g-signin2" class="googlebutton"  @data-onsuccess="onSignIn"></div>
+
+
       <q-dialog v-model="alert">
         <q-card>
           <q-card-section>
@@ -41,8 +44,6 @@
         </q-card>
       </q-dialog>
     </div>
-          <div id="g-signin2" style="background-color: pink;" @data-onsuccess="onSignIn"></div>
-
   </div>
 </template>
 
@@ -60,10 +61,11 @@ export default {
   },
   async created() {
     sessionStorage.removeItem("Session");
+    sessionStorage.removeItem("gtoken");
+
     //this.init();
   },
    mounted() {
-    window.onSignIn = this.onSignIn();
 
     //this.render();
       /*  window.gapi.signin2.render('g-signin2', {
@@ -112,15 +114,22 @@ export default {
     /******************************************************************************login? */
 
       onSignIn(user) {
-        console.log("lasdfjkansdfnasd");
-        console.log(user);
-      /*const access_token = user.uc.access_token;
-      //la linea esta de arriba, en el momendo que entregue la practica, era user.Zi.access_token, y por algun motivo
-      //que desconozco, al hacerlo ahora para reentregarla, pasa a ser user.uc.access_token
-      localStorage.setItem("access_token", access_token);
-      document.querySelector("#g-signin2").style.visibility = "hidden";
-      sessionStorage.setItem("authok",true);
-      location.reload();*/
+        let usuario = user;
+        console.log("EL USUEARIO V");
+        console.log(user.getAuthResponse().id_token)
+        sessionStorage.setItem("gtoken", user.getAuthResponse().id_token);
+        document.querySelector("#g-signin2").style.visibility = "hidden";
+
+        this.$router.push("/main");
+
+        //const access_token = user.uc;
+        //console.log(access_token);
+        //la linea esta de arriba, en el momendo que entregue la practica, era user.Zi.access_token, y por algun motivo
+        //que desconozco, al hacerlo ahora para reentregarla, pasa a ser user.uc.access_token
+       /* localStorage.setItem("access_token", access_token);
+        document.querySelector("#g-signin2").style.visibility = "hidden";
+        sessionStorage.setItem("authok",true);
+        location.reload();*/
       },
 
 //TODO
@@ -160,16 +169,5 @@ export default {
 
   }
 };
-
-
-
-
-function signOut() {
-    let auth2 = gapi.auth2.getAuthInstance();
-    auth2.signOut().then(function () {
-        console.log('User signed out.');
-    });
-}
-
 </script>
 <style></style>

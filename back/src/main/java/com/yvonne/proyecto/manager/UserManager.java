@@ -66,8 +66,11 @@ public class UserManager implements CrudManager<User> {
 
     @Override
     public User getById(Integer id) {
-
         return userRepository.findById(id).orElse(null);
+    }
+
+    public User findByEmail(String email){
+        return userRepository.findByEmail(email);
     }
 
     public Map<Boolean, String> getUserByLogin(String user, String pass) {

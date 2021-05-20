@@ -58,11 +58,10 @@ public class DocumentController{
 
     @GetMapping("/employee")
     public ResponseEntity<List<Document>> getUserLasts(HttpServletRequest request) throws Exception {
-        String auth = request.getHeader("Authorization");
-        String token = auth.split(" ")[1];
 
         try {
-            User user = TokenManager.getTokenUser(token);
+            User user = TokenManager.validateAnyToken(request);
+
             List<Document> result = documentManager.getUserLasts(user);
             return ResponseEntity.status(HttpStatus.OK).body(result);
 
@@ -74,11 +73,8 @@ public class DocumentController{
 
     @GetMapping("/userdocs")
     public ResponseEntity<List<Document>> getAllFromUser(HttpServletRequest request) throws Exception {
-        String auth = request.getHeader("Authorization");
-        String token = auth.split(" ")[1];
-
         try {
-            User user = TokenManager.getTokenUser(token);
+            User user = TokenManager.validateAnyToken(request);
             List<Document> result = documentManager.getAllFromUser(user);
             return ResponseEntity.status(HttpStatus.OK).body(result);
 

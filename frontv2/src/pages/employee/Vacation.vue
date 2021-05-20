@@ -175,6 +175,7 @@ export default {
   },
   async created() {
     this.token = sessionStorage.getItem("Session");
+    this.gtoken = sessionStorage.getItem("gtoken")
     console.log(this.token);
     this.listCalendar();
   },
@@ -236,6 +237,7 @@ export default {
         const axiospost = await axios.post(url, data, {
           headers: {
             Authorization: "Bearer " + this.token,
+            Gauth: "Bearer " + this.gtoken,
             "Content-Type": "application/json"
           }
         }).then(response => {
@@ -257,7 +259,8 @@ export default {
       let fail = false;
       let listarPosts = await axios.get("http://localhost:8080/calendar/users", {
         headers:{
-          Authorization: "Bearer " + sessionStorage.getItem("Session")
+            Authorization: "Bearer " + this.token,
+            Gauth: "Bearer " + this.gtoken,
         }
       }).then(response => {
         console.log(response.data);
@@ -289,6 +292,7 @@ export default {
         .delete("http://localhost:8080/calendar/delete", {
           headers: {
             Authorization: "Bearer " + this.token,
+            Gauth: "Bearer " + this.gtoken,
             "Content-Type": "application/json"
           },
           data: {
@@ -320,6 +324,7 @@ export default {
         .put(url, data, {
           headers: {
             Authorization: "Bearer " + this.token,
+            Gauth: "Bearer " + this.gtoken,
             "Content-Type": "application/json"
           }
         })

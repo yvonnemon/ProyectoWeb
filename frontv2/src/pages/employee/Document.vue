@@ -88,6 +88,7 @@ export default {
   },
   async created() {
     this.token = sessionStorage.getItem("Session");
+    this.gtoken = sessionStorage.getItem("gtoken")
     console.log(this.token);
     this.listFiles();
   },
@@ -122,6 +123,7 @@ export default {
         .get("http://localhost:8080/document/userdocs", {
           headers: {
             Authorization: "Bearer " + this.token,
+            Gauth: "Bearer " + this.gtoken,
             "Content-Type": "application/json"
           }
         })
@@ -151,6 +153,7 @@ export default {
         .post("http://localhost:8080/document/download", {
           headers: {
             Authorization: "Bearer " + this.token,
+            Gauth: "Bearer " + this.gtoken,
             "Content-Type": "application/json"
           },
           data: id

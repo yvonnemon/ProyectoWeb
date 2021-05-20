@@ -44,10 +44,8 @@ public class CalendarController {
 
     @GetMapping("/next")
     public ResponseEntity<List<Calendar>> getNext(HttpServletRequest request) throws Exception {
-        String auth = request.getHeader("Authorization");
-        String token = auth.split(" ")[1];
         try {
-            User user = TokenManager.getTokenUser(token);
+            User user = TokenManager.validateAnyToken(request);
             List<Calendar> result = calendarManager.getNext(user);
             return ResponseEntity.status(HttpStatus.OK).body(result);
 
@@ -60,12 +58,11 @@ public class CalendarController {
 
     @GetMapping("/users")
     public ResponseEntity<List<Calendar>> getAllFromUser(HttpServletRequest request) throws Exception {
-        String auth = request.getHeader("Authorization");
-        String token = auth.split(" ")[1];
-        User user = TokenManager.getTokenUser(token);
 
         try {
-             List<Calendar> list = calendarManager.getAllFromUser(user);
+            User user = TokenManager.validateAnyToken(request);
+
+            List<Calendar> list = calendarManager.getAllFromUser(user);
             return ResponseEntity.status(HttpStatus.OK).body(list);
         } catch (Exception e)
         {
@@ -84,7 +81,7 @@ public class CalendarController {
         calendar.setStartDate(from);
         calendar.setEndDate(to);
         calendar.setComment(data.getComment());
-        calendar.setUser(TokenManager.getTokenUser(token));
+        calendar.setUser(TokenManager.validateAnyToken(request));
 
         try {
             calendarManager.create(calendar);

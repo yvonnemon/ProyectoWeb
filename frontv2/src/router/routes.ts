@@ -36,19 +36,21 @@ const routes: RouteConfig[] = [
       { path: 'document', component: () => import('src/pages/employee/Document.vue') },
     ],   
      beforeEnter: (from, to, next) => {
-      if(!sessionStorage.getItem("Session")){
+      if(!sessionStorage.getItem("Session") && !sessionStorage.getItem("gtoken")){
         next("/");
-      } else {
+      } else if(sessionStorage.getItem("gtoken")) {
+        next();
+
+      }else{
         const token: any = sessionStorage.getItem("Session");
         let decoded: any = jwt_decode(token);
-        if(decoded.role != "EMPLOYEE"){
+        if(decoded.role != "EMPLOYEE") {
           next("/");
         } else {
-          next();
+            next();
         }
       }
     }
-
   },
   
   {

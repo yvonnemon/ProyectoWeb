@@ -1,11 +1,10 @@
 <template>
-  <q-layout view="hHh lpR fFf"  class="fondo">
-
+  <q-layout view="hHh lpR fFf" class="fondo">
     <q-header elevated class="bg-primary text-white" height-hint="98">
       <q-toolbar>
         <q-toolbar-title>
           <q-avatar>
-            <img src="https://cdn.quasar.dev/logo/svg/quasar-logo.svg">
+            <img src="https://cdn.quasar.dev/logo/svg/quasar-logo.svg" />
           </q-avatar>
           Inter-net
         </q-toolbar-title>
@@ -17,7 +16,6 @@
         <q-route-tab to="/main/document" label="Mis Nominas" />
         <q-route-tab to="/main/vacation" label="Mis Vacaciones" />
       </q-tabs>
-
     </q-header>
 
     <q-page-container>
@@ -28,33 +26,37 @@
       <q-toolbar>
         <q-toolbar-title>
           <q-avatar>
-            <img src="https://cdn.quasar.dev/logo/svg/quasar-logo.svg">
+            <img src="https://cdn.quasar.dev/logo/svg/quasar-logo.svg" />
           </q-avatar>
           Inter-net
         </q-toolbar-title>
-        <span class="logout" @click="logout"><i class="fas fa-sign-out-alt"></i> Log out</span>
-
+        <span class="logout" @click="logout"
+          ><i class="fas fa-sign-out-alt"></i> Log out</span
+        >
       </q-toolbar>
     </q-footer>
-
   </q-layout>
 </template>
 
 <script>
 import jwt_decode from "jwt-decode";
+import { parse } from 'path';
 export default {
   data() {
-    return {
-    };
+    return {};
   },
-      methods: {
-      logout: function(){
-        sessionStorage.removeItem("Session");
-        this.$router.push("/");
+  methods: {
+    logout: async function() {
+      sessionStorage.removeItem("Session");
+      sessionStorage.removeItem("gtoken");
 
-      }
+      let auth2 = gapi.auth2.getAuthInstance();
+      await auth2.signOut().then(function() {
+        console.log("User signed out.");
+      });
+
+      this.$router.push("/");
     }
-
-
-}
+  }
+};
 </script>

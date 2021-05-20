@@ -16,18 +16,32 @@ public class TokenInterceptor implements HandlerInterceptor {
 
         System.out.println("estas en el handler");
         String auth = request.getHeader("Authorization");
-        if(auth == null){
+       String auth2 = request.getHeader("Gauth");
+        if(auth == null && auth2 == null){
             return true;
         }
-
         System.out.println(auth);
-        String token = auth.split(" ")[1];
 
-        if(!TokenManager.validateToken(token)){
-            response.sendError(403);
-            return false;
+        if(auth2 != null){ //TODO condicionarlo mas?
+            String gToken = auth2.split(" ")[1];
+
+            if(!TokenManager.validateGoogleToken(gToken)){
+                response.sendError(403);
+                return false;
+            } else {
+                return true;
+            }
         } else {
-            return true;
+            String token = auth.split(" ")[1];
+
+            if(!TokenManager.validateToken(token)){
+                response.sendError(403);
+                return false;
+            } else {
+                return true;
+            }
+
         }
+
     }
 }

@@ -57,3 +57,17 @@
 .q-table__middle.scroll {
     min-height: 290px;
 }
+
+.googlebutton {
+    margin-top: 10px;
+    padding-left: 128px;
+    padding-right: auto;
+}
+
+@media only screen and (max-width: 599px) {
+    .googlebutton {
+        margin-top: 10px;
+        padding-left: 20px;
+        padding-right: auto;
+    }
+      }

@@ -128,7 +128,7 @@ export default {
 
   async created() {
     this.token = sessionStorage.getItem("Session");
-
+    this.gtoken = sessionStorage.getItem("gtoken")
      await axios
         .get("http://localhost:8080/document/admin", {
           headers: {
