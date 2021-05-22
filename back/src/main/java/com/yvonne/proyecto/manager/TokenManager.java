@@ -81,7 +81,6 @@ public class TokenManager implements Serializable {
             System.out.println(e);
             return false;
         }
-        //Date fecha = jws.getBody().getExpiration();
     }
 
     public static boolean validateGoogleToken(String token) throws Exception {
@@ -99,12 +98,11 @@ public class TokenManager implements Serializable {
             }
             return true;
         } catch (Exception e){
-            System.out.println(e);
-            return false;
+            throw new Exception(e);
         }
     }
 
-    public static User validateAnyToken(HttpServletRequest request){
+    public static User getUserFromToken(HttpServletRequest request){
 
         String auth = request.getHeader("Authorization");
         String gauth = request.getHeader("Gauth");
@@ -134,6 +132,7 @@ public class TokenManager implements Serializable {
                 GoogleIdToken idToken = verifier.verify(gtoken);
                 if (idToken != null) {
                     GoogleIdToken.Payload payload = idToken.getPayload();
+                    //solo cojo el email, porque es lo que compruebo en la base de datos
                     String email = payload.getEmail();
 
                     return userManager.findByEmail(email);

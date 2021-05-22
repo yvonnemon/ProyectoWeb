@@ -45,7 +45,7 @@ public class CalendarController {
     @GetMapping("/next")
     public ResponseEntity<List<Calendar>> getNext(HttpServletRequest request) throws Exception {
         try {
-            User user = TokenManager.validateAnyToken(request);
+            User user = TokenManager.getUserFromToken(request);
             List<Calendar> result = calendarManager.getNext(user);
             return ResponseEntity.status(HttpStatus.OK).body(result);
 
@@ -60,7 +60,7 @@ public class CalendarController {
     public ResponseEntity<List<Calendar>> getAllFromUser(HttpServletRequest request) throws Exception {
 
         try {
-            User user = TokenManager.validateAnyToken(request);
+            User user = TokenManager.getUserFromToken(request);
 
             List<Calendar> list = calendarManager.getAllFromUser(user);
             return ResponseEntity.status(HttpStatus.OK).body(list);
@@ -79,7 +79,7 @@ public class CalendarController {
             calendar.setStartDate(from);
             calendar.setEndDate(to);
             calendar.setComment(data.getComment());
-            calendar.setUser(TokenManager.validateAnyToken(request));
+            calendar.setUser(TokenManager.getUserFromToken(request));
 
             calendarManager.create(calendar);
             return ResponseEntity.status(HttpStatus.OK).body("Vacaciones solicitadas");

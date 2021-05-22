@@ -1,11 +1,14 @@
 package com.yvonne.proyecto.manager;
 
 import com.yvonne.proyecto.model.Calendar;
+import com.yvonne.proyecto.model.Document;
 import com.yvonne.proyecto.model.User;
 import com.yvonne.proyecto.model.VacationStatus;
 import com.yvonne.proyecto.repository.CalendarRepository;
 import com.yvonne.proyecto.repository.CrudManager;
 import com.yvonne.proyecto.repository.UserRepository;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -25,6 +28,8 @@ public class CalendarManager implements CrudManager<Calendar> {
 
     @Autowired
     CalendarRepository calendarRepository;
+
+    private static final Logger LOG = LogManager.getLogger(Document.class);
 
     @Override
     public List<Calendar> getAll() throws Exception {
@@ -49,43 +54,77 @@ public class CalendarManager implements CrudManager<Calendar> {
 
     @Override
     public void delete(Calendar vacation) throws Exception {
-        vacation.setStatus(VacationStatus.CANCELED);
-        calendarRepository.save(vacation);
+        try {
+            vacation.setStatus(VacationStatus.CANCELED);
+            calendarRepository.save(vacation);
+        } catch (Exception e) {
+            LOG.error("ERROR: no se pudo cancelar " + e.getMessage(), e);
+            throw new Exception(e);
+        }
+
     }
 
     @Override
-    public Boolean update(Calendar object) throws Exception {
+    public Boolean update(Calendar calendar) throws Exception {
         return null;
     }
 
     public void updateStatus(Calendar vacation, VacationStatus status) throws Exception {
-        vacation.setStatus(status);
-        calendarRepository.save(vacation);
+        try {
+            vacation.setStatus(status);
+            calendarRepository.save(vacation);
+        } catch (Exception e) {
+            LOG.error("ERROR: no se pudo actualizar el estado " + e.getMessage(), e);
+            throw new Exception(e);
+        }
     }
 
     @Override
     public Calendar getById(Integer id) throws Exception {
-        return calendarRepository.findById(id).orElse(null);
+        try {
+            return calendarRepository.findById(id).orElse(null);
+        } catch (Exception e) {
+            LOG.error("ERROR: no existe ese id " + e.getMessage(), e);
+            throw new Exception(e);
+        }
+
     }
 
-    public List<Calendar> getMonthly(){
-        LocalDateTime currentdate = LocalDateTime.now();
-                //LocalDate.of(currentdate.getYear(), currentdate.getMonth(),1);
-        return calendarRepository.findCalendarByStartDateAfter(LocalDateTime.of(currentdate.getYear(),currentdate.getMonthValue(),1,0,0));
+    public List<Calendar> getMonthly() throws Exception{
+        try {
+            LocalDateTime currentdate = LocalDateTime.now();
+            return calendarRepository.findCalendarByStartDateAfter(LocalDateTime.of(currentdate.getYear(),currentdate.getMonthValue(),1,0,0));
+        } catch (Exception e) {
+            LOG.error("ERROR: No se pudieron recuperar los datos " + e.getMessage(), e);
+            throw new Exception(e);
+        }
     }
 
-    public List<Calendar> getPending(){
-        return calendarRepository.findCalendarByStatus(VacationStatus.PENDING);
+    public List<Calendar> getPending() throws Exception{
+        try {
+            return calendarRepository.findCalendarByStatus(VacationStatus.PENDING);
+        } catch (Exception e) {
+            LOG.error("ERROR: No se pudieron recuperar los datos " + e.getMessage(), e);
+            throw new Exception(e);
+        }
     }
 
     public List<Calendar> getNext(User user) throws Exception {
-        Pageable limit = PageRequest.of(0,5);
-
-        return calendarRepository.findCalendarByStatusAndUserOrderByIdDesc(VacationStatus.APPROVED, user,limit );
+        try {
+            Pageable limit = PageRequest.of(0,5);
+            return calendarRepository.findCalendarByStatusAndUserOrderByIdDesc(VacationStatus.APPROVED, user,limit );
+        } catch (Exception e) {
+            LOG.error("ERROR: No se pudieron recuperar los datos " + e.getMessage(), e);
+            throw new Exception(e);
+        }
     }
 
     public List<Calendar> getAllFromUser(User user) throws Exception {
-
-        return calendarRepository.findByUser(user);
+        try {
+            return calendarRepository.findByUser(user);
+        } catch (Exception e) {
+            LOG.error("ERROR: No se pudieron recuperar los datos " + e.getMessage(), e);
+            throw new Exception(e);
+        }
     }
 }

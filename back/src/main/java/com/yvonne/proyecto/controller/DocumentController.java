@@ -2,14 +2,12 @@ package com.yvonne.proyecto.controller;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
-import com.yvonne.proyecto.controller.crud.CrudController;
 import com.yvonne.proyecto.manager.DocumentManager;
 import com.yvonne.proyecto.manager.TokenManager;
 import com.yvonne.proyecto.model.Document;
 import com.yvonne.proyecto.model.User;
 import com.yvonne.proyecto.model.dto.DocumentDto;
 import org.apache.logging.log4j.LogManager;
-import org.apache.tomcat.util.codec.binary.Base64;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -60,7 +58,7 @@ public class DocumentController{
     public ResponseEntity<List<Document>> getUserLasts(HttpServletRequest request) throws Exception {
 
         try {
-            User user = TokenManager.validateAnyToken(request);
+            User user = TokenManager.getUserFromToken(request);
 
             List<Document> result = documentManager.getUserLasts(user);
             return ResponseEntity.status(HttpStatus.OK).body(result);
@@ -74,7 +72,7 @@ public class DocumentController{
     @GetMapping("/userdocs")
     public ResponseEntity<List<Document>> getAllFromUser(HttpServletRequest request) throws Exception {
         try {
-            User user = TokenManager.validateAnyToken(request);
+            User user = TokenManager.getUserFromToken(request);
             List<Document> result = documentManager.getAllFromUser(user);
             return ResponseEntity.status(HttpStatus.OK).body(result);
 
