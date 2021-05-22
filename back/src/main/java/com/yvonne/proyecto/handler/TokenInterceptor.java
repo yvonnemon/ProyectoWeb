@@ -22,7 +22,7 @@ public class TokenInterceptor implements HandlerInterceptor {
         }
         System.out.println(auth);
 
-        if(auth2 != null){ //TODO condicionarlo mas?
+        if(auth2 != null){
             String gToken = auth2.split(" ")[1];
 
             if(!TokenManager.validateGoogleToken(gToken)){

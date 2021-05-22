@@ -1,5 +1,6 @@
 package com.yvonne.proyecto.manager;
 
+import com.yvonne.proyecto.model.Document;
 import com.yvonne.proyecto.model.Role;
 import com.yvonne.proyecto.model.User;
 import com.yvonne.proyecto.model.dto.UserDto;
@@ -7,6 +8,8 @@ import com.yvonne.proyecto.repository.CrudManager;
 import com.yvonne.proyecto.repository.UserRepository;
 import com.yvonne.proyecto.util.EmailSender;
 import com.yvonne.proyecto.util.Util;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -26,15 +29,22 @@ public class UserManager implements CrudManager<User> {
         return (List<User>) userRepository.findAll();
     }
 
+    private static final Logger LOG = LogManager.getLogger(Document.class);
+
     @Override
     public void create(User user) throws Exception{
+        try {
+            String pass = Util.randomString(7);
+            user.setPassword(pass);
+            String data = setBodyHtml(user);
+            userRepository.save(user);
+            EmailSender.sendEmail("Nuevo registro", "templates/template.html",
+                    data, user.getEmail());
 
-        String pass = Util.randomString(7);
-        user.setPassword(pass);
-        String data = setBodyHtml(user);
-        userRepository.save(user);
-        EmailSender.sendEmail("Nuevo registro", "templates/template.html",
-                data, user.getEmail());
+        } catch (Exception e){
+            LOG.error("ERROR: el archivo a guardar no existe " + e.getMessage(), e);
+            throw new Exception(e);
+        }
     }
 
     @Override
@@ -73,18 +83,13 @@ public class UserManager implements CrudManager<User> {
         return userRepository.findByEmail(email);
     }
 
-    public Map<Boolean, String> getUserByLogin(String user, String pass) {
-        User loginUser = userRepository.findByUsernameAndPassword(user, pass);
-        Map<Boolean, String> response = new HashMap<>();
-        if (loginUser != null) {
-            String credentials = TokenManager.generateToken(loginUser);
-            response.put(true, credentials);
-        } else {
-            response.put(false, "wrong credentials");
+    public String getUserByLogin(String user, String pass) {
+        try {
+            User loginUser = userRepository.findByUsernameAndPassword(user, pass);
+            return TokenManager.generateToken(loginUser);
+        }catch (Exception e){
+            return e.toString();
         }
-
-
-        return response;
     }
 
     public List<UserDto> getAllEmployee(){
@@ -102,6 +107,7 @@ public class UserManager implements CrudManager<User> {
     }
 
     private String setBodyHtml(User usuario) {
+        //añadir el contenido del correo, para que se vea bonito
         StringBuilder result = new StringBuilder();
 
         String first = "<tr>  <td style=\"padding: 20px 0 30px 0;\"> <span style=\"font-size: 18px\">";

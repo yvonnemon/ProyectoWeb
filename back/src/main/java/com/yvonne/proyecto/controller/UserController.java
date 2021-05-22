@@ -13,7 +13,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequestMapping(value = "/user")
@@ -44,11 +43,11 @@ public class UserController {
 
     @PostMapping("/login")
     public ResponseEntity<String> loginUser(@RequestBody UserDto data) {
-        Map<Boolean, String> credentials = userManager.getUserByLogin(data.getUsername(), data.getPassword());
-        if (credentials.containsKey(true)) {
-            return ResponseEntity.ok(HttpStatus.OK + "&" + credentials.get(true));
+        try{
+            String token = userManager.getUserByLogin(data.getUsername(), data.getPassword());
+            return ResponseEntity.ok(HttpStatus.OK + "&" + token);
 
-        } else {
+        } catch(Exception e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Sus credenciales no son correctas");
         }
     }

@@ -72,18 +72,15 @@ public class CalendarController {
 
     @PostMapping("/insert")
     public ResponseEntity<String> insertVacation(@RequestBody CalendarDto data, HttpServletRequest request) {
-        String auth = request.getHeader("Authorization");
-        String token = auth.split(" ")[1];
-
-        Calendar calendar = new Calendar();
-        LocalDateTime from = LocalDateTime.ofInstant(data.getStartDate().toInstant(), ZoneId.systemDefault());
-        LocalDateTime to = LocalDateTime.ofInstant(data.getEndDate().toInstant(), ZoneId.systemDefault());
-        calendar.setStartDate(from);
-        calendar.setEndDate(to);
-        calendar.setComment(data.getComment());
-        calendar.setUser(TokenManager.validateAnyToken(request));
-
         try {
+            Calendar calendar = new Calendar();
+            LocalDateTime from = LocalDateTime.ofInstant(data.getStartDate().toInstant(), ZoneId.systemDefault());
+            LocalDateTime to = LocalDateTime.ofInstant(data.getEndDate().toInstant(), ZoneId.systemDefault());
+            calendar.setStartDate(from);
+            calendar.setEndDate(to);
+            calendar.setComment(data.getComment());
+            calendar.setUser(TokenManager.validateAnyToken(request));
+
             calendarManager.create(calendar);
             return ResponseEntity.status(HttpStatus.OK).body("Vacaciones solicitadas");
         } catch (Exception e)
