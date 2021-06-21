@@ -157,16 +157,13 @@ export default {
     },
     getUser: async function() {
       this.token = sessionStorage.getItem("Session");
-      let theUser = jwt_decode(this.token);
-      console.log(theUser.user.id);
-      let userinfo = await axios.post("http://localhost:8080/user/user", {
+      console.log(this.gtoken);
+      let userinfo = await axios.get("http://localhost:8080/user/user", {
         headers:{
             Authorization: "Bearer " + this.token,
             Gauth: "Bearer " + this.gtoken,
           "Content-Type": "application/json"
-        },
-        id: theUser.user.id
-        
+        }        
       });
       this.updateData(userinfo.data);
     },
@@ -182,7 +179,7 @@ export default {
       this.email = data.email;
       this.telephone = data.telephone;
       this.user = data.username;
-            this.address = data.address;
+      this.address = data.address;
 
      // this.selectedRol = data.role;
 

@@ -3,6 +3,7 @@ package com.yvonne.proyecto.controller;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 
+import com.yvonne.proyecto.manager.TokenManager;
 import com.yvonne.proyecto.manager.UserManager;
 import com.yvonne.proyecto.model.User;
 import com.yvonne.proyecto.model.dto.UserDto;
@@ -12,6 +13,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 @RestController
@@ -33,12 +35,15 @@ public class UserController {
         return userManager.getAllEmployee();
     }
 
-    @PostMapping("/user")
-    public User getUser(@RequestBody String id) {
-        JsonObject jsonObject = gson.fromJson(id, JsonObject.class);
-        String x = jsonObject.get("id").toString();
+    @GetMapping("/user")
+    public ResponseEntity<User> getUser(HttpServletRequest request) {
+        try {
+            User user = TokenManager.getUserFromToken(request);
+            return ResponseEntity.status(HttpStatus.OK).body(user);
 
-        return userManager.getById(Integer.parseInt(x));
+        } catch (Exception e){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+        }
     }
 
     @PostMapping("/login")

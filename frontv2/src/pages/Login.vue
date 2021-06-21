@@ -62,21 +62,8 @@ export default {
   async created() {
     sessionStorage.removeItem("Session");
     sessionStorage.removeItem("gtoken");
-
-    //this.init();
   },
    mounted() {
-
-    //this.render();
-      /*  window.gapi.signin2.render('g-signin2', {
-        scope: 'https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/userinfo.profile',
-        width: 250,
-        height: 50,
-        longtitle: true,
-        theme: 'dark',
-        onsuccess: this.onSignIn
-    })*/
-
     this.init();
 
   },
@@ -111,7 +98,6 @@ export default {
         });
       this.alert = alert;
     },
-    /******************************************************************************login? */
 
       onSignIn(user) {
         let usuario = user;
@@ -122,21 +108,9 @@ export default {
 
         this.$router.push("/main");
 
-        //const access_token = user.uc;
-        //console.log(access_token);
-        //la linea esta de arriba, en el momendo que entregue la practica, era user.Zi.access_token, y por algun motivo
-        //que desconozco, al hacerlo ahora para reentregarla, pasa a ser user.uc.access_token
-       /* localStorage.setItem("access_token", access_token);
-        document.querySelector("#g-signin2").style.visibility = "hidden";
-        sessionStorage.setItem("authok",true);
-        location.reload();*/
       },
 
-//TODO
-      init: function() { //onload esto 
-      console.log(window.gapi);
-      console.log(" ^^^window.gapi");
-      //storageremove();
+      init: function() { 
       if (!localStorage.getItem("access_token")) {
           window.gapi.load('auth2', () => {
             this.render()
@@ -145,7 +119,6 @@ export default {
                   scope: 'https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/userinfo.profile'
               });
           });
-          //this.render();
 
       } else {
           document.querySelector("#g-signin2").style.display = "none";

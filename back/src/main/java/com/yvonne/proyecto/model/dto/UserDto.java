@@ -1,12 +1,6 @@
 package com.yvonne.proyecto.model.dto;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.yvonne.proyecto.model.Role;
-
-import javax.persistence.Column;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
 
 public class UserDto {
     private String username;
