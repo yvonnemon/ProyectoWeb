@@ -56,7 +56,7 @@ public class TokenManager implements Serializable {
         Calendar c = Calendar.getInstance();
         c.setTime(today);
         c.add(Calendar.DATE, 1);
-        String jws = Jwts.builder()
+        return Jwts.builder()
                 .claim("user", user)
                 .claim("role", user.getRole())
                 .setIssuedAt(today)
@@ -65,7 +65,6 @@ public class TokenManager implements Serializable {
                         SECRET
                 ).compact();
 
-        return jws;
     }
 
     public static boolean validateToken(String token) {
@@ -83,35 +82,15 @@ public class TokenManager implements Serializable {
         }
     }
 
-    public static boolean validateGoogleToken(String token) throws Exception {
-        try {
-            GoogleIdTokenVerifier verifier = new GoogleIdTokenVerifier.Builder(new NetHttpTransport(), new GsonFactory())
-                    .setAudience(Collections.singletonList(GOOGLE_ID))
-                    .build();
-
-            GoogleIdToken idToken = verifier.verify(token);
-            if (idToken != null) {
-                GoogleIdToken.Payload payload = idToken.getPayload();
-                System.out.println("User ID: " + payload.getSubject());
-            } else {
-                throw new Exception("Invalid token.");
-            }
-            return true;
-        } catch (Exception e){
-            throw new Exception(e);
-        }
-    }
-
     public static User getUserFromToken(HttpServletRequest request){
 
         String auth = request.getHeader("Authorization");
-        String gauth = request.getHeader("Gauth");
         User user;
         if(auth != null && !auth.contains("null")) {
             String token = auth.split(" ")[1];
 
             Base64.Decoder decoder = Base64.getDecoder();
-            ///esto va a pincho porque los tokens deberian ser siempre iguales.
+            //esto va a pincho porque los tokens deberian ser siempre iguales.
             String[] chunks = token.split("\\.");
             String payload = new String(decoder.decode(chunks[1]));
 
@@ -121,31 +100,7 @@ public class TokenManager implements Serializable {
             user = gson.fromJson(json.get("user"), User.class);
             return user;
 
-        } else if(gauth != null && !gauth.contains("null")){
-
-            String gtoken = gauth.split(" ")[1];
-            GoogleIdTokenVerifier verifier = new GoogleIdTokenVerifier
-                    .Builder(new NetHttpTransport(), new GsonFactory())
-                    .setAudience(Arrays.asList(GOOGLE_ID))
-                    .build();
-            try {
-                GoogleIdToken idToken = verifier.verify(gtoken);
-                if (idToken != null) {
-                    GoogleIdToken.Payload payload = idToken.getPayload();
-                    //solo cojo el email, porque es lo que compruebo en la base de datos
-                    String email = payload.getEmail();
-
-                    return userManager.findByEmail(email);
-
-                } else {
-                    System.out.println("Invalid ID token.");
-                    return null;
-                }
-            } catch (GeneralSecurityException | IOException e) {
-                e.printStackTrace();
-                return null;
-            }
-        } else {
+        }  else {
             return null;
         }
     }

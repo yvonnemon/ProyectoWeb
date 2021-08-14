@@ -335,7 +335,7 @@ export default {
         };
 
         console.log(data);
-        let url = "http://localhost:8080/user/insert";
+        let url = process.env.BACKEND_URL+"user/insert";
         const axiospost = await axios
           .post(url, data, {
             headers: {
@@ -362,7 +362,7 @@ export default {
       let fail = false;
 
       let listarPosts = await axios
-        .get("http://localhost:8080/user/users", {
+        .get(process.env.BACKEND_URL+"user/users", {
           headers: {
             Authorization: "Bearer " + this.token,
             "Content-Type": "application/json"
@@ -402,7 +402,7 @@ export default {
       let fail = false;
       console.log(this.modifyingId);
       let borrado = await axios
-        .delete("http://localhost:8080/user/delete", {
+        .delete(process.env.BACKEND_URL+"user/delete", {
           headers: {
             Authorization: "Bearer " + this.token,
             "Content-Type": "application/json"
@@ -467,7 +467,7 @@ export default {
         role: rol
       };
 
-      let url = "http://localhost:8080/user/update";
+      let url = process.env.BACKEND_URL+"user/update";
       const axiospost = await axios
         .put(url, data, {
           headers: {

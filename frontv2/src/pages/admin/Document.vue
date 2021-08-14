@@ -15,7 +15,7 @@
               @submit="addFile"
               @reset="onFormReset"
             >
-              <q-file
+              <q-file id="inputfile"
                 v-model="files"
                 label="Seleccionar archivos"
                 filled
@@ -146,7 +146,7 @@ export default {
       expanded: false,
       deleteConfirm: false,
       modifyingId: "",
-      files: null,
+      files: [],
       employee: "",
       allFiles: [],
       columns: [
@@ -243,7 +243,7 @@ export default {
       };
 
       console.log(data);
-      let url = "http://localhost:8080/document/insert";
+      let url = process.env.BACKEND_URL+"document/insert";
       const axiospost = await axios.post(url, data, {
         headers: {
           Authorization: "Bearer " + this.token,
@@ -278,7 +278,7 @@ export default {
       let fail = false;
 
       let listar = await axios
-        .get("http://localhost:8080/user/employee", {
+        .get(process.env.BACKEND_URL+"/user/employee", {
           headers: {
             Authorization: "Bearer " + this.token,
             "Content-Type": "application/json"
@@ -301,7 +301,7 @@ export default {
       let fail = false;
 
       let listar = await axios
-        .get("http://localhost:8080/document/documents", {
+        .get(process.env.BACKEND_URL+"document/documents", {
           headers: {
             Authorization: "Bearer " + this.token,
             "Content-Type": "application/json"
@@ -340,7 +340,7 @@ export default {
       let cleanName = name.split(/([0-9]{17}_)/);
       let fail = false;
       let borrado = await axios
-        .post("http://localhost:8080/document/download", {
+        .post(process.env.BACKEND_URL+"document/download", {
           headers: {
             Authorization: "Bearer " + this.token,
             "Content-Type": "application/json"
@@ -376,7 +376,7 @@ export default {
     deleteFile: async function() {
       let fail = false;
       let borrado = await axios
-        .delete("http://localhost:8080/document/delete", {
+        .delete(process.env.BACKEND_URL+"document/delete", {
           headers: {
             Authorization: "Bearer " + this.token,
             "Content-Type": "application/json"
@@ -408,5 +408,7 @@ export default {
     }
   }
 };
+
+
 </script>
 <style></style>

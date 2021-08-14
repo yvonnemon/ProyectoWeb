@@ -129,12 +129,10 @@ export default {
 
   async created() {
     this.token = sessionStorage.getItem("Session");
-    this.gtoken = sessionStorage.getItem("gtoken")
      await axios
-        .get("http://localhost:8080/document/employee", {
+        .get(process.env.BACKEND_URL+"document/employee", {
           headers: {
             Authorization: "Bearer " + this.token,
-            Gauth: "Bearer " + this.gtoken,
             "Content-Type": "application/json"
           }
         })
@@ -154,10 +152,9 @@ export default {
     },
     listCalendar: async function() {
       let fail = false;
-      let listarPosts = await axios.get("http://localhost:8080/calendar/next", {
+      let listarPosts = await axios.get(process.env.BACKEND_URL+"calendar/next", {
           headers: {
             Authorization: "Bearer " + this.token,
-            Gauth: "Bearer " + this.gtoken,
             "Content-Type": "application/json"
           }
       }).then(response => {

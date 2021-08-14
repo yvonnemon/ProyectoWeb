@@ -172,7 +172,7 @@ export default {
 
     listCalendar: async function() {
       let fail = false;
-      let listarPosts = await axios.get("http://localhost:8080/calendar/vacations", {
+      let listarPosts = await axios.get(process.env.BACKEND_URL+"calendar/vacations", {
           headers: {
             Authorization: "Bearer " + this.token,
             "Content-Type": "application/json"
@@ -206,7 +206,7 @@ export default {
       let fail = false;
       console.log(this.modifyingId);
       let borrado = await axios
-        .delete("http://localhost:8080/calendar/delete", {
+        .delete(process.env.BACKEND_URL+"calendar/delete", {
           headers: {
             Authorization: "Bearer " + this.token,
             "Content-Type": "application/json"
@@ -258,7 +258,7 @@ export default {
         status: status
         };
       console.log(data);
-      let url = "http://localhost:8080/calendar/update";
+      let url = process.env.BACKEND_URL+"calendar/update";
       const axiospost = await axios
         .put(url, data, {
           headers: {

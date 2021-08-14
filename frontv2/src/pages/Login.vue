@@ -25,8 +25,7 @@
           class="col-sm-6 offset-sm-3 col-xs-12"
         />
       </q-form>
-           <div id="g-signin2" class="googlebutton"  @data-onsuccess="onSignIn"></div>
-
+      <div id="g-signin2" class="googlebutton" @data-onsuccess="onSignIn"></div>
 
       <q-dialog v-model="alert">
         <q-card>
@@ -63,19 +62,35 @@ export default {
     sessionStorage.removeItem("Session");
     sessionStorage.removeItem("gtoken");
   },
-   mounted() {
+  mounted() {
     this.init();
-
   },
   methods: {
-    login: async function() {
+    login: async function(mail, nombre, apellido) {
+      console.log("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
+     // console.log(user.ts);
       let alert = false;
       console.log("login to back");
-      const data = {
-        username: this.user,
-        password: this.password
-      };
-      let url = "http://localhost:8080/user/login";
+      let data = {};
+      if(mail && nombre && apellido){
+        data = {
+          username: this.user,
+          password: this.password,
+          email: mail,
+          name: nombre,
+          lastname: apellido
+        };
+      } else {
+        data = {
+          username: this.user,
+          password: this.password,
+          email: "null",
+          name: "null",
+          lastname: "null"
+
+        };
+      }
+      let url = process.env.BACKEND_URL + "auth/login";
       const axiospost = await this.$axios
         .post(url, data, {
           headers: {
@@ -99,47 +114,51 @@ export default {
       this.alert = alert;
     },
 
-      onSignIn(user) {
-        let usuario = user;
-        console.log("EL USUEARIO V");
-        console.log(user.getAuthResponse().id_token)
-        sessionStorage.setItem("gtoken", user.getAuthResponse().id_token);
+    onSignIn(user) {
+      let usuario = user.Ts;
+      console.log(user.Ts);
+      let mail = user.Ts.Et;
+      let nombre = user.Ts.RT;
+      let apellido = user.Ts.TR;
+
+      this.login(mail, nombre, apellido);
+      //on sign in -> get con parametros?
+      /* sessionStorage.setItem("gtoken", user.getAuthResponse().id_token);
         document.querySelector("#g-signin2").style.visibility = "hidden";
 
-        this.$router.push("/main");
+        this.$router.push("/main");*/
+    },
 
-      },
-
-      init: function() { 
+    init: function() {
       if (!localStorage.getItem("access_token")) {
-          window.gapi.load('auth2', () => {
-            this.render()
-              let auth2 = window.gapi.auth2.getAuthInstance({
-                  client_id: process.env.GOOGLE_ID,
-                  scope: 'https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/userinfo.profile'
-              });
+        window.gapi.load("auth2", () => {
+          this.render();
+          let auth2 = window.gapi.auth2.getAuthInstance({
+            client_id: process.env.GOOGLE_ID,
+            scope:
+              "https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/userinfo.profile"
           });
-
+        });
       } else {
-          document.querySelector("#g-signin2").style.display = "none";
-          sessionStorage.setItem("authok",true);
+        document.querySelector("#g-signin2").style.display = "none";
+        sessionStorage.setItem("authok", true);
       }
     },
 
-   render: async function() {
-        window.gapi.signin2.render('g-signin2', {
-            scope: 'https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/userinfo.profile',
-            width: 250,
-            height: 50,
-            longtitle: true,
-            theme: 'dark',
-            onsuccess: this.onSignIn
-        })
-             console.log("render gapi");
+    render: async function() {
+      window.gapi.signin2.render("g-signin2", {
+        scope:
+          "https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/userinfo.profile",
+        width: 250,
+        height: 50,
+        longtitle: true,
+        theme: "dark",
+        onsuccess: this.onSignIn
+      });
+      console.log("render gapi");
 
-        console.log(window.gapi);
+      console.log(window.gapi);
     }
-
   }
 };
 </script>

@@ -46,16 +46,6 @@ public class UserController {
         }
     }
 
-    @PostMapping("/login")
-    public ResponseEntity<String> loginUser(@RequestBody UserDto data) {
-        try{
-            String token = userManager.getUserByLogin(data.getUsername(), data.getPassword());
-            return ResponseEntity.ok(HttpStatus.OK + "&" + token);
-
-        } catch(Exception e) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Sus credenciales no son correctas");
-        }
-    }
 
     @PostMapping(value = "/insert", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity createUser(@RequestBody User data) {

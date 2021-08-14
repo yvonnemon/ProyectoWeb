@@ -140,7 +140,6 @@ export default {
   },
   async created() {
     this.token = sessionStorage.getItem("Session");
-    this.gtoken = sessionStorage.getItem("gtoken")
     console.log(this.token);
     this.getUser();
   },
@@ -158,10 +157,9 @@ export default {
     getUser: async function() {
       this.token = sessionStorage.getItem("Session");
       console.log(this.gtoken);
-      let userinfo = await axios.get("http://localhost:8080/user/user", {
+      let userinfo = await axios.get(process.env.BACKEND_URL+"user/user", {
         headers:{
             Authorization: "Bearer " + this.token,
-            Gauth: "Bearer " + this.gtoken,
           "Content-Type": "application/json"
         }        
       });
@@ -214,11 +212,10 @@ export default {
         role: rol
       };
 
-      let url = "http://localhost:8080/user/update";
+      let url = process.env.BACKEND_URL+"user/update";
       const axiospost = await axios.put(url, data, {
         headers: {
             Authorization: "Bearer " + this.token,
-            Gauth: "Bearer " + this.gtoken,
           "Content-Type": "application/json"
         }
       }).then(response => {

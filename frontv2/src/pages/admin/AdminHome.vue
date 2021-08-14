@@ -130,7 +130,7 @@ export default {
     this.token = sessionStorage.getItem("Session");
     this.gtoken = sessionStorage.getItem("gtoken")
      await axios
-        .get("http://localhost:8080/document/admin", {
+        .get(process.env.BACKEND_URL+"document/admin", {
           headers: {
             Authorization: "Bearer " + this.token,
             "Content-Type": "application/json"
@@ -152,7 +152,7 @@ export default {
     },
     listCalendar: async function() {
       let fail = false;
-      let listarPosts = await axios.get("http://localhost:8080/calendar/pending", {
+      let listarPosts = await axios.get(process.env.BACKEND_URL+"calendar/pending", {
           headers: {
             Authorization: "Bearer " + this.token,
             "Content-Type": "application/json"

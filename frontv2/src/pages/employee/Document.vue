@@ -88,7 +88,6 @@ export default {
   },
   async created() {
     this.token = sessionStorage.getItem("Session");
-    this.gtoken = sessionStorage.getItem("gtoken")
     console.log(this.token);
     this.listFiles();
   },
@@ -120,10 +119,9 @@ export default {
       let fail = false;
 
       let listar = await axios
-        .get("http://localhost:8080/document/userdocs", {
+        .get(process.env.BACKEND_URL+"document/userdocs", {
           headers: {
             Authorization: "Bearer " + this.token,
-            Gauth: "Bearer " + this.gtoken,
             "Content-Type": "application/json"
           }
         })
@@ -150,10 +148,9 @@ export default {
       let cleanName = name.split(/([0-9]{17}_)/);
       let fail = false;
       let borrado = await axios
-        .post("http://localhost:8080/document/download", {
+        .post(process.env.BACKEND_URL+"document/download", {
           headers: {
             Authorization: "Bearer " + this.token,
-            Gauth: "Bearer " + this.gtoken,
             "Content-Type": "application/json"
           },
           data: id
