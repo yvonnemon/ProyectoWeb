@@ -11,8 +11,14 @@ import com.yvonne.proyecto.util.Util;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -23,6 +29,12 @@ public class UserManager implements CrudManager<User> {
 
     @Autowired
     UserRepository userRepository;
+
+    @Autowired
+    CalendarManager calendarManager;
+
+    @Autowired
+    DocumentManager documentManager;
 
     @Override
     public List<User> getAll() {
@@ -35,20 +47,30 @@ public class UserManager implements CrudManager<User> {
     public void create(User user) throws Exception{
         try {
             String pass = Util.randomString(7);
-            user.setPassword(pass);
-            String data = setBodyHtml(user);
+            //boolean matched = BCrypt.checkpw(originalPassword, generatedSecuredPasswordHash);
+
+            //System.out.println(matched);
+            User tempUser = user;
+            tempUser.setPassword(pass);
+
+            String data = setBodyHtml(tempUser);
+            user.setPassword(passwordCypher(pass));
             userRepository.save(user);
             EmailSender.sendEmail("Nuevo registro", "templates/template.html",
                     data, user.getEmail());
 
         } catch (Exception e){
             LOG.error("ERROR: el archivo a guardar no existe " + e.getMessage(), e);
+            e.printStackTrace();
             throw new Exception(e);
         }
     }
 
     @Override
+    @Transactional
     public void delete(User user) {
+        documentManager.deleteAllFromUser(user);
+        calendarManager.deleteAllFromUser(user);
         userRepository.delete(user);
     }
 
@@ -83,10 +105,31 @@ public class UserManager implements CrudManager<User> {
         return userRepository.findByEmail(email);
     }
 
+    public String findByGoogleUser(String email, String name, String lastname) {
+        try {
+            User user = userRepository.findByEmail(email);
+            return TokenManager.generateToken(user);
+        } catch (Exception e){
+            User user = new User();
+            user.setName(name);
+            user.setLastname(lastname);
+            user.setEmail(email);
+            user.setPassword(Util.randomString(7));
+            return TokenManager.generateToken(user);
+        }
+
+    }
+
     public String getUserByLogin(String user, String pass) {
         try {
-            User loginUser = userRepository.findByUsernameAndPassword(user, pass);
-            return TokenManager.generateToken(loginUser);
+            User loginUser = userRepository.findByUsername(user);
+            boolean matched = BCrypt.checkpw(pass, loginUser.getPassword());
+            if(matched){
+                return TokenManager.generateToken(loginUser);
+            } else {
+                throw new Exception();
+            }
+
         }catch (Exception e){
             return e.toString();
         }
@@ -104,6 +147,11 @@ public class UserManager implements CrudManager<User> {
             result.add(user);
         }
         return result;
+    }
+
+    private String passwordCypher(String password){
+
+        return BCrypt.hashpw(password, BCrypt.gensalt(12));
     }
 
     private String setBodyHtml(User usuario) {

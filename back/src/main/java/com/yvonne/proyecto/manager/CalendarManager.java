@@ -119,6 +119,10 @@ public class CalendarManager implements CrudManager<Calendar> {
         }
     }
 
+    public void deleteAllFromUser(User user){
+        calendarRepository.deleteAllByUser(user);
+    }
+
     public List<Calendar> getAllFromUser(User user) throws Exception {
         try {
             return calendarRepository.findByUser(user);

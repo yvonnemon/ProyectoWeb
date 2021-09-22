@@ -84,6 +84,7 @@ public class UserController {
                     userManager.delete(userManager.getById(Integer.parseInt(x)));
                     return ResponseEntity.status(HttpStatus.OK).body("Usuario borrado");
                 } catch (Exception e) {
+                    System.out.println(e);
                     return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Hubo un error borrando el usuario");
                 }
             } else {

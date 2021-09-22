@@ -15,7 +15,7 @@ public class Util {
         StringBuilder random = new StringBuilder();
         for (int i = 0; i < stringLenght; i++) {
             Random r = new Random();
-            int number = r.nextInt(chars.length()+1);
+            int number = r.nextInt(chars.length());
             random.append(chars.charAt(number));
         }
 

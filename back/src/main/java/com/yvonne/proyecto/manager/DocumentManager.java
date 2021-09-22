@@ -123,6 +123,9 @@ public class DocumentManager implements CrudManager<Document> {
         return documentRepository.findById(id).orElse(null);
     }
 
+    public void deleteAllFromUser(User user){
+        documentRepository.deleteAllByUser(user);
+    }
     private boolean deleteFileFromDir(Document doc) throws Exception {
         //este metodo borra el archivo de la carpeta donde esta
         boolean deleted = false;

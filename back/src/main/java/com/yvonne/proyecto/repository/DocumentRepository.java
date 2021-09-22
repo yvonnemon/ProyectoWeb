@@ -13,4 +13,6 @@ public interface DocumentRepository extends CrudRepository<Document, Integer> {
     List<Document> findDocumentByUser(User user);
     List<Document> findAllByOrderByIdDesc(Pageable p);
     List<Document> findDocumentByUserOrderByIdDesc(User user, Pageable P);
+    void deleteAllByUser(User user);
+
 }

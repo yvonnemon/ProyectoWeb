@@ -98,11 +98,19 @@
                 :rules="[val => !!val || 'Campo necesario']"
               />
               <q-btn
+                color="red-8"
+                class="col-sm-1 offset-sm-8 form-buttons col-xs-12 offset-xs-auto"
+                outline
+                type="reset"
+                label="Cancelar"
+                @click="closeForm"
+              />
+              <q-btn
                 label="Limpar"
                 type="reset"
                 color="amber-14"
                 outline
-                class="col-sm-1 offset-sm-9 form-buttons col-xs-12 offset-xs-auto"
+                class="col-sm-1  form-buttons col-xs-12 offset-xs-auto"
                 id="resetButton"
               />
               <q-btn
@@ -110,7 +118,7 @@
                 class="col-sm-1 form-buttons col-xs-12 offset-xs-auto"
                 glossy
                 type="submit"
-                label="Añadir"
+                label="Guardar"
               />
             </q-form>
           </q-card-section>
@@ -277,6 +285,9 @@ export default {
         return result;
       }
     },
+    closeForm: function() {
+      this.expanded = false;
+    },
 
     onFormReset: function() {
       this.dni = "";
@@ -435,6 +446,7 @@ export default {
       this.email = data.email;
       this.telephone = data.telephone;
       this.user = data.username;
+      this.address = data.address;
       // this.selectedRol = data.role;
 
       if (data.role == "ADMIN") {

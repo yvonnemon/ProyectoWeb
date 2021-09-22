@@ -1,7 +1,7 @@
 package com.yvonne.proyecto.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import org.hibernate.annotations.Cascade;
 
 import javax.persistence.*;
 import java.util.List;
@@ -46,11 +46,13 @@ public class User {
     private Role role;
 
     @Transient
-    @OneToMany(mappedBy="user", cascade = CascadeType.REMOVE)
+    @Cascade(org.hibernate.annotations.CascadeType.DELETE)
+    @OneToMany(mappedBy="user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Calendar> vacation;
 
     @Transient
-    @OneToMany(mappedBy="user", cascade = CascadeType.REMOVE)
+    @Cascade(org.hibernate.annotations.CascadeType.DELETE)
+    @OneToMany(mappedBy="user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Document> documents;
 
     public User() {

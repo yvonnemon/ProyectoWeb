@@ -20,5 +20,5 @@ public interface CalendarRepository extends CrudRepository<Calendar, Integer> {
     List<Calendar> findCalendarByStatus(VacationStatus status);
     List<Calendar> findCalendarByStatusAndUserOrderByIdDesc(VacationStatus status, User user, Pageable p);
     List<Calendar> findCalendarByStatusAndUser( VacationStatus status, User user);
-
+    void deleteAllByUser(User user);
 }
