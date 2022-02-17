@@ -39,8 +39,6 @@
 </template>
 
 <script>
-import jwt_decode from "jwt-decode";
-import { parse } from 'path';
 export default {
   data() {
     return {};
@@ -48,12 +46,13 @@ export default {
   methods: {
     logout: async function() {
       sessionStorage.removeItem("Session");
-      sessionStorage.removeItem("gtoken");
-
+      if(gapi){
       let auth2 = gapi.auth2.getAuthInstance();
       await auth2.signOut().then(function() {
         console.log("User signed out.");
       });
+
+      }
 
       this.$router.push("/");
     }

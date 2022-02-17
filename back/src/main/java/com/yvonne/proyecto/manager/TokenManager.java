@@ -32,11 +32,8 @@ public class TokenManager implements Serializable {
         TokenManager.SECRETO = secreto;
     }
 
-
-    //private final Key SECRET = new SecretKeySpec(Base64.getDecoder().decode(SECRETO),             SignatureAlgorithm.HS256.getJcaName());
-
     public static String generateToken(User user) {
-        //TODO fix this
+        //TODO fix this, el que?
         Key secret = new SecretKeySpec(Base64.getDecoder().decode(SECRETO),
                 SignatureAlgorithm.HS256.getJcaName());
         user.setPassword("");
@@ -72,8 +69,23 @@ public class TokenManager implements Serializable {
             return false;
         }
     }
+    public static User getUserFromToken(String token){
 
-    public static User getUserFromToken(HttpServletRequest request){
+        User user;
+
+            Base64.Decoder decoder = Base64.getDecoder();
+            //esto va a pincho porque los tokens deberian ser siempre iguales.
+            String[] chunks = token.split("\\.");
+            String payload = new String(decoder.decode(chunks[1]));
+
+            JsonObject json = new Gson().fromJson(payload, JsonObject.class);
+
+            Gson gson = new Gson();
+            user = gson.fromJson(json.get("user"), User.class);
+            return user;
+    }
+
+    public static User getUserFromRequest(HttpServletRequest request){
 
         String auth = request.getHeader("Authorization");
         User user;

@@ -23,13 +23,13 @@ import java.util.List;
 public class CalendarController {
 
     @Autowired
-    CalendarManager calendarManager;
+    private CalendarManager calendarManager;
 
     @Autowired
     private Gson gson;
 
     @GetMapping("/vacations")
-    public List<Calendar> getAllVacacions() throws Exception {
+    public List<Calendar> getAllVacations() throws Exception {
         return calendarManager.getAll();
     }
     @GetMapping("/monthly")
@@ -41,28 +41,27 @@ public class CalendarController {
     public List<Calendar> getPending() throws Exception {
         return calendarManager.getPending();
     }
-
+// TODO los Controllers no deberian tirar excepciones, hazlo como este de abajo, dvuelve un response entity con el error.
     @GetMapping("/next")
-    public ResponseEntity<List<Calendar>> getNext(HttpServletRequest request) throws Exception {
+    public ResponseEntity<List<Calendar>> getNext(HttpServletRequest request) {
         try {
-            User user = TokenManager.getUserFromToken(request);
+            User user = TokenManager.getUserFromRequest(request);
             List<Calendar> result = calendarManager.getNext(user);
-            return ResponseEntity.status(HttpStatus.OK).body(result);
 
+            return ResponseEntity.status(HttpStatus.OK).body(result);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
         }
     }
 
-
-
     @GetMapping("/users")
-    public ResponseEntity<List<Calendar>> getAllFromUser(HttpServletRequest request) throws Exception {
-
-        try {
-            User user = TokenManager.getUserFromToken(request);
-
+    public ResponseEntity<List<Calendar>> getAllFromUser(HttpServletRequest request)
+    {
+        try
+        {
+            User user = TokenManager.getUserFromRequest(request);
             List<Calendar> list = calendarManager.getAllFromUser(user);
+
             return ResponseEntity.status(HttpStatus.OK).body(list);
         } catch (Exception e)
         {
@@ -73,13 +72,14 @@ public class CalendarController {
     @PostMapping("/insert")
     public ResponseEntity<String> insertVacation(@RequestBody CalendarDto data, HttpServletRequest request) {
         try {
+            // TODO o lo mapeas con un mapper o montas el objeto dentro del manager.
             Calendar calendar = new Calendar();
             LocalDateTime from = LocalDateTime.ofInstant(data.getStartDate().toInstant(), ZoneId.systemDefault());
             LocalDateTime to = LocalDateTime.ofInstant(data.getEndDate().toInstant(), ZoneId.systemDefault());
             calendar.setStartDate(from);
             calendar.setEndDate(to);
             calendar.setComment(data.getComment());
-            calendar.setUser(TokenManager.getUserFromToken(request));
+            calendar.setUser(TokenManager.getUserFromRequest(request));
 
             calendarManager.create(calendar);
             return ResponseEntity.status(HttpStatus.OK).body("Vacaciones solicitadas");
@@ -91,11 +91,13 @@ public class CalendarController {
 
     @PutMapping("/update")
     public ResponseEntity updateStatus(@RequestBody String data) throws Exception {
+        // TODO haz que reciba un objeto en vez de un Strnig JSON y lueg coger los cosos con el GSON...
         JsonObject jsonObject = gson.fromJson(data, JsonObject.class);
         String id = jsonObject.get("id").toString();
         String clean = jsonObject.get("status").toString();
         clean = clean.replace("\"","");
         VacationStatus status = VacationStatus.valueOf(clean);
+        // TODO no tiene que haber logica en un controlador
         if (calendarManager.getById(Integer.parseInt(id)) != null) {
 
             try {
@@ -112,10 +114,12 @@ public class CalendarController {
 
     @DeleteMapping("/delete")
     public ResponseEntity<String> delete(@RequestBody String id) throws Exception {
+        // TODO haz que reciba un objeto en vez de un Strnig JSON y lueg coger los cosos con el GSON...
 
         JsonObject jsonObject = gson.fromJson(id, JsonObject.class);
 
         String x = jsonObject.get("id").toString();
+        // TODO no tiene que haber logica en un controlador
 
         if (calendarManager.getById(Integer.parseInt(x)) != null) {
 

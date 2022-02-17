@@ -20,7 +20,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping(value = "/document")
-public class DocumentController{
+public class DocumentController {
 
     @Autowired
     private Gson gson;
@@ -31,7 +31,7 @@ public class DocumentController{
     private DocumentManager documentManager;
 
     @GetMapping("/documents")
-    public ResponseEntity<List<Document>> getAll() throws Exception {
+    public ResponseEntity<List<Document>> getAll() {
         try {
             List<Document> result = documentManager.getAll();
             return ResponseEntity.status(HttpStatus.OK).body(result);
@@ -43,7 +43,7 @@ public class DocumentController{
     }
 
     @GetMapping("/admin")
-    public ResponseEntity<List<Document>> getLasts() throws Exception {
+    public ResponseEntity<List<Document>> getLasts()  {
         try {
             List<Document> result = documentManager.getLasts();
             return ResponseEntity.status(HttpStatus.OK).body(result);
@@ -55,10 +55,10 @@ public class DocumentController{
     }
 
     @GetMapping("/employee")
-    public ResponseEntity<List<Document>> getUserLasts(HttpServletRequest request) throws Exception {
+    public ResponseEntity<List<Document>> getUserLasts(HttpServletRequest request) {
 
         try {
-            User user = TokenManager.getUserFromToken(request);
+            User user = TokenManager.getUserFromRequest(request);
 
             List<Document> result = documentManager.getUserLasts(user);
             return ResponseEntity.status(HttpStatus.OK).body(result);
@@ -70,9 +70,9 @@ public class DocumentController{
     }
 
     @GetMapping("/userdocs")
-    public ResponseEntity<List<Document>> getAllFromUser(HttpServletRequest request) throws Exception {
+    public ResponseEntity<List<Document>> getAllFromUser(HttpServletRequest request) {
         try {
-            User user = TokenManager.getUserFromToken(request);
+            User user = TokenManager.getUserFromRequest(request);
             List<Document> result = documentManager.getAllFromUser(user);
             return ResponseEntity.status(HttpStatus.OK).body(result);
 
@@ -83,12 +83,13 @@ public class DocumentController{
     }
 
     @PostMapping("/document")
-    public Document getOne(Document data) throws Exception {
+    public Document getOne(Document data)  {
+        // TODO borrar si no se usa
         return null;
     }
 
     @PostMapping(value = "/insert", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity create(@RequestBody DocumentDto data) throws Exception {
+    public ResponseEntity create(@RequestBody DocumentDto data) {
 
         try {
             documentManager.generateNewDocument(data);
@@ -100,7 +101,9 @@ public class DocumentController{
     }
 
     @PutMapping("/update")
-    public ResponseEntity<String> update(Document data) throws Exception {
+    public ResponseEntity<String> update(Document data) {
+        // TODO borrar si no se usa
+
         return null;
     }
 

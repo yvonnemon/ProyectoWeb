@@ -16,3 +16,4 @@ public interface CrudController <T>{
     ResponseEntity<String> delete(String id) throws Exception;
 
 }
+// TODO crear excepciones custom y dejar de usar Exception por todo

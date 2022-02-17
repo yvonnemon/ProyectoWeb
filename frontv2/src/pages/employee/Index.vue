@@ -32,7 +32,7 @@
 
         <q-card-section>
           <q-table
-            title="Pendiente de aprobacion"
+            title="Vacaciones aprobadas"
             :data="dates"
             :columns="columnsdate"
             row-key="id"
@@ -169,6 +169,7 @@ export default {
 
     },
         text: function(filtro){
+          
         console.log(filtro);
         let result;
         if(filtro === "PENDING"){
@@ -183,40 +184,7 @@ export default {
        return result;
     },
 
-      /*vacationRanges: function(vacations) {
-        let dateRanges = [];
-        vacations.forEach(range => {
-          let st = new Date(range.startDate);
-          let end = new Date(range.endDate);
-          //console.log(st);
-          console.log(end);
-          let array = this.ranges(st,end)
-          //console.log(array);
-          //dateRanges.push(array);
-        });
-        console.log(dateRanges);
-      },
-      ranges: function(startDate, endDate){
-          //debugger;
-          console.log("FECHA LOCO");
-         // console.log(startDate);
-
-
-
-          
-          let addFn = Date.prototype.addDays;
-          let interval = 1;
-
-          var retVal = [];
-          var current = new Date(startDate);
-
-          while (current <= endDate) {
-            retVal.push(new Date(current));
-            current = addFn.call(current, interval);
-          }
-         // console.log(retVal);
-          return retVal;
-      }*/
+      
       vacation: function(){
         this.$router.push("/admin/vacation")
       },
@@ -226,5 +194,7 @@ export default {
 
   }
 };
+
+
 </script>
 

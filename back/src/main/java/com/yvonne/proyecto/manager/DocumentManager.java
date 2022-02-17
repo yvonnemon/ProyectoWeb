@@ -48,12 +48,12 @@ public class DocumentManager implements CrudManager<Document> {
     }
 
     //subir el documento
-    public void generateNewDocument(DocumentDto document) throws Exception {
+    public void generateNewDocument(DocumentDto document) {
         List<Document> result;
         try {
             result = fileGenerator(document); //esto crea el documento 'fisicamente'
-            for (int i = 0; i < result.size(); i++) {
-                create(result.get(i)); //crear en la base de datos
+            for (Document value : result) {
+                create(value); //crear en la base de datos
             }
         } catch (Exception e) {
             LOG.error("ERROR: el archivo a guardar no existe " + e.getMessage(), e);
@@ -79,12 +79,11 @@ public class DocumentManager implements CrudManager<Document> {
         return (List<Document>) documentRepository.findAll();
     }
 
-    public List<Document> getAllFromUser(User user) throws Exception {
-
+    public List<Document> getAllFromUser(User user) {
         return documentRepository.findDocumentByUser(user);
     }
 
-    public List<Document> getLasts() throws Exception {
+    public List<Document> getLasts() {
         Pageable limit = PageRequest.of(0, 5);
         List<Document> allDocs = documentRepository.findAllByOrderByIdDesc(limit);
 
@@ -131,12 +130,7 @@ public class DocumentManager implements CrudManager<Document> {
         boolean deleted = false;
         try {
             File file = new File(doc.getPath());
-            if (file.delete()) {
-                System.out.print("deleted file from directory");
-                deleted = true;
-            } else {
-                deleted = false;
-            }
+            deleted = file.delete();
         } catch (Exception e) {
             e.printStackTrace();
             throw new Exception("ERROR: la ruta no existe ");

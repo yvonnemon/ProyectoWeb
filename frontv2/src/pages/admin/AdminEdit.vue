@@ -104,20 +104,22 @@
               class="form-input col-sm-6 col-xs-12"
               :rules="[val => !!val || 'Campo necesario']"
             />
-            <q-btn
-              color="yellow-8"
-              class="col-sm-2 offset-sm-7 form-buttons col-xs-12 offset-xs-auto"
-              glossy
-              @click="editar"
-              label="Editar"
-            />
+            <q-toggle
+                label="Editar"
+                color="yellow-8"
+                v-model="editToogle"
+                class="col-sm-1 offset-sm-8 form-buttons col-xs-12 offset-xs-auto"
+                @input="editar"
+
+              />
 
             <q-btn
               color="green-8"
               class="col-sm-2 form-buttons col-xs-12 offset-xs-auto"
               glossy
               type="submit"
-              label="Actualizar"
+              label="Guardar"
+              :disable="readonly"
             />
           </q-form>
         </q-card-section>
@@ -127,11 +129,11 @@
 </template>
 
 <script>
-import jwt_decode from "jwt-decode";
 const axios = require("axios");
 export default {
   data() {
     return {
+      editToogle: false,
       password: "",
       name: "",
       lastname: "",
@@ -249,7 +251,7 @@ export default {
     },
 
     editar: function(){
-      if(this.readonly){
+      if(this.editToogle){
         this.readonly = false; 
       } else {
         this.readonly = true; 
@@ -290,7 +292,7 @@ export default {
             timeout: 2500
           });
           clearInterval(interval);
-          this.$router.push("/main");
+          this.$router.push("/admin");
         }
       }, 500);
     }

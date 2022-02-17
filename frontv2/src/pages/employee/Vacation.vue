@@ -175,7 +175,6 @@ export default {
   },
   async created() {
     this.token = sessionStorage.getItem("Session");
-    this.gtoken = sessionStorage.getItem("gtoken")
     console.log(this.token);
     this.listCalendar();
   },
@@ -221,6 +220,7 @@ export default {
     },
 
     insert: async function() {
+        let fail = false;
         let dateFrom = new Date();
         dateFrom = Date.parse(this.dates.from);
 
@@ -233,7 +233,7 @@ export default {
           endDate: dateTo
         };
         console.log(data);
-        let url = "http://localhost:8080/calendar/insert";
+        let url = process.env.BACKEND_URL+"calendar/insert";
         const axiospost = await axios.post(url, data, {
           headers: {
             Authorization: "Bearer " + this.token,
@@ -257,7 +257,7 @@ export default {
 
     listCalendar: async function() {//TODO catch error
       let fail = false;
-      let listarPosts = await axios.get("http://localhost:8080/calendar/users", {
+      let listarPosts = await axios.get(process.env.BACKEND_URL+"calendar/users", {
         headers:{
             Authorization: "Bearer " + this.token,
             Gauth: "Bearer " + this.gtoken,
@@ -289,7 +289,7 @@ export default {
       let fail = false;
       console.log(this.modifyingId);
       let borrado = await axios
-        .delete("http://localhost:8080/calendar/delete", {
+        .delete(process.env.BACKEND_URL+"calendar/delete", {
           headers: {
             Authorization: "Bearer " + this.token,
             Gauth: "Bearer " + this.gtoken,
@@ -319,7 +319,7 @@ export default {
         status: status
         };
       console.log(data);
-      let url = "http://localhost:8080/calendar/update";
+      let url = process.env.BACKEND_URL+"calendar/update";
       const axiospost = await axios
         .put(url, data, {
           headers: {

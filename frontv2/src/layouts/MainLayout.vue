@@ -10,14 +10,14 @@
         </q-toolbar-title>
       </q-toolbar>
 
-      <q-tabs align="left">
+      <q-tabs align="left" shrink stretch>
         <q-route-tab to="/admin" label="Inicio" />
         <q-route-tab to="/admin/user" label="Usuarios" class="nav-font" />
         <q-route-tab to="/admin/document" label="Nominas" class="nav-font" />
         <q-route-tab to="/admin/vacation" label="Vacaciones" class="nav-font" />
-
+        <q-route-tab to="/admin/adminedition" label="Admin" class="nav-font adminedit"/>
       </q-tabs>
-
+      </q-toolbar>
     </q-header>
 
     <q-page-container>
@@ -48,7 +48,6 @@ export default {
   methods: {
     logout: function() {
       sessionStorage.removeItem("Session");
-      sessionStorage.removeItem("gtoken");
 
       this.$router.push("/");
     }

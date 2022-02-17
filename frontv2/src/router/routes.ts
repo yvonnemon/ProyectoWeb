@@ -10,6 +10,7 @@ const routes: RouteConfig[] = [
       { path: 'user', component: () => import('src/pages/admin/User.vue') },
       { path: 'vacation', component: () => import('src/pages/admin/Calendar.vue') },
       { path: 'document', component: () => import('src/pages/admin/Document.vue') },
+      { path: 'adminedition', component: () => import('src/pages/admin/AdminEdit.vue') },
     ],
     beforeEnter: (from, to, next) => {
       if(!sessionStorage.getItem("Session")){

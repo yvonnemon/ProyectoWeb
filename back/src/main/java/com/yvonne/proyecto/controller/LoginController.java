@@ -19,6 +19,7 @@ public class LoginController {
 
     @PostMapping("/login")
     public ResponseEntity<String> loginUser(@RequestBody UserDto data) {
+        // TODO no logica en el controllador
         try{
             if(!data.getUsername().isEmpty() || !data.getPassword().isEmpty()) {
                 String token = userManager.getUserByLogin(data.getUsername(), data.getPassword());

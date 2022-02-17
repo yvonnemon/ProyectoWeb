@@ -278,7 +278,7 @@ export default {
       let fail = false;
 
       let listar = await axios
-        .get(process.env.BACKEND_URL+"/user/employee", {
+        .get(process.env.BACKEND_URL+"user/employee", {
           headers: {
             Authorization: "Bearer " + this.token,
             "Content-Type": "application/json"

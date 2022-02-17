@@ -39,7 +39,6 @@
             :pagination="pagination"
           >
           </q-table>
-          
         </q-card-section>
 
         <q-separator dark />
@@ -67,7 +66,8 @@ export default {
           align: "center",
           field: row => row.user.dni,
           format: val => `${val}`,
-          sortable: true
+          sortable: true,
+          style: 'width: 500px'
         },
         {
           name: "name",
@@ -90,7 +90,7 @@ export default {
           name: "user",
           align: "center",
           label: "Empleado",
-          field: row => row.user.name +' '+ row.user.lastname,
+          field: row => row.user.name + " " + row.user.lastname,
           sortable: true
         },
         {
@@ -113,8 +113,7 @@ export default {
           field: row => this.text(row.status),
           align: "center",
           sortable: true
-        },
-
+        }
       ],
       data: [],
       dates: [],
@@ -128,20 +127,20 @@ export default {
 
   async created() {
     this.token = sessionStorage.getItem("Session");
-    this.gtoken = sessionStorage.getItem("gtoken")
-     await axios
-        .get(process.env.BACKEND_URL+"document/admin", {
-          headers: {
-            Authorization: "Bearer " + this.token,
-            "Content-Type": "application/json"
-          }
-        })
-        .then(response => {
-          this.allFiles = response.data;
-        })
-        .catch(function(error) {
-          console.log(error);
-        });
+    this.gtoken = sessionStorage.getItem("gtoken");
+    await axios
+      .get(process.env.BACKEND_URL + "document/admin", {
+        headers: {
+          Authorization: "Bearer " + this.token,
+          "Content-Type": "application/json"
+        }
+      })
+      .then(response => {
+        this.allFiles = response.data;
+      })
+      .catch(function(error) {
+        console.log(error);
+      });
 
     this.listCalendar();
   },
@@ -152,15 +151,17 @@ export default {
     },
     listCalendar: async function() {
       let fail = false;
-      let listarPosts = await axios.get(process.env.BACKEND_URL+"calendar/pending", {
+      let listarPosts = await axios
+        .get(process.env.BACKEND_URL + "calendar/pending", {
           headers: {
             Authorization: "Bearer " + this.token,
             "Content-Type": "application/json"
           }
-      }).then(response => {
-        this.dates = response.data;
-        console.log(this.dates);
-       // this.vacationRanges(this.dates);
+        })
+        .then(response => {
+          this.dates = response.data;
+          console.log(this.dates);
+          // this.vacationRanges(this.dates);
         })
         .catch(function(error) {
           console.log(error);
@@ -169,64 +170,30 @@ export default {
 
       if (fail) {
         this.showNotif();
-      };
-    },
-        text: function(filtro){
-        console.log(filtro);
-        let result;
-        if(filtro === "PENDING"){
-            result = "Pendiente";
-        } else if(filtro === "APPROVED") {
-            result = "Aprobado";
-        } else if(filtro === "DENIED") {
-            result = "Denegado";
-        } else if (filtro === "CANCELED") {
-            result = "Cancelado";
-        }
-       return result;
-    },
-
-      /*vacationRanges: function(vacations) {
-        let dateRanges = [];
-        vacations.forEach(range => {
-          let st = new Date(range.startDate);
-          let end = new Date(range.endDate);
-          //console.log(st);
-          console.log(end);
-          let array = this.ranges(st,end)
-          //console.log(array);
-          //dateRanges.push(array);
-        });
-        console.log(dateRanges);
-      },
-      ranges: function(startDate, endDate){
-          //debugger;
-          console.log("FECHA LOCO");
-         // console.log(startDate);
-
-
-
-          
-          let addFn = Date.prototype.addDays;
-          let interval = 1;
-
-          var retVal = [];
-          var current = new Date(startDate);
-
-          while (current <= endDate) {
-            retVal.push(new Date(current));
-            current = addFn.call(current, interval);
-          }
-         // console.log(retVal);
-          return retVal;
-      }*/
-      vacation: function(){
-        this.$router.push("/admin/vacation")
-      },
-      docs: function(){
-        this.$router.push("/admin/document")
       }
+    },
+    text: function(filtro) {
+      console.log(filtro);
+      let result;
+      if (filtro === "PENDING") {
+        result = "Pendiente";
+      } else if (filtro === "APPROVED") {
+        result = "Aprobado";
+      } else if (filtro === "DENIED") {
+        result = "Denegado";
+      } else if (filtro === "CANCELED") {
+        result = "Cancelado";
+      }
+      return result;
+    },
 
+    vacation: function() {
+      this.$router.push("/admin/vacation");
+    },
+    docs: function() {
+      this.$router.push("/admin/document");
+    }
   }
 };
 </script>
+<style></style>
