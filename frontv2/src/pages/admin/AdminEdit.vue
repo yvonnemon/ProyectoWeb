@@ -83,7 +83,6 @@
               label="Contraseña"
               stack-label
               class="form-input col-sm-6 col-xs-12"
-              :rules="[val => !!val || 'Campo necesario']"
             >
               <template v-slot:append>
                 <q-icon

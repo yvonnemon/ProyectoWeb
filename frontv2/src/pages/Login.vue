@@ -67,7 +67,6 @@ export default {
   },
   methods: {
     login: async function(mail, nombre, apellido) {
-      console.log("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
      // console.log(user.ts);
       let alert = false;
       console.log("login to back");
@@ -115,18 +114,13 @@ export default {
     },
 
     onSignIn(user) {
-      let usuario = user.Ts;
-      console.log(user.Ts);
-      let mail = user.Ts.Et;
-      let nombre = user.Ts.RT;
-      let apellido = user.Ts.TR;
+      //el login de google puede fallar si los valores para conseguir los datos (user.Ju) no estan actualizados recientemnete
+      let mail = user.Ju.zv;
+      //console.log(user);
+      let nombre = user.Ju.iY;
+      let apellido = user.Ju.wW;
 
       this.login(mail, nombre, apellido);
-      //on sign in -> get con parametros?
-      /* sessionStorage.setItem("gtoken", user.getAuthResponse().id_token);
-        document.querySelector("#g-signin2").style.visibility = "hidden";
-
-        this.$router.push("/main");*/
     },
 
     init: function() {

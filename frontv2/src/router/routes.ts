@@ -38,11 +38,16 @@ const routes: RouteConfig[] = [
     ],   
      beforeEnter: (from, to, next) => {
       if(!sessionStorage.getItem("Session") && !sessionStorage.getItem("gtoken")){
+        console.log("hola");
+        
         next("/");
       } else if(sessionStorage.getItem("gtoken")) {
-        next();
-
+        next("/");
+        console.log("next");
+        
       }else{
+        console.log("else");
+        
         const token: any = sessionStorage.getItem("Session");
         let decoded: any = jwt_decode(token);
         if(decoded.role != "EMPLOYEE") {

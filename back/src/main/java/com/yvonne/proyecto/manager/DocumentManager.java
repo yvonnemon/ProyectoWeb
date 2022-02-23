@@ -9,16 +9,22 @@ import com.yvonne.proyecto.repository.DocumentRepository;
 import com.yvonne.proyecto.util.Util;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdmodel.encryption.AccessPermission;
+import org.apache.pdfbox.pdmodel.encryption.StandardDecryptionMaterial;
+import org.apache.pdfbox.pdmodel.encryption.StandardProtectionPolicy;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -39,6 +45,9 @@ public class DocumentManager implements CrudManager<Document> {
 
     @Value("${spring.datasource.filepath}")
     private String FILE_PATH;
+
+    @Value("${spring.datasource.documentPassword}")
+    private String PASSWORD;
 
     private static final Logger LOG = LogManager.getLogger(Document.class);
 
@@ -64,8 +73,13 @@ public class DocumentManager implements CrudManager<Document> {
 
         Document file = documentRepository.findById(docCode).orElse(null);
         if (file != null) {
+
             String path = file.getPath();
+            decryptDocument(path);
             byte[] pdfToByteArray = Files.readAllBytes(Paths.get(path));
+
+            encryptDocument(path);
+
             //por algun motivo, no me lo devuelve en base 64, asi que:
             return Base64.getEncoder().encode(pdfToByteArray);
 
@@ -113,7 +127,7 @@ public class DocumentManager implements CrudManager<Document> {
     }
 
     @Override
-    public Boolean update(Document object) throws Exception {
+    public Boolean update(Document object) {
         return null;
     }
 
@@ -125,6 +139,7 @@ public class DocumentManager implements CrudManager<Document> {
     public void deleteAllFromUser(User user){
         documentRepository.deleteAllByUser(user);
     }
+
     private boolean deleteFileFromDir(Document doc) throws Exception {
         //este metodo borra el archivo de la carpeta donde esta
         boolean deleted = false;
@@ -179,11 +194,38 @@ public class DocumentManager implements CrudManager<Document> {
                 LOG.error("ERROR: el archivo a guardar no existe " + e.getMessage(), e);
                 throw new Exception();
             }
-
+            encryptDocument(f.getPath());
             entity.setName(randomName + recivedFile.getDocName() + recivedFile.getExt());
             entity.setPath(f.getPath());
             result.add(entity);
         }
         return result; //devuelve una lista de documentos, con su nombre y path
+    }
+
+    private void encryptDocument( String path ) throws IOException {
+
+        File file = new File(path);
+        PDDocument pdd = PDDocument.load(file);
+
+        AccessPermission ap = new AccessPermission();
+        String encriptedPass = BCrypt.hashpw(PASSWORD, BCrypt.gensalt(12));
+
+        StandardProtectionPolicy stpp = new StandardProtectionPolicy(encriptedPass , encriptedPass , ap);
+        stpp.setEncryptionKeyLength(128);
+
+        stpp.setPermissions(ap);
+        pdd.protect(stpp);
+        pdd.save(path);
+        System.out.println(path);
+        pdd.close();
+
+    }
+
+    private void decryptDocument( String path ) throws IOException {
+        File file = new File(path);
+        PDDocument pdd = PDDocument.load(file,PASSWORD);
+        pdd.setAllSecurityToBeRemoved(true);
+        pdd.save(path);
+        pdd.close();
     }
 }

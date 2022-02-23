@@ -82,12 +82,6 @@ public class DocumentController {
         }
     }
 
-    @PostMapping("/document")
-    public Document getOne(Document data)  {
-        // TODO borrar si no se usa
-        return null;
-    }
-
     @PostMapping(value = "/insert", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity create(@RequestBody DocumentDto data) {
 
@@ -100,12 +94,6 @@ public class DocumentController {
 
     }
 
-    @PutMapping("/update")
-    public ResponseEntity<String> update(Document data) {
-        // TODO borrar si no se usa
-
-        return null;
-    }
 
     @DeleteMapping("/delete")
     public ResponseEntity<String> delete(@RequestBody String id) throws Exception {
