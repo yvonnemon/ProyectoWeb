@@ -1,6 +1,5 @@
 package com.yvonne.proyecto.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import javax.persistence.*;
@@ -20,6 +19,10 @@ public class Document {
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     @Column(name = "path", nullable = false, unique = true)
     private String path;
+
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    @Column(name = "password")
+    private String password;
 
     @ManyToOne
     @JoinColumn(name="user_id", nullable=false)
@@ -56,5 +59,14 @@ public class Document {
     public void setPath(String path) {
         this.path = path;
     }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
 }
 

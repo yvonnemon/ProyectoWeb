@@ -75,7 +75,7 @@ public class DocumentManager implements CrudManager<Document> {
         if (file != null) {
 
             String path = file.getPath();
-            decryptDocument(path);
+            decryptDocument(path, file);
             byte[] pdfToByteArray = Files.readAllBytes(Paths.get(path));
 
             encryptDocument(path);
@@ -165,10 +165,10 @@ public class DocumentManager implements CrudManager<Document> {
 
             //random nombre para evitar repetidos
             String randomName = Util.generateRandomDate() + "_";
-            Document entity = new Document();
+            Document documentEntity = new Document();
 
             User employeeId = userManager.getById(dto.getUser().getId());
-            entity.setUser(employeeId);
+            documentEntity.setUser(employeeId);
             String path = FILE_PATH + '\\' + employeeId.getDni();
 
             //quitar las barras bajas para evitar problemas al recuperar los datos en el front
@@ -194,36 +194,42 @@ public class DocumentManager implements CrudManager<Document> {
                 LOG.error("ERROR: el archivo a guardar no existe " + e.getMessage(), e);
                 throw new Exception();
             }
-            encryptDocument(f.getPath());
-            entity.setName(randomName + recivedFile.getDocName() + recivedFile.getExt());
-            entity.setPath(f.getPath());
-            result.add(entity);
+            documentEntity.setPassword( encryptDocument(f.getPath()) );
+            documentEntity.setName(randomName + recivedFile.getDocName() + recivedFile.getExt());
+            documentEntity.setPath(f.getPath());
+            result.add(documentEntity);
         }
         return result; //devuelve una lista de documentos, con su nombre y path
     }
 
-    private void encryptDocument( String path ) throws IOException {
+    private String encryptDocument(String path) throws IOException {
+
 
         File file = new File(path);
         PDDocument pdd = PDDocument.load(file);
 
         AccessPermission ap = new AccessPermission();
-        String encriptedPass = BCrypt.hashpw(PASSWORD, BCrypt.gensalt(12));
 
-        StandardProtectionPolicy stpp = new StandardProtectionPolicy(encriptedPass , encriptedPass , ap);
+        String pass = Util.randomString(25);
+        String encriptedPass = Base64.getEncoder().encodeToString(pass.getBytes());
+
+        StandardProtectionPolicy stpp = new StandardProtectionPolicy(pass , pass , ap);
         stpp.setEncryptionKeyLength(128);
 
         stpp.setPermissions(ap);
         pdd.protect(stpp);
         pdd.save(path);
-        System.out.println(path);
         pdd.close();
-
+        return encriptedPass;
     }
 
-    private void decryptDocument( String path ) throws IOException {
+    private void decryptDocument(String path, Document document) throws IOException {
+
         File file = new File(path);
-        PDDocument pdd = PDDocument.load(file,PASSWORD);
+        byte[] decodedBytes = Base64.getDecoder().decode(document.getPassword());
+        String decodedString = new String(decodedBytes);
+
+        PDDocument pdd = PDDocument.load(file,decodedString);
         pdd.setAllSecurityToBeRemoved(true);
         pdd.save(path);
         pdd.close();
