@@ -1,14 +1,13 @@
 package com.yvonne.proyecto.model.dto;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import com.yvonne.proyecto.model.User;
 import com.yvonne.proyecto.model.VacationStatus;
 
-import javax.persistence.*;
-import java.time.LocalDateTime;
 import java.util.Date;
 
 public class CalendarDto {
+
+    private Integer id;
 
     private Date startDate;
 
@@ -19,6 +18,14 @@ public class CalendarDto {
     private String comment;
 
     private User user;
+
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
 
     public Date getStartDate() {
         return startDate;

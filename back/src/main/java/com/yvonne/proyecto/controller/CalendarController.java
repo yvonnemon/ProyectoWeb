@@ -41,7 +41,6 @@ public class CalendarController {
     public List<Calendar> getPending() throws Exception {
         return calendarManager.getPending();
     }
-// TODO los Controllers no deberian tirar excepciones, hazlo como este de abajo, dvuelve un response entity con el error.
     @GetMapping("/next")
     public ResponseEntity<List<Calendar>> getNext(HttpServletRequest request) {
         try {
@@ -71,17 +70,11 @@ public class CalendarController {
 
     @PostMapping("/insert")
     public ResponseEntity<String> insertVacation(@RequestBody CalendarDto data, HttpServletRequest request) {
-        try {
-            // TODO o lo mapeas con un mapper o montas el objeto dentro del manager.
-            Calendar calendar = new Calendar();
-            LocalDateTime from = LocalDateTime.ofInstant(data.getStartDate().toInstant(), ZoneId.systemDefault());
-            LocalDateTime to = LocalDateTime.ofInstant(data.getEndDate().toInstant(), ZoneId.systemDefault());
-            calendar.setStartDate(from);
-            calendar.setEndDate(to);
-            calendar.setComment(data.getComment());
-            calendar.setUser(TokenManager.getUserFromRequest(request));
 
-            calendarManager.create(calendar);
+        try {
+            data.setUser(TokenManager.getUserFromRequest(request));
+
+            calendarManager.create(data);
             return ResponseEntity.status(HttpStatus.OK).body("Vacaciones solicitadas");
         } catch (Exception e)
         {
@@ -90,47 +83,25 @@ public class CalendarController {
     }
 
     @PutMapping("/update")
-    public ResponseEntity updateStatus(@RequestBody String data) throws Exception {
-        // TODO haz que reciba un objeto en vez de un Strnig JSON y lueg coger los cosos con el GSON...
-        JsonObject jsonObject = gson.fromJson(data, JsonObject.class);
-        String id = jsonObject.get("id").toString();
-        String clean = jsonObject.get("status").toString();
-        clean = clean.replace("\"","");
-        VacationStatus status = VacationStatus.valueOf(clean);
-        // TODO no tiene que haber logica en un controlador
-        if (calendarManager.getById(Integer.parseInt(id)) != null) {
+    public ResponseEntity updateStatus(@RequestBody CalendarDto data) throws Exception {
 
             try {
-                Calendar calendar = calendarManager.getById(Integer.parseInt(id));
-                calendarManager.updateStatus(calendar, status);
+                calendarManager.updateStatus(data);
                 return ResponseEntity.status(HttpStatus.OK).body("Estado modificado");
             } catch (Exception e) {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Hubo un error modificando los datos");
             }
-        } else {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Fechas no encontradas");
-        }
     }
 
     @DeleteMapping("/delete")
-    public ResponseEntity<String> delete(@RequestBody String id) throws Exception {
-        // TODO haz que reciba un objeto en vez de un Strnig JSON y lueg coger los cosos con el GSON...
-
-        JsonObject jsonObject = gson.fromJson(id, JsonObject.class);
-
-        String x = jsonObject.get("id").toString();
-        // TODO no tiene que haber logica en un controlador
-
-        if (calendarManager.getById(Integer.parseInt(x)) != null) {
+    public ResponseEntity<String> delete(@RequestBody CalendarDto data) throws Exception {
 
             try {
-                calendarManager.delete(calendarManager.getById(Integer.parseInt(x)));
+
+                calendarManager.delete(data);
                 return ResponseEntity.status(HttpStatus.OK).body("Usuario borrado");
             } catch (Exception e) {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Hubo un error borrando el usuario");
             }
-        } else {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Usuario no encontrado");
-        }
     }
 }

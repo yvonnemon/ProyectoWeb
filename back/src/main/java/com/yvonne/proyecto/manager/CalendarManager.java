@@ -4,6 +4,7 @@ import com.yvonne.proyecto.model.Calendar;
 import com.yvonne.proyecto.model.Document;
 import com.yvonne.proyecto.model.User;
 import com.yvonne.proyecto.model.VacationStatus;
+import com.yvonne.proyecto.model.dto.CalendarDto;
 import com.yvonne.proyecto.repository.CalendarRepository;
 import com.yvonne.proyecto.repository.CrudManager;
 import com.yvonne.proyecto.repository.UserRepository;
@@ -13,11 +14,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.GetMapping;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Date;
+import java.time.ZoneId;
 import java.util.List;
 
 @Service
@@ -31,31 +30,50 @@ public class CalendarManager implements CrudManager<Calendar> {
 
     private static final Logger LOG = LogManager.getLogger(Document.class);
 // TODO LOGGER en vez de syso
+
     @Override
     public List<Calendar> getAll() {
         try{
             return (List<Calendar>) calendarRepository.findAll();
         } catch (Exception e){
-            System.out.println(e);
-            return null;
+            LOG.error("ERROR: lista de calendarios vacia" + e.getMessage());
+            throw e;
         }
     }
 
     @Override
-    public void create(Calendar vacation) {
+    public void create(Calendar object) throws Exception {}
+
+    @Override
+    public void delete(Calendar object) throws Exception {
+
+    }
+
+
+    public void create(CalendarDto calendardto) {
         try {
-            vacation.setStatus(VacationStatus.PENDING);
-            calendarRepository.save(vacation);
+            Calendar calendar = new Calendar();
+            LocalDateTime from = LocalDateTime.ofInstant(calendardto.getStartDate().toInstant(), ZoneId.systemDefault());
+            LocalDateTime to = LocalDateTime.ofInstant(calendardto.getEndDate().toInstant(), ZoneId.systemDefault());
+            calendar.setStartDate(from);
+            calendar.setEndDate(to);
+            calendar.setComment(calendardto.getComment());
+            calendar.setUser(calendardto.getUser());
+
+            calendar.setStatus(VacationStatus.PENDING);
+            calendarRepository.save(calendar);
         } catch (Exception e){
-            System.out.println(e);
+            LOG.error("ERROR: no se puede crear nuevo calendario" + e.getMessage());
+            throw e;
         }
     }
 
-    @Override
-    public void delete(Calendar vacation) throws Exception {
+
+    public void delete(CalendarDto vacation) {
         try {
-            vacation.setStatus(VacationStatus.CANCELED);
-            calendarRepository.save(vacation);
+            Calendar calendar = getById(vacation.getId());
+            calendar.setStatus(VacationStatus.CANCELED);
+            calendarRepository.save(calendar);
         } catch (Exception e) {
             LOG.error("ERROR: no se pudo cancelar " + e.getMessage(), e);
             throw e;
@@ -63,14 +81,17 @@ public class CalendarManager implements CrudManager<Calendar> {
     }
 
     @Override
-    public Boolean update(Calendar calendar) throws Exception {
-        return null;
+    public Boolean update(Calendar calendar) {
+        return false;
     }
 
-    public void updateStatus(Calendar vacation, VacationStatus status) throws Exception {
+    public void updateStatus(CalendarDto vacation) {
         try {
-            vacation.setStatus(status);
-            calendarRepository.save(vacation);
+           // vacation.setStatus(status);
+            Calendar calendar = getById(vacation.getId());
+            calendar.setStatus(vacation.getStatus());
+
+            calendarRepository.save(calendar);
         } catch (Exception e) {
             LOG.error("ERROR: no se pudo actualizar el estado " + e.getMessage(), e);
             throw e;
@@ -78,7 +99,7 @@ public class CalendarManager implements CrudManager<Calendar> {
     }
 
     @Override
-    public Calendar getById(Integer id) throws Exception {
+    public Calendar getById(Integer id) {
         try {
             return calendarRepository.findById(id).orElse(null);
         } catch (Exception e) {
@@ -88,7 +109,7 @@ public class CalendarManager implements CrudManager<Calendar> {
 
     }
 
-    public List<Calendar> getMonthly() throws Exception{
+    public List<Calendar> getMonthly() {
         try {
             LocalDateTime currentdate = LocalDateTime.now();
             return calendarRepository.findCalendarByStartDateAfter(LocalDateTime.of(currentdate.getYear(),currentdate.getMonthValue(),1,0,0));
@@ -98,7 +119,7 @@ public class CalendarManager implements CrudManager<Calendar> {
         }
     }
 
-    public List<Calendar> getPending() throws Exception{
+    public List<Calendar> getPending() {
         try {
             return calendarRepository.findCalendarByStatus(VacationStatus.PENDING);
         } catch (Exception e) {
@@ -107,7 +128,7 @@ public class CalendarManager implements CrudManager<Calendar> {
         }
     }
 
-    public List<Calendar> getNext(User user) throws Exception {
+    public List<Calendar> getNext(User user) {
         try {
             Pageable limit = PageRequest.of(0,5);
             return calendarRepository.findCalendarByStatusAndUserOrderByIdDesc(VacationStatus.APPROVED, user,limit );
@@ -121,7 +142,7 @@ public class CalendarManager implements CrudManager<Calendar> {
         calendarRepository.deleteAllByUser(user);
     }
 
-    public List<Calendar> getAllFromUser(User user) throws Exception {
+    public List<Calendar> getAllFromUser(User user) {
         try {
             return calendarRepository.findByUser(user);
         } catch (Exception e) {
