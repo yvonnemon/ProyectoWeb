@@ -19,15 +19,10 @@ public class LoginController {
 
     @PostMapping("/login")
     public ResponseEntity<String> loginUser(@RequestBody UserDto data) {
-        // TODO no logica en el controllador
+
         try{
-            if(!data.getUsername().isEmpty() || !data.getPassword().isEmpty()) {
-                String token = userManager.getUserByLogin(data.getUsername(), data.getPassword());
-                return ResponseEntity.ok(HttpStatus.OK + "&" + token);
-            } else {
-                String token = userManager.findByGoogleUser(data.getEmail(),data.getName(),data.getLastname());
-                return ResponseEntity.ok(HttpStatus.OK + "&" + token);
-            }
+            String token = userManager.findUser(data);
+            return ResponseEntity.ok(HttpStatus.OK + "&" + token);
         } catch(Exception e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Sus credenciales no son correctas");
         }

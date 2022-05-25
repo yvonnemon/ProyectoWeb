@@ -4,13 +4,10 @@ import com.yvonne.proyecto.model.Calendar;
 import com.yvonne.proyecto.model.User;
 import com.yvonne.proyecto.model.VacationStatus;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Date;
 import java.util.List;
 
 @Repository

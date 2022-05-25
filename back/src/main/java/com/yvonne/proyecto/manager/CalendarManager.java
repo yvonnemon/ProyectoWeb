@@ -29,20 +29,20 @@ public class CalendarManager implements CrudManager<Calendar> {
     CalendarRepository calendarRepository;
 
     private static final Logger LOG = LogManager.getLogger(Document.class);
-// TODO LOGGER en vez de syso
 
     @Override
     public List<Calendar> getAll() {
-        try{
+        try {
             return (List<Calendar>) calendarRepository.findAll();
-        } catch (Exception e){
+        } catch (Exception e) {
             LOG.error("ERROR: lista de calendarios vacia" + e.getMessage());
             throw e;
         }
     }
 
     @Override
-    public void create(Calendar object) throws Exception {}
+    public void create(Calendar object) throws Exception {
+    }
 
     @Override
     public void delete(Calendar object) throws Exception {
@@ -62,7 +62,7 @@ public class CalendarManager implements CrudManager<Calendar> {
 
             calendar.setStatus(VacationStatus.PENDING);
             calendarRepository.save(calendar);
-        } catch (Exception e){
+        } catch (Exception e) {
             LOG.error("ERROR: no se puede crear nuevo calendario" + e.getMessage());
             throw e;
         }
@@ -87,7 +87,7 @@ public class CalendarManager implements CrudManager<Calendar> {
 
     public void updateStatus(CalendarDto vacation) {
         try {
-           // vacation.setStatus(status);
+            // vacation.setStatus(status);
             Calendar calendar = getById(vacation.getId());
             calendar.setStatus(vacation.getStatus());
 
@@ -112,7 +112,7 @@ public class CalendarManager implements CrudManager<Calendar> {
     public List<Calendar> getMonthly() {
         try {
             LocalDateTime currentdate = LocalDateTime.now();
-            return calendarRepository.findCalendarByStartDateAfter(LocalDateTime.of(currentdate.getYear(),currentdate.getMonthValue(),1,0,0));
+            return calendarRepository.findCalendarByStartDateAfter(LocalDateTime.of(currentdate.getYear(), currentdate.getMonthValue(), 1, 0, 0));
         } catch (Exception e) {
             LOG.error("ERROR: No se pudieron recuperar los datos " + e.getMessage(), e);
             throw e;
@@ -130,15 +130,15 @@ public class CalendarManager implements CrudManager<Calendar> {
 
     public List<Calendar> getNext(User user) {
         try {
-            Pageable limit = PageRequest.of(0,5);
-            return calendarRepository.findCalendarByStatusAndUserOrderByIdDesc(VacationStatus.APPROVED, user,limit );
+            Pageable limit = PageRequest.of(0, 5);
+            return calendarRepository.findCalendarByStatusAndUserOrderByIdDesc(VacationStatus.APPROVED, user, limit);
         } catch (Exception e) {
             LOG.error("ERROR: No se pudieron recuperar los datos " + e.getMessage(), e);
             throw e;
         }
     }
 
-    public void deleteAllFromUser(User user){
+    public void deleteAllFromUser(User user) {
         calendarRepository.deleteAllByUser(user);
     }
 

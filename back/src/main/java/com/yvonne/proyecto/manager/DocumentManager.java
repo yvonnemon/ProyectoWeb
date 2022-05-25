@@ -38,19 +38,24 @@ public class DocumentManager implements CrudManager<Document> {
     @Autowired
     private UserManager userManager;
 
-    private static final String FILE_NAME_REGEX = "([0-9]{17}+_)";
+    //private static final String FILE_NAME_REGEX = "([0-9]{17}+_)";
 
     @Value("${spring.datasource.filepath}")
     private String FILE_PATH;
 
-    @Value("${spring.datasource.documentPassword}")
-    private String PASSWORD;
+   /* @Value("${spring.datasource.documentPassword}")
+    private String PASSWORD;*/
 
     private static final Logger LOG = LogManager.getLogger(Document.class);
 
     @Override
     public void create(Document doc) throws Exception {
         documentRepository.save(doc);
+    }
+
+    @Override
+    public void delete(Document object) throws Exception {
+
     }
 
     //subir el documento
@@ -77,11 +82,11 @@ public class DocumentManager implements CrudManager<Document> {
 
             encryptDocument(path);
 
-            //por algun motivo, no me lo devuelve en base 64, asi que:
+            //no me lo devuelve en base 64, asi que:
             return Base64.getEncoder().encode(pdfToByteArray);
 
         } else {
-            return null;
+            return new byte[0];
         }
     }
 
@@ -95,27 +100,26 @@ public class DocumentManager implements CrudManager<Document> {
     }
 
     public List<Document> getLasts() {
-        Pageable limit = PageRequest.of(0, 5);
-        List<Document> allDocs = documentRepository.findAllByOrderByIdDesc(limit);
 
-        return allDocs;
+        Pageable limit = PageRequest.of(0, 5);
+        return documentRepository.findAllByOrderByIdDesc(limit);
     }
 
-    public List<Document> getUserLasts(User user) throws Exception {
-        Pageable limit = PageRequest.of(0, 5);
-        List<Document> allDocs = documentRepository.findDocumentByUserOrderByIdDesc(user, limit);
+    public List<Document> getUserLasts(User user) {
 
-        return allDocs;
+        Pageable limit = PageRequest.of(0, 5);
+        return documentRepository.findDocumentByUserOrderByIdDesc(user, limit);
     }
 
-    @Override
-    public void delete(Document object) throws Exception {
+
+    public void delete(DocumentDto doc) throws Exception {
         try {
-            boolean borradofisico = deleteFileFromDir(object);
+            Document document = getById(doc.getId());
+            boolean borradofisico = deleteFileFromDir(document);
             if (borradofisico) {
-                documentRepository.delete(object);
+                documentRepository.delete(document);
             } else {
-                throw new Exception("ERROR: el archivo  no existe "); //TODO
+                throw new Exception("ERROR: el archivo  no existe ");
             }
         } catch (Exception e) {
             LOG.error("ERROR: el archivo  no existe " + e.getMessage(), e);
@@ -133,7 +137,7 @@ public class DocumentManager implements CrudManager<Document> {
         return documentRepository.findById(id).orElse(null);
     }
 
-    public void deleteAllFromUser(User user){
+    public void deleteAllFromUser(User user) {
         documentRepository.deleteAllByUser(user);
     }
 
@@ -150,7 +154,7 @@ public class DocumentManager implements CrudManager<Document> {
         return deleted;
     }
 
-    private List<Document> fileGenerator(DocumentDto dto) throws Exception {
+    private List<Document> fileGenerator(DocumentDto dto) throws IOException {
 
         List<Document> result = new ArrayList<>();
         //fileObject es el archivo en si
@@ -189,9 +193,9 @@ public class DocumentManager implements CrudManager<Document> {
 
             } catch (IOException e) {
                 LOG.error("ERROR: el archivo a guardar no existe " + e.getMessage(), e);
-                throw new Exception();
+                throw e;
             }
-            documentEntity.setPassword( encryptDocument(f.getPath()) );
+            documentEntity.setPassword(encryptDocument(f.getPath()));
             documentEntity.setName(randomName + recivedFile.getDocName() + recivedFile.getExt());
             documentEntity.setPath(f.getPath());
             result.add(documentEntity);
@@ -207,16 +211,18 @@ public class DocumentManager implements CrudManager<Document> {
 
         AccessPermission ap = new AccessPermission();
 
+        //le asigna al archivo abierto una contraseña
         String pass = Util.randomString(25);
         String encriptedPass = Base64.getEncoder().encodeToString(pass.getBytes());
 
-        StandardProtectionPolicy stpp = new StandardProtectionPolicy(pass , pass , ap);
+        StandardProtectionPolicy stpp = new StandardProtectionPolicy(pass, pass, ap);
         stpp.setEncryptionKeyLength(128);
 
         stpp.setPermissions(ap);
         pdd.protect(stpp);
         pdd.save(path);
         pdd.close();
+        //hasta que no se hace este metodo, el archivo no esta protegido
         return encriptedPass;
     }
 
@@ -226,7 +232,7 @@ public class DocumentManager implements CrudManager<Document> {
         byte[] decodedBytes = Base64.getDecoder().decode(document.getPassword());
         String decodedString = new String(decodedBytes);
 
-        PDDocument pdd = PDDocument.load(file,decodedString);
+        PDDocument pdd = PDDocument.load(file, decodedString);
         pdd.setAllSecurityToBeRemoved(true);
         pdd.save(path);
         pdd.close();

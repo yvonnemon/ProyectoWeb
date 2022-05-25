@@ -12,9 +12,10 @@ import org.springframework.stereotype.Service;
 import javax.crypto.spec.SecretKeySpec;
 import javax.servlet.http.HttpServletRequest;
 import java.io.Serializable;
-import java.nio.charset.StandardCharsets;
 import java.security.Key;
-import java.util.*;
+import java.util.Base64;
+import java.util.Calendar;
+import java.util.Date;
 
 @Service
 public class TokenManager implements Serializable {
@@ -28,12 +29,12 @@ public class TokenManager implements Serializable {
     }
 
     @Value("${spring.datasource.secreto}")
-    public void setSecret(String secreto){
+    public void setSecret(String secreto) {
         TokenManager.SECRETO = secreto;
     }
 
     public static String generateToken(User user) {
-        //TODO fix this, el que?
+        //m
         Key secret = new SecretKeySpec(Base64.getDecoder().decode(SECRETO),
                 SignatureAlgorithm.HS256.getJcaName());
         user.setPassword("");
@@ -69,27 +70,28 @@ public class TokenManager implements Serializable {
             return false;
         }
     }
-    public static User getUserFromToken(String token){
+
+    public static User getUserFromToken(String token) {
 
         User user;
 
-            Base64.Decoder decoder = Base64.getDecoder();
-            //esto va a pincho porque los tokens deberian ser siempre iguales.
-            String[] chunks = token.split("\\.");
-            String payload = new String(decoder.decode(chunks[1]));
+        Base64.Decoder decoder = Base64.getDecoder();
+        //esto va a pincho porque los tokens deberian ser siempre iguales.
+        String[] chunks = token.split("\\.");
+        String payload = new String(decoder.decode(chunks[1]));
 
-            JsonObject json = new Gson().fromJson(payload, JsonObject.class);
+        JsonObject json = new Gson().fromJson(payload, JsonObject.class);
 
-            Gson gson = new Gson();
-            user = gson.fromJson(json.get("user"), User.class);
-            return user;
+        Gson gson = new Gson();
+        user = gson.fromJson(json.get("user"), User.class);
+        return user;
     }
 
-    public static User getUserFromRequest(HttpServletRequest request){
+    public static User getUserFromRequest(HttpServletRequest request) {
 
         String auth = request.getHeader("Authorization");
         User user;
-        if(auth != null && !auth.contains("null")) {
+        if (auth != null && !auth.contains("null")) {
             String token = auth.split(" ")[1];
 
             Base64.Decoder decoder = Base64.getDecoder();
@@ -103,7 +105,7 @@ public class TokenManager implements Serializable {
             user = gson.fromJson(json.get("user"), User.class);
             return user;
 
-        }  else {
+        } else {
             return null;
         }
     }

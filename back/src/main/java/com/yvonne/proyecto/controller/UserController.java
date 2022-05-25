@@ -2,11 +2,13 @@ package com.yvonne.proyecto.controller;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
-
 import com.yvonne.proyecto.manager.TokenManager;
 import com.yvonne.proyecto.manager.UserManager;
+import com.yvonne.proyecto.model.Document;
 import com.yvonne.proyecto.model.User;
 import com.yvonne.proyecto.model.dto.UserDto;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -21,6 +23,8 @@ import java.util.List;
 public class UserController {
     @Autowired
     private UserManager userManager;
+
+    private static final Logger LOG = LogManager.getLogger(UserController.class);
 
     @Autowired
     private Gson gson;
@@ -38,10 +42,12 @@ public class UserController {
     @GetMapping("/user")
     public ResponseEntity<User> getUser(HttpServletRequest request) {
         try {
-            User user = TokenManager.getUserFromToken(request);
+            User user = TokenManager.getUserFromRequest(request);
             return ResponseEntity.status(HttpStatus.OK).body(user);
 
-        } catch (Exception e){
+        } catch (Exception e) {
+            LOG.error("ERROR: el duaurio no existe " + e.getMessage(), e);
+
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
         }
     }
@@ -53,6 +59,8 @@ public class UserController {
             userManager.create(data);
             return ResponseEntity.ok(HttpStatus.OK);
         } catch (Exception e) {
+            LOG.error("ERROR: no se puede crear el usuario " + e.getMessage(), e);
+
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Uno de los campos esta repetido");
         }
     }
@@ -60,13 +68,14 @@ public class UserController {
     @PutMapping(value = "/update", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<String> updateUser(@RequestBody User user) {
         try {
-            Boolean update = userManager.update(user);
-            if(update){
+            boolean update = userManager.update(user);
+            if (update) {
                 return ResponseEntity.status(HttpStatus.OK).body("Usuario actualizado");
             } else {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Error");
             }
-        } catch (Exception e){
+        } catch (Exception e) {
+            LOG.error("ERROR: no se pudo actualizar el usuario " + e.getMessage(), e);
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Error");
         }
     }
@@ -74,22 +83,22 @@ public class UserController {
     @DeleteMapping("/delete")
     public ResponseEntity<String> deleteUser(@RequestBody String id) {
 
-            JsonObject jsonObject = gson.fromJson(id, JsonObject.class);
+        JsonObject jsonObject = gson.fromJson(id, JsonObject.class);
 
-            String x = jsonObject.get("id").toString();
+        String x = jsonObject.get("id").toString();
 
-            if (userManager.getById(Integer.parseInt(x)) != null) {
+        if (userManager.getById(Integer.parseInt(x)) != null) {
 
-                try {
-                    userManager.delete(userManager.getById(Integer.parseInt(x)));
-                    return ResponseEntity.status(HttpStatus.OK).body("Usuario borrado");
-                } catch (Exception e) {
-                    System.out.println(e);
-                    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Hubo un error borrando el usuario");
-                }
-            } else {
-                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Usuario no encontrado");
+            try {
+                userManager.delete(userManager.getById(Integer.parseInt(x)));
+                return ResponseEntity.status(HttpStatus.OK).body("Usuario borrado");
+            } catch (Exception e) {
+                LOG.error("ERROR: no se pudo borar el usuario " + e.getMessage(), e);
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Hubo un error borrando el usuario");
             }
+        } else {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Usuario no encontrado");
+        }
     }
 }
 

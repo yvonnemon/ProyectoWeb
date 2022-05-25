@@ -7,7 +7,7 @@ import javax.persistence.*;
 import java.util.List;
 
 @Entity
-@Table(name="user")
+@Table(name = "user")
 public class User {
 
     @Id
@@ -47,12 +47,12 @@ public class User {
 
     @Transient
     @Cascade(org.hibernate.annotations.CascadeType.DELETE)
-    @OneToMany(mappedBy="user", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Calendar> vacation;
 
     @Transient
     @Cascade(org.hibernate.annotations.CascadeType.DELETE)
-    @OneToMany(mappedBy="user", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Document> documents;
 
     public User() {

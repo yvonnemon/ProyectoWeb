@@ -10,7 +10,7 @@ import java.util.Random;
 @Component
 public class Util {
 
-    public static String randomString(Integer stringLenght){
+    public static String randomString(Integer stringLenght) {
         String chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ01234566789";
         StringBuilder random = new StringBuilder();
         for (int i = 0; i < stringLenght; i++) {
@@ -22,11 +22,10 @@ public class Util {
         return random.toString();
     }
 
-    public static String generateRandomDate()
-    {
-        DateFormat dateFormat = new SimpleDateFormat( "yyyyMMddHHmmssSSS" );
+    public static String generateRandomDate() {
+        DateFormat dateFormat = new SimpleDateFormat("yyyyMMddHHmmssSSS");
         Date date = new Date();
 
-        return dateFormat.format( date );
+        return dateFormat.format(date);
     }
 }

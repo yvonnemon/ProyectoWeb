@@ -1,13 +1,12 @@
 package com.yvonne.proyecto.model;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name="calendar")
+@Table(name = "calendar")
 public class Calendar {
 
     @Id
@@ -15,11 +14,11 @@ public class Calendar {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @JsonFormat(pattern="dd-MM-yyyy")
+    @JsonFormat(pattern = "dd-MM-yyyy")
     @Column(name = "start_date", nullable = false)
     private LocalDateTime startDate;
 
-    @JsonFormat(pattern="dd-MM-yyyy")
+    @JsonFormat(pattern = "dd-MM-yyyy")
     @Column(name = "end_date", nullable = false)
     private LocalDateTime endDate;
 
@@ -30,7 +29,7 @@ public class Calendar {
     private String comment;
 
     @ManyToOne
-    @JoinColumn(name="user_id", nullable=false)
+    @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
     public Integer getId() {

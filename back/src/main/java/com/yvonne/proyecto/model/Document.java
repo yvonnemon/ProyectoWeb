@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import javax.persistence.*;
 
 @Entity
-@Table(name="document")
+@Table(name = "document")
 public class Document {
 
     @Id
@@ -25,7 +25,7 @@ public class Document {
     private String password;
 
     @ManyToOne
-    @JoinColumn(name="user_id", nullable=false)
+    @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
     public Integer getId() {

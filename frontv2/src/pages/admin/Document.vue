@@ -59,7 +59,7 @@
                 class="col-sm-1 form-buttons col-xs-12 offset-xs-auto"
                 glossy
                 type="submit"
-                label="Añadir"
+                label="Añadir"allFiles
               />
             </q-form>
           </q-card-section>
@@ -110,7 +110,7 @@
           <q-card-section class="row items-center">
             <q-avatar icon="fas fa-user" color="indigo" text-color="white" />
             <span class="q-ml-sm"
-              >¿Esta seguro de querer borrar el usuario?</span
+              >¿Esta seguro de querer borrar el archivo?</span
             >
           </q-card-section>
 
@@ -197,7 +197,7 @@ export default {
   },
   methods: {
     cleanName: function(string) {
-      let result = string.split("_");
+      let result = string.split(/_(.*)/);
       return result[1];
     },
 
@@ -309,6 +309,8 @@ export default {
         })
         .then(response => {
           this.allFiles = response.data;
+              console.log(this.allFiles);
+
         })
         .catch(function(error) {
           console.log(error);

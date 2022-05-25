@@ -15,14 +15,8 @@ import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
-import java.nio.charset.StandardCharsets;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-import java.security.SecureRandom;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @Service
 public class UserManager implements CrudManager<User> {
@@ -44,13 +38,13 @@ public class UserManager implements CrudManager<User> {
     private static final Logger LOG = LogManager.getLogger(Document.class);
 
     @Override
-    public void create(User user) throws Exception{
+    public void create(User user) throws Exception {
         try {
             String pass = Util.randomString(7);
-            //boolean matched = BCrypt.checkpw(originalPassword, generatedSecuredPasswordHash);
 
-            //System.out.println(matched);
-            User tempUser = user;
+            // TODO clone del objeto
+
+            User tempUser = new User();
             tempUser.setPassword(pass);
 
             String data = setBodyHtml(tempUser);
@@ -59,7 +53,7 @@ public class UserManager implements CrudManager<User> {
             EmailSender.sendEmail("Nuevo registro", "templates/template.html",
                     data, user.getEmail());
 
-        } catch (Exception e){
+        } catch (Exception e) {
             LOG.error("ERROR: el archivo a guardar no existe " + e.getMessage(), e);
             e.printStackTrace();
             throw new Exception(e);
@@ -75,7 +69,7 @@ public class UserManager implements CrudManager<User> {
     }
 
     @Override
-    public Boolean update(User user){
+    public Boolean update(User user) {
         if (userRepository.existsById(user.getId())) {
 
             User updatedUser = userRepository.findById(user.getId()).orElse(null);
@@ -85,7 +79,7 @@ public class UserManager implements CrudManager<User> {
             updatedUser.setLastname(user.getLastname());
             updatedUser.setTelephone(user.getTelephone());
             updatedUser.setUsername(user.getUsername());
-            updatedUser.setPassword(user.getPassword());
+            updatedUser.setPassword(passwordCypher(user.getPassword()));
             updatedUser.setEmail(user.getEmail());
 
             userRepository.save(updatedUser);
@@ -101,7 +95,17 @@ public class UserManager implements CrudManager<User> {
         return userRepository.findById(id).orElse(null);
     }
 
-    public User findByEmail(String email){
+    public String findUser(UserDto data) {
+        String token;
+        if (!data.getUsername().isEmpty() || !data.getPassword().isEmpty()) {
+            token = getUserByLogin(data.getUsername(), data.getPassword());
+        } else {
+            token = findByGoogleUser(data.getEmail(), data.getName(), data.getLastname());
+        }
+        return token;
+    }
+
+    public User findByEmail(String email) {
         return userRepository.findByEmail(email);
     }
 
@@ -109,7 +113,7 @@ public class UserManager implements CrudManager<User> {
         try {
             User user = userRepository.findByEmail(email);
             return TokenManager.generateToken(user);
-        } catch (Exception e){
+        } catch (Exception e) {
             User user = new User();
             user.setName(name);
             user.setLastname(lastname);
@@ -124,32 +128,32 @@ public class UserManager implements CrudManager<User> {
         try {
             User loginUser = userRepository.findByUsername(user);
             boolean matched = BCrypt.checkpw(pass, loginUser.getPassword());
-            if(matched){
+            if (matched) {
                 return TokenManager.generateToken(loginUser);
             } else {
                 throw new Exception();
             }
 
-        }catch (Exception e){
+        } catch (Exception e) {
             return e.toString();
         }
     }
 
-    public List<UserDto> getAllEmployee(){
+    public List<UserDto> getAllEmployee() {
 
         List<User> users = userRepository.findByRole(Role.EMPLOYEE);
         List<UserDto> result = new ArrayList<>();
         for (int i = 0; i < users.size(); i++) {
             UserDto user = new UserDto();
             User u = users.get(i);
-            user.setFullName(u.getName()+" "+u.getLastname());
+            user.setFullName(u.getName() + " " + u.getLastname());
             user.setId(u.getId());
             result.add(user);
         }
         return result;
     }
 
-    private String passwordCypher(String password){
+    private String passwordCypher(String password) {
 
         return BCrypt.hashpw(password, BCrypt.gensalt(12));
     }

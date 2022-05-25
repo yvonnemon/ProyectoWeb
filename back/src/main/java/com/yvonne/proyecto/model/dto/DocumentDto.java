@@ -1,8 +1,6 @@
 package com.yvonne.proyecto.model.dto;
 
-import com.yvonne.proyecto.model.User;
 
-import javax.persistence.*;
 import java.util.List;
 
 public class DocumentDto {
