@@ -18,11 +18,12 @@ public class LoginController {
 
 
     @PostMapping("/login")
+    
     public ResponseEntity<String> loginUser(@RequestBody UserDto data) {
 
         try{
             String token = userManager.findUser(data);
-            return ResponseEntity.ok(HttpStatus.OK + "&" + token);
+            return ResponseEntity.status(HttpStatus.OK).body(token);
         } catch(Exception e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Sus credenciales no son correctas");
         }

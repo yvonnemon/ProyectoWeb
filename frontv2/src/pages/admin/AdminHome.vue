@@ -149,6 +149,13 @@ export default {
       let result = string.split("_");
       return result[1];
     },
+        showNotif() {
+      this.$q.notify({
+        message: "Hubo un error",
+        color: "negative"
+      });
+    },
+
     listCalendar: async function() {
       let fail = false;
       let listarPosts = await axios

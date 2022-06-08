@@ -13,6 +13,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
@@ -30,11 +32,15 @@ public class UserController {
     private Gson gson;
 
     @GetMapping("/users")
+    @Secured("ADMIN")
+    @PreAuthorize("hasAuthority('ADMIN')")
     public List<User> getAllUsers() {
         return userManager.getAll();
     }
 
     @GetMapping("/employee")
+    @Secured("ADMIN")
+    @PreAuthorize("hasAuthority('ADMIN')")
     public List<UserDto> getAllEmployee() {
         return userManager.getAllEmployee();
     }
@@ -54,6 +60,8 @@ public class UserController {
 
 
     @PostMapping(value = "/insert", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @Secured("ADMIN")
+    @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity createUser(@RequestBody User data) {
         try {
             userManager.create(data);
@@ -81,6 +89,8 @@ public class UserController {
     }
 
     @DeleteMapping("/delete")
+    @Secured("ADMIN")
+    @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<String> deleteUser(@RequestBody String id) {
 
         JsonObject jsonObject = gson.fromJson(id, JsonObject.class);

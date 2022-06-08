@@ -2,13 +2,19 @@ package com.yvonne.proyecto.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import org.hibernate.annotations.Cascade;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 
 @Entity
 @Table(name = "user")
 public class User {
+    String ROLE_PREFIX = "";
 
     @Id
     @Column(name = "id_user")
@@ -43,6 +49,7 @@ public class User {
     private String email;
 
     @Column(name = "role", nullable = false)
+    //@Enumerated(EnumType.STRING)
     private Role role;
 
     @Transient
@@ -110,9 +117,11 @@ public class User {
         return username;
     }
 
+
     public void setUsername(String username) {
         this.username = username;
     }
+
 
     public String getPassword() {
         return password;
@@ -138,6 +147,14 @@ public class User {
         this.role = role;
     }
 
+    public GrantedAuthority getAuthorities() {
+        //List<GrantedAuthority> list = new ArrayList<>();
+
+       //list.add(new SimpleGrantedAuthority(ROLE_PREFIX + role.toString()));
+
+      return new SimpleGrantedAuthority(role.toString());
+   }
+
     @Override
     public String toString() {
         return "User{" +
@@ -151,5 +168,20 @@ public class User {
                 ", email='" + email + '\'' +
                 ", role=" + role +
                 '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        User user = (User) o;
+        return id.equals(user.id) && Objects.equals(dni, user.dni) && Objects.equals(name, user.name) && Objects.equals(lastname, user.lastname)
+                && Objects.equals(telephone, user.telephone) && Objects.equals(username, user.username) && Objects.equals(address, user.address) && Objects.equals(email, user.email)
+                && role == user.role && Objects.equals(vacation, user.vacation) && Objects.equals(documents, user.documents);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, dni, name, lastname, telephone, username, address, email, role, vacation, documents);
     }
 }

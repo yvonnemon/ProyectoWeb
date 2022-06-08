@@ -48,7 +48,7 @@ export default {
   methods: {
     logout: function() {
       sessionStorage.removeItem("Session");
-
+      window.location.href = window.location.href
       this.$router.push("/");
     }
   }

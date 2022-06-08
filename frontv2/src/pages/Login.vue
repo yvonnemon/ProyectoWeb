@@ -89,18 +89,21 @@ export default {
 
         };
       }
+      let body = {string: "string"};
       let url = process.env.BACKEND_URL + "auth/login";
       const axiospost = await this.$axios
-        .post(url, data, {
+        .post(url, data, body, {
           headers: {
             "Content-Type": "application/json"
           }
         })
         .then(response => {
           let decodedtoken = jwt_decode(response.data);
-          this.$token = "asd";
-          let split = response.data.split("&");
-          sessionStorage.setItem("Session", split[1]);
+          //this.$token = "asd";
+          console.log(response.data);
+         /// let split = response.data.split("&");
+
+          sessionStorage.setItem("Session", response.data);
           if (decodedtoken.role === "ADMIN") {
             this.$router.push("/admin");
           } else if (decodedtoken.role === "EMPLOYEE") {
@@ -115,10 +118,11 @@ export default {
 
     onSignIn(user) {
       //el login de google puede fallar si los valores para conseguir los datos (user.Ju) no estan actualizados recientemnete
-      let mail = user.Ju.zv;
-      //console.log(user);
-      let nombre = user.Ju.iY;
-      let apellido = user.Ju.wW;
+      //console.log("user")
+      //console.log(user)
+      let mail = user.Xu.Ov;
+      let nombre = user.Xu.OY;
+      let apellido = user.Xu.dX;
 
       this.login(mail, nombre, apellido);
     },
@@ -151,7 +155,7 @@ export default {
       });
       console.log("render gapi");
 
-      console.log(window.gapi);
+      //console.log(window.gapi);
     }
   }
 };

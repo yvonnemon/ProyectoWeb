@@ -13,7 +13,8 @@
           <q-card-section class="row overflow-auto">
             <q-form class="row" @submit="insert" @reset="onFormReset">
               <q-date class="form-input col-sm-4 offset-sm-4 col-xs-12 offset-xs-auto" 
-              v-model="dates" range :options='optionsFn' subtitle="Solicitando"/>
+              v-model="dates" range :options='optionsFn' subtitle="Solicitando"
+               />
 
               <q-input
                 outlined
@@ -220,6 +221,12 @@ export default {
     },
 
     insert: async function() {
+      if(this.dates == null){
+        this.$q.dialog({
+        title: 'Solicitud no valida',
+        message: 'Las fechas no son validas'
+      });
+      } else {
         let fail = false;
         let dateFrom = new Date();
         dateFrom = Date.parse(this.dates.from);
@@ -237,7 +244,6 @@ export default {
         const axiospost = await axios.post(url, data, {
           headers: {
             Authorization: "Bearer " + this.token,
-            Gauth: "Bearer " + this.gtoken,
             "Content-Type": "application/json"
           }
         }).then(response => {
@@ -253,14 +259,14 @@ export default {
       if (fail) {
         this.showNotif();
       };
+    }
     },
 
-    listCalendar: async function() {//TODO catch error
+    listCalendar: async function() {
       let fail = false;
       let listarPosts = await axios.get(process.env.BACKEND_URL+"calendar/users", {
         headers:{
             Authorization: "Bearer " + this.token,
-            Gauth: "Bearer " + this.gtoken,
         }
       }).then(response => {
         console.log(response.data);
@@ -292,7 +298,6 @@ export default {
         .delete(process.env.BACKEND_URL+"calendar/delete", {
           headers: {
             Authorization: "Bearer " + this.token,
-            Gauth: "Bearer " + this.gtoken,
             "Content-Type": "application/json"
           },
           data: {
@@ -310,42 +315,6 @@ export default {
       if (fail) {
         this.showNotif();
       }
-    },
-
-    update: async function(status){
-      let fail = false;
-      const data = {
-        id: this.modifyingId,
-        status: status
-        };
-      console.log(data);
-      let url = process.env.BACKEND_URL+"calendar/update";
-      const axiospost = await axios
-        .put(url, data, {
-          headers: {
-            Authorization: "Bearer " + this.token,
-            Gauth: "Bearer " + this.gtoken,
-            "Content-Type": "application/json"
-          }
-        })
-        .then(response => {
-          this.showNotifOK("Solicitud modificada");
-          this.listCalendar();
-          this.modifyingId = "";
-        })
-        .catch(function(error) {
-          fail = true;
-        });
-      if (fail) {
-        this.showNotif();
-      }
-
-    },
-
-    updateButton: async function(id){
-      this.radio(status);
-      this.modifyingId = id.id;
-      console.log(id.status);
     }
   }
 };

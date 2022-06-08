@@ -436,6 +436,7 @@ export default {
     },
 
     updateData: function(data) {
+      window.scrollTo(0, 0);
       console.log(data);
       let rol;
       this.modifyingId = data.id;

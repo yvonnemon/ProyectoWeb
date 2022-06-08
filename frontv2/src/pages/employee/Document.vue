@@ -93,7 +93,7 @@ export default {
   },
   methods: {
     cleanName: function(string) {
-      let result = string.split("_");
+      let result = string.split(/_(.*)/);
       return result[1];
     },
 
@@ -147,13 +147,15 @@ export default {
     downloadFile: async function(id, name) {
       let cleanName = name.split(/([0-9]{17}_)/);
       let fail = false;
+      let datos = {
+        data: id
+      }
       let borrado = await axios
-        .post(process.env.BACKEND_URL+"document/download", {
+              .post(process.env.BACKEND_URL+"document/download", datos, {
           headers: {
             Authorization: "Bearer " + this.token,
             "Content-Type": "application/json"
-          },
-          data: id
+          }
         }) 
         .then(res => {
           const byteCharacters = atob(res.data);
@@ -177,7 +179,7 @@ export default {
           fail = true;
         });
       if (fail) {
-        console.log("delete error?");
+        console.log("download error");
         this.showNotif();
       }
     },

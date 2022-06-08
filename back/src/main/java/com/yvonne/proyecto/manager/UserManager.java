@@ -11,12 +11,17 @@ import com.yvonne.proyecto.util.Util;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Service
 public class UserManager implements CrudManager<User> {
@@ -103,6 +108,14 @@ public class UserManager implements CrudManager<User> {
             token = findByGoogleUser(data.getEmail(), data.getName(), data.getLastname());
         }
         return token;
+    }
+
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        User user = userRepository.findByUsername(username);
+        List<GrantedAuthority> roles = new ArrayList<>();
+        roles.add(user.getAuthorities());
+
+        return new org.springframework.security.core.userdetails.User(user.getUsername(), user.getPassword(), roles);
     }
 
     public User findByEmail(String email) {

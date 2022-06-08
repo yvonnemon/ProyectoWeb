@@ -80,7 +80,9 @@ public class DocumentManager implements CrudManager<Document> {
             decryptDocument(path, file);
             byte[] pdfToByteArray = Files.readAllBytes(Paths.get(path));
 
-            encryptDocument(path);
+           // encryptDocument(path);
+            file.setPassword(encryptDocument(path));
+            update(file);
 
             //no me lo devuelve en base 64, asi que:
             return Base64.getEncoder().encode(pdfToByteArray);
@@ -129,7 +131,13 @@ public class DocumentManager implements CrudManager<Document> {
 
     @Override
     public Boolean update(Document object) {
-        return null;
+        try{
+            documentRepository.save(object);
+            return true;
+        } catch (Exception e){
+            LOG.error("ERROR: no se pudo actualizar " + e.getMessage(), e);
+        }
+        return false;
     }
 
     @Override

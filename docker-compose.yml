@@ -40,7 +40,7 @@ services:
     build:
        context: frontv2/
        dockerfile: Dockerfile
-    image: yvonnemon/proyecto-front:latest
+    image: yvonnemon/proyecto-front:may22
     ports:
     - 8081:81
     volumes:

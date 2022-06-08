@@ -210,6 +210,12 @@ export default {
       this.files = null;
       this.employee = "";
     },
+    showNotif() {
+      this.$q.notify({
+        message: "Hubo un error",
+        color: "negative"
+      });
+    },
 
     showNotifOK() {
       this.$q.notify({
@@ -341,13 +347,16 @@ export default {
     downloadFile: async function(id, name) {
       let cleanName = name.split(/([0-9]{17}_)/);
       let fail = false;
+      let datos = {
+        data: id
+      };
+
       let borrado = await axios
-        .post(process.env.BACKEND_URL+"document/download", {
+        .post(process.env.BACKEND_URL+"document/download", datos, {
           headers: {
             Authorization: "Bearer " + this.token,
             "Content-Type": "application/json"
-          },
-          data: id
+          }
         }) 
         .then(res => {
           const byteCharacters = atob(res.data);
