@@ -72,19 +72,23 @@ public class TokenManager implements Serializable {
     }
 
     public static User getUserFromToken(String token) {
+        if(validateToken(token)){
+            User user;
 
-        User user;
+            Base64.Decoder decoder = Base64.getDecoder();
+            //esto va a pincho porque los tokens deberian ser siempre iguales.
+            String[] chunks = token.split("\\.");
+            String payload = new String(decoder.decode(chunks[1]));
 
-        Base64.Decoder decoder = Base64.getDecoder();
-        //esto va a pincho porque los tokens deberian ser siempre iguales.
-        String[] chunks = token.split("\\.");
-        String payload = new String(decoder.decode(chunks[1]));
+            JsonObject json = new Gson().fromJson(payload, JsonObject.class);
 
-        JsonObject json = new Gson().fromJson(payload, JsonObject.class);
+            Gson gson = new Gson();
+            user = gson.fromJson(json.get("user"), User.class);
+            return user;
+        } else{
+            return null;
+        }
 
-        Gson gson = new Gson();
-        user = gson.fromJson(json.get("user"), User.class);
-        return user;
     }
 
     public static User getUserFromRequest(HttpServletRequest request) {

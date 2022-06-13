@@ -1,4 +1,4 @@
-package com.yvonne.proyecto.handler;
+/*package com.yvonne.proyecto.handler;
 
 import com.yvonne.proyecto.manager.TokenManager;
 import com.yvonne.proyecto.model.Role;
@@ -9,14 +9,13 @@ import org.springframework.web.servlet.HandlerInterceptor;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.Arrays;
-import java.util.List;
+import java.util.List;*/
 
-@Component
+/*@Component
 public class TokenInterceptor implements HandlerInterceptor {
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
-
         String auth = request.getHeader("Authorization");
         if (auth == null) {
             return true;
@@ -27,6 +26,8 @@ public class TokenInterceptor implements HandlerInterceptor {
             response.sendError(403);
             return false;
         } else {
+           // request.authenticate(response);
+
             User user = TokenManager.getUserFromToken(token);
             if (user.getRole().equals(Role.EMPLOYEE)) {
                 String s = request.getRequestURI();
@@ -35,6 +36,7 @@ public class TokenInterceptor implements HandlerInterceptor {
                 }
                 return authorizedRoles(s);
             } else {
+                request.authenticate(response);
                 return true;
             }
         }
@@ -45,4 +47,4 @@ public class TokenInterceptor implements HandlerInterceptor {
         List<String> employee = Arrays.asList("/document/download", "/document/userdocs", "/user/user", "/user/update", "/document/employee", "/calendar/next", "/calendar/insert", "/calendar/users", "/calendar/delete", "/calendar/update");
         return employee.contains(url);
     }
-}
+}*/

@@ -46,7 +46,7 @@ public class EmailSender {
     public static void sendEmail(String subject, String HTMLTemplateUrl, String dataAsBody, String userEmail) throws Exception {
 
         Properties props = System.getProperties();
-        props.put("mail.smtp.host", "smtp.gmail.com");  //El servidor SMTP de Google
+        props.put("mail.smtp.host", "smtp-mail.outlook.com");  //El servidor SMTP de Google
         props.put("mail.smtp.auth", "true");    //Usar autenticación mediante usuario y clave
         props.put("mail.smtp.starttls.enable", "true"); //Para conectar de manera segura al servidor SMTP
         props.put("mail.smtp.port", "587"); //El puerto SMTP seguro de Google
@@ -59,10 +59,9 @@ public class EmailSender {
                 return new PasswordAuthentication(MAIL, PASS);
             }
         });
-        /// Session session = Session.getDefaultInstance(props);
         Message message = new MimeMessage(session);
 
-        message.setFrom(new InternetAddress("practicayvonne@gmail.com"));
+        message.setFrom(new InternetAddress("practicayvonne@outlook.es"));
         message.setRecipients(Message.RecipientType.TO,
                 InternetAddress.parse(userEmail));
 
