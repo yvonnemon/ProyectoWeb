@@ -101,14 +101,10 @@ export default {
           let decodedtoken = jwt_decode(response.data);
           //this.$token = "asd";
           console.log(response.data);
+          
          /// let split = response.data.split("&");
-
-          sessionStorage.setItem("Session", response.data);
-          if (decodedtoken.role === "ADMIN") {
-            this.$router.push("/admin");
-          } else if (decodedtoken.role === "EMPLOYEE") {
+         sessionStorage.setItem("Session", response.data);
             this.$router.push("/main");
-          }
         })
         .catch(function(error) {
           alert = true;
@@ -119,11 +115,10 @@ export default {
     onSignIn(user) {
       //el login de google puede fallar si los valores para conseguir los datos (user.Ju) no estan actualizados recientemnete
       //console.log("user")
-      //console.log(user)
+      console.log(user)
       let mail = user.Xu.Ov;
       let nombre = user.Xu.OY;
       let apellido = user.Xu.dX;
-
       this.login(mail, nombre, apellido);
     },
 

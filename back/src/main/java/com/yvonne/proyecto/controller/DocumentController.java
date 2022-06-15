@@ -83,6 +83,7 @@ public class DocumentController {
     }
 
     @GetMapping("/userdocs")
+    @PreAuthorize("hasAuthority('EMPLOYEE')")
     public ResponseEntity<List<Document>> getAllFromUser(HttpServletRequest request) {
         try {
             //lista toddos los del usuario

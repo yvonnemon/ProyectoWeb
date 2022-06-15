@@ -15,7 +15,18 @@
         <q-route-tab to="/main/form" label="Mis Datos" />
         <q-route-tab to="/main/document" label="Mis Nominas" />
         <q-route-tab to="/main/vacation" label="Mis Vacaciones" />
+        <q-route-tab to="/main/clock" label="Fichar" />
+
       </q-tabs>
+            <div>
+                <q-chip align="right" class="fixed-top-right avatar" >
+                  <span class="material-icons">
+                    person_outline
+                    </span>
+                {{ nombre }}
+              </q-chip>
+          </div>
+
     </q-header>
 
     <q-page-container>
@@ -39,12 +50,22 @@
 </template>
 
 <script>
+import jwt_decode from "jwt-decode";
+
 export default {
   data() {
-    return {};
+    return {
+      nombre:""
+    };
   },
+    mounted(){
+          let decodedtoken = jwt_decode(sessionStorage.getItem("Session"));
+          this.nombre = decodedtoken.user.name;
+  },
+
   methods: {
     logout: async function() {
+      console.log("logout");
       //var token = gapi.auth.getToken();
       sessionStorage.removeItem("Session");
       /*if(gapi){

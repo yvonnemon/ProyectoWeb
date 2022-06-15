@@ -100,7 +100,7 @@ public class UserManager implements CrudManager<User> {
         return userRepository.findById(id).orElse(null);
     }
 
-    public String findUser(UserDto data) {
+    public String findUser(UserDto data) throws Exception {
         String token;
         if (!data.getUsername().isEmpty() || !data.getPassword().isEmpty()) {
             token = getUserByLogin(data.getUsername(), data.getPassword());
@@ -123,16 +123,23 @@ public class UserManager implements CrudManager<User> {
     }
 
     public String findByGoogleUser(String email, String name, String lastname) {
-        try {
-            User user = userRepository.findByEmail(email);
-            return TokenManager.generateToken(user);
-        } catch (Exception e) {
-            User user = new User();
+        User user = userRepository.findByEmail(email);
+        if(user == null) {
+            user = new User();
             user.setName(name);
             user.setLastname(lastname);
             user.setEmail(email);
             user.setPassword(Util.randomString(7));
+            user.setRole(Role.EMPLOYEE);
+            user.setDni("");
+            user.setUsername(name+lastname+Util.randomString(5));
+            user.setTelephone(0);
+            user.setAddress("");
+
+            userRepository.save(user);
             return TokenManager.generateToken(user);
+        } else {
+            return TokenManager.generateToken(findByEmail(email));
         }
 
     }

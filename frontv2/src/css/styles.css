@@ -15,6 +15,9 @@
     background-color: rgba(255, 255, 255, 0.692) !important;
 }
 
+.fichaje {
+    padding: 15px;
+}
 
 .list-style {
     box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
@@ -43,6 +46,17 @@
 
 .fondo {
     background-color: #e2edff;
+}
+.avatar {
+    background-color: rgb(8, 35, 151) !important;
+    padding: 15px;
+    margin-top: 2vh;
+    margin-right: 2vw;
+
+    color: white;
+}
+.avatar .material-icons{
+    margin-right: 5px;
 }
 
 .logout {

@@ -6,11 +6,12 @@ const routes: RouteConfig[] = [
     path: '/admin',
     component: () => import('layouts/MainLayout.vue'),
     children: [
-      { path: '', component: () => import('src/pages/admin/AdminHome.vue') },
+      { path: 'index', component: () => import('src/pages/admin/AdminHome.vue') },
       { path: 'user', component: () => import('src/pages/admin/User.vue') },
       { path: 'vacation', component: () => import('src/pages/admin/Calendar.vue') },
       { path: 'document', component: () => import('src/pages/admin/Document.vue') },
       { path: 'adminedition', component: () => import('src/pages/admin/AdminEdit.vue') },
+      { path: 'clock', component: () => import('src/pages/admin/clock.vue') },
     ],
     beforeEnter: (from, to, next) => {
       if(!sessionStorage.getItem("Session")){
@@ -20,9 +21,7 @@ const routes: RouteConfig[] = [
         let decoded: any = jwt_decode(token);
         if(decoded.role != "ADMIN"){
           next("/");
-        } else {
-          next();
-        }
+        } 
       }
     }
 
@@ -35,17 +34,14 @@ const routes: RouteConfig[] = [
       { path: 'form', component: () => import('src/pages/employee/Employee.vue') },
       { path: 'vacation', component: () => import('src/pages/employee/Vacation.vue') },
       { path: 'document', component: () => import('src/pages/employee/Document.vue') },
-    ],   
+      { path: 'clock', component: () => import('src/pages/employee/clock.vue') },
+    ],    //TODO esto no funciona
      beforeEnter: (from, to, next) => {
-      if(!sessionStorage.getItem("Session") && !sessionStorage.getItem("gtoken")){
+      if(!sessionStorage.getItem("Session")){
         console.log("hola");
         
         next("/");
-      } else if(sessionStorage.getItem("gtoken")) {
-        next("/");
-        console.log("next");
-        
-      }else{
+      } else{
         console.log("else");
         
         const token: any = sessionStorage.getItem("Session");

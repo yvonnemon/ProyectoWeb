@@ -7,6 +7,7 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Service;
 
 import javax.crypto.spec.SecretKeySpec;
@@ -93,10 +94,10 @@ public class TokenManager implements Serializable {
 
     public static User getUserFromRequest(HttpServletRequest request) {
 
-        String auth = request.getHeader("Authorization");
+        String header = request.getHeader(HttpHeaders.AUTHORIZATION);
         User user;
-        if (auth != null && !auth.contains("null")) {
-            String token = auth.split(" ")[1];
+        final String token = header.replace("Bearer", "");
+        if (header != null && !header.contains("null") && validateToken(token)) {
 
             Base64.Decoder decoder = Base64.getDecoder();
             //esto va a pincho porque los tokens deberian ser siempre iguales.
