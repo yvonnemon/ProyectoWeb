@@ -15,10 +15,7 @@ services:
       - red
   proyecto-back:
     container_name: proyecto-back
-    build:
-      context: back/
-      dockerfile: Dockerfile
-    image: yvonnemon/proyecto-back:latest
+    image: yvonnemon/back:final
     ports:
       - 8080:8080
     depends_on:
@@ -37,10 +34,7 @@ services:
       - red
   proyecto-front:
     container_name: proyecto-front
-    build:
-       context: frontv2/
-       dockerfile: Dockerfile
-    image: yvonnemon/proyecto-front:may22
+    image: yvonnemon/front:final
     ports:
     - 8081:81
     volumes:
