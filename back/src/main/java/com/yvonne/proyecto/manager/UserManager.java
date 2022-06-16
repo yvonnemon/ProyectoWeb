@@ -10,6 +10,7 @@ import com.yvonne.proyecto.util.EmailSender;
 import com.yvonne.proyecto.util.Util;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.hibernate.annotations.NaturalId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -35,28 +36,45 @@ public class UserManager implements CrudManager<User> {
     @Autowired
     DocumentManager documentManager;
 
+    @Autowired
+    ClockManager clockManager;
+
     @Override
     public List<User> getAll() {
         return (List<User>) userRepository.findAll();
     }
 
+    @Override
+    public void create(User object) throws Exception {
+
+    }
+
     private static final Logger LOG = LogManager.getLogger(Document.class);
 
-    @Override
-    public void create(User user) throws Exception {
+    public void create(UserDto user) throws Exception {
         try {
             String pass = Util.randomString(7);
 
-            // TODO clone del objeto
-
             User tempUser = new User();
+            tempUser.setName(user.getName());
+            tempUser.setLastname(user.getLastname());
+            tempUser.setAddress(user.getAddress());
+            tempUser.setTelephone(user.getTelephone());
             tempUser.setPassword(pass);
+            //para tests
+            tempUser.setPassword("123");
+
+            tempUser.setDni(user.getDni());
+            tempUser.setUsername(user.getUsername());
+            tempUser.setEmail(user.getEmail());
+            tempUser.setRole(user.getRole());
 
             String data = setBodyHtml(tempUser);
-            user.setPassword(passwordCypher(pass));
-            userRepository.save(user);
+            tempUser.setPassword(passwordCypher(pass));
+
             EmailSender.sendEmail("Nuevo registro", "templates/template.html",
-                    data, user.getEmail());
+                    data, tempUser.getEmail());
+            userRepository.save(tempUser);
 
         } catch (Exception e) {
             LOG.error("ERROR: el archivo a guardar no existe " + e.getMessage(), e);
@@ -70,11 +88,16 @@ public class UserManager implements CrudManager<User> {
     public void delete(User user) {
         documentManager.deleteAllFromUser(user);
         calendarManager.deleteAllFromUser(user);
+        clockManager.deleteAllFromUser(user);
         userRepository.delete(user);
     }
 
     @Override
-    public Boolean update(User user) {
+    public Boolean update(User object) throws Exception {
+        return null;
+    }
+
+    public Boolean update(UserDto user) {
         if (userRepository.existsById(user.getId())) {
 
             User updatedUser = userRepository.findById(user.getId()).orElse(null);
@@ -84,7 +107,13 @@ public class UserManager implements CrudManager<User> {
             updatedUser.setLastname(user.getLastname());
             updatedUser.setTelephone(user.getTelephone());
             updatedUser.setUsername(user.getUsername());
-            updatedUser.setPassword(passwordCypher(user.getPassword()));
+            updatedUser.setAddress(user.getAddress());
+            if(user.getPassword() != null && !user.getPassword().isEmpty()){
+                updatedUser.setPassword(passwordCypher(user.getPassword()));
+
+            }
+            //esta linea es para testear
+            //updatedUser.setPassword(passwordCypher("123"));
             updatedUser.setEmail(user.getEmail());
 
             userRepository.save(updatedUser);
@@ -131,7 +160,7 @@ public class UserManager implements CrudManager<User> {
             user.setEmail(email);
             user.setPassword(Util.randomString(7));
             user.setRole(Role.EMPLOYEE);
-            user.setDni("");
+            user.setDni("1");
             user.setUsername(name+lastname+Util.randomString(5));
             user.setTelephone(0);
             user.setAddress("");

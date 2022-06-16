@@ -5,6 +5,7 @@ import com.google.gson.JsonObject;
 import com.yvonne.proyecto.manager.TokenManager;
 import com.yvonne.proyecto.manager.UserManager;
 import com.yvonne.proyecto.model.Document;
+import com.yvonne.proyecto.model.Role;
 import com.yvonne.proyecto.model.User;
 import com.yvonne.proyecto.model.dto.UserDto;
 import org.apache.logging.log4j.LogManager;
@@ -19,6 +20,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
+import java.util.Objects;
 
 @RestController
 @RequestMapping(value = "/user")
@@ -46,10 +48,12 @@ public class UserController {
     }
 
     @GetMapping("/user")
+    @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('EMPLOYEE')")
     public ResponseEntity<User> getUser(HttpServletRequest request) {
         try {
+            //si el token es de un admin, se esta cargando la info del admin, asi que se devuelve la info del dueño del token
             User user = TokenManager.getUserFromRequest(request);
-            return ResponseEntity.status(HttpStatus.OK).body(user);
+            return ResponseEntity.status(HttpStatus.OK).body(userManager.getById(user.getId()));
 
         } catch (Exception e) {
             LOG.error("ERROR: el duaurio no existe " + e.getMessage(), e);
@@ -62,7 +66,7 @@ public class UserController {
     @PostMapping(value = "/insert", consumes = MediaType.APPLICATION_JSON_VALUE)
     @Secured("ADMIN")
     @PreAuthorize("hasAuthority('ADMIN')")
-    public ResponseEntity createUser(@RequestBody User data) {
+    public ResponseEntity createUser(@RequestBody UserDto data) {
         try {
             userManager.create(data);
             return ResponseEntity.ok(HttpStatus.OK);
@@ -74,13 +78,19 @@ public class UserController {
     }
 
     @PutMapping(value = "/update", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<String> updateUser(@RequestBody User user) {
+    @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('EMPLOYEE')")
+    public ResponseEntity<String> updateUser(@RequestBody UserDto user, HttpServletRequest request) {
         try {
-            boolean update = userManager.update(user);
-            if (update) {
-                return ResponseEntity.status(HttpStatus.OK).body("Usuario actualizado");
+            //si es el propio usuario o el admin
+            if (Objects.requireNonNull(TokenManager.getUserFromRequest(request)).getId().equals(user.getId()) || Objects.requireNonNull(TokenManager.getUserFromRequest(request)).getRole() == Role.ADMIN){
+                boolean update = userManager.update(user);
+                if (update) {
+                    return ResponseEntity.status(HttpStatus.OK).body("Usuario actualizado");
+                } else {
+                    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("No se pudo actualizar el usuario");
+                }
             } else {
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Error");
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("No se pudo actualizar el usuario");
             }
         } catch (Exception e) {
             LOG.error("ERROR: no se pudo actualizar el usuario " + e.getMessage(), e);

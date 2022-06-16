@@ -10,7 +10,8 @@ import java.util.List;
 
 @Repository
 public interface ClockRepository extends CrudRepository<Clockin, Integer> {
-    List<Clockin> findAllByOrderByIdAsc();
+    List<Clockin> findAllByOrderByIdDesc();
     List<Clockin> findAllByUserOrderByIdDesc(User user);
     List<Clockin> findAllByUserAndStartDateAfterOrderByIdDesc(User user, LocalDateTime date);
+    void deleteAllByUser(User user);
 }

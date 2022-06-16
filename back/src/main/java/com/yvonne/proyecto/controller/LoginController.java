@@ -27,6 +27,6 @@ public class LoginController {
         } catch(Exception e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Sus credenciales no son correctas");
         }
-    }chip
+    }
 
 }

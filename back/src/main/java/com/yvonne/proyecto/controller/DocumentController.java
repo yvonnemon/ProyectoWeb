@@ -138,7 +138,9 @@ public class DocumentController {
 
         try {
             Document doc = documentManager.getById(Integer.parseInt(x));
-            if (doc.getUser().equals(TokenManager.getUserFromRequest(request)) || TokenManager.getUserFromRequest(request).getRole() == Role.ADMIN){
+
+            User user = TokenManager.getUserFromRequest(request);
+            if (doc.getUser().equals(user) || TokenManager.getUserFromRequest(request).getRole() == Role.ADMIN){
                 byte[] result = documentManager.downloadFile(Integer.parseInt(x));
                 return ResponseEntity.status(HttpStatus.OK).body(result);
             } else {

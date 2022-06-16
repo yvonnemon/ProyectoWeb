@@ -59,7 +59,6 @@ export default {
     return {
       allFiles: [],
       token: "",
-      gtoken: "",
       columns: [
         {
           name: "dni",
@@ -186,10 +185,10 @@ export default {
 
       
       vacation: function(){
-        this.$router.push("/admin/vacation")
+        this.$router.push("/main/vacation")
       },
       docs: function(){
-        this.$router.push("/admin/document")
+        this.$router.push("/main/document")
       }
 
   }

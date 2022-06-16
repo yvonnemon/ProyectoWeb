@@ -11,7 +11,7 @@
       </q-toolbar>
 
       <q-tabs align="left" shrink stretch>
-        <q-route-tab to="/admin/index" label="Inicio" />
+        <q-route-tab to="/admin/" label="Inicio" />
         <q-route-tab to="/admin/user" label="Usuarios" class="nav-font" />
         <q-route-tab to="/admin/document" label="Nominas" class="nav-font" />
         <q-route-tab to="/admin/vacation" label="Vacaciones" class="nav-font" />
@@ -20,11 +20,10 @@
       </q-tabs>
       </q-toolbar>
             <div>
-                <q-chip align="right" class="fixed-top-right avatar" color="white">
-            <q-avatar>
-              <img icon="fas fa-eye"
->
-                </q-avatar>
+                <q-chip align="right" class="fixed-top-right avatar" >
+                  <span class="material-icons">
+                    person_outline
+                    </span>
                 {{ nombre }}
               </q-chip>
           </div>

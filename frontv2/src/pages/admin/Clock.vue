@@ -4,7 +4,7 @@
       <div class="q-pa-md list-style self-center" >
         <div class="q-pa-md">
           <q-table
-            title="Fichajes de hoy"
+            title="Ultimos fichajes"
             :data="data"
             :columns="columns"
             row-key="id_clock"

@@ -477,7 +477,8 @@ export default {
         username: this.user,
         password: this.password,
         email: this.email,
-        role: rol
+        role: rol,
+        address: this.address
       };
 
       let url = process.env.BACKEND_URL+"user/update";

@@ -31,12 +31,12 @@
                 type="reset"
                 color="amber-14"
                 outline
-                class="col-sm-1 offset-sm-9 form-buttons col-xs-12 offset-xs-auto"
+                class="col-sm-2 offset-sm-7 form-buttons col-xs-12 offset-xs-auto"
                 id="resetButton"
               />
               <q-btn
                 color="green-8"
-                class="col-sm-1 form-buttons col-xs-12 offset-auto"
+                class="col-sm-2 form-buttons col-xs-12 offset-auto"
                 glossy
                 type="submit"
                 label="Solicitar"

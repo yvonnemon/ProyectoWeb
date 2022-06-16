@@ -99,7 +99,6 @@
               v-model="address"
               label="Dirección"
               stack-label
-              @keypress="userrandom"
               class="form-input col-sm-6 col-xs-12"
               :rules="[val => !!val || 'Campo necesario']"
             />
@@ -114,7 +113,7 @@
 
             <q-btn
               color="green-8"
-              class="col-sm-2 form-buttons col-xs-12 offset-xs-auto"
+              class="col-sm-1 offset-sm-1 form-buttons col-xs-12 offset-xs-auto"
               glossy
               type="submit"
               label="Guardar"

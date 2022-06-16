@@ -30,7 +30,8 @@ public class ClockManager implements CrudManager<Clockin> {
 
     @Override
     public List<Clockin> getAll() throws Exception {
-        return clockRepository.findAllByOrderByIdAsc();
+        return clockRepository.findAllByOrderByIdDesc();
+
     }
 
     @Override
@@ -58,7 +59,7 @@ public class ClockManager implements CrudManager<Clockin> {
 
     @Override
     public void delete(Clockin object) throws Exception {
-
+        clockRepository.delete(object);
     }
 
     @Override
@@ -83,6 +84,9 @@ public class ClockManager implements CrudManager<Clockin> {
         return null;
     }
 
+    public void deleteAllFromUser(User user){
+        clockRepository.deleteAllByUser(user);
+    }
     public List<Clockin> getAllFromUser(User user) {
         return clockRepository.findAllByUserOrderByIdDesc(user);
     }

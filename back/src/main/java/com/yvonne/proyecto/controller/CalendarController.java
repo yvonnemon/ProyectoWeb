@@ -5,6 +5,7 @@ import com.yvonne.proyecto.manager.CalendarManager;
 import com.yvonne.proyecto.manager.TokenManager;
 import com.yvonne.proyecto.manager.UserManager;
 import com.yvonne.proyecto.model.Calendar;
+import com.yvonne.proyecto.model.Role;
 import com.yvonne.proyecto.model.User;
 import com.yvonne.proyecto.model.VacationStatus;
 import com.yvonne.proyecto.model.dto.CalendarDto;
@@ -101,7 +102,7 @@ public class CalendarController {
 
         try {
             Calendar cal = calendarManager.getById(data.getId());
-            if (cal.getUser().equals(TokenManager.getUserFromRequest(request)) && cal.getStatus() == VacationStatus.CANCELED){
+            if (cal.getUser().equals(TokenManager.getUserFromRequest(request)) && cal.getStatus() == VacationStatus.CANCELED || TokenManager.getUserFromRequest(request).getRole() == Role.ADMIN){
                 calendarManager.updateStatus(data);
                 return ResponseEntity.status(HttpStatus.OK).body("Estado modificado");
             } else {

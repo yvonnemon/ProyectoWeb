@@ -55,7 +55,7 @@ public class DocumentManager implements CrudManager<Document> {
 
     @Override
     public void delete(Document object) throws Exception {
-
+        documentRepository.delete(object);
     }
 
     //subir el documento

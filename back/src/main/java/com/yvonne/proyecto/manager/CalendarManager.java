@@ -46,7 +46,6 @@ public class CalendarManager implements CrudManager<Calendar> {
 
     @Override
     public void delete(Calendar object) throws Exception {
-
     }
 
 

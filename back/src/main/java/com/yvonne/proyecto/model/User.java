@@ -41,7 +41,7 @@ public class User {
 
     //@JsonIgnore
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
-    @Column(name = "password", nullable = false)
+    @Column(name = "password")
     private String password;
 
     //se le quito el unique para poder hacer pruebas
@@ -61,6 +61,11 @@ public class User {
     @Cascade(org.hibernate.annotations.CascadeType.DELETE)
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Document> documents;
+
+    @Transient
+    @Cascade(org.hibernate.annotations.CascadeType.DELETE)
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Clockin> clockins;
 
     public User() {
     }
@@ -148,10 +153,6 @@ public class User {
     }
 
     public GrantedAuthority getAuthorities() {
-        //List<GrantedAuthority> list = new ArrayList<>();
-
-       //list.add(new SimpleGrantedAuthority(ROLE_PREFIX + role.toString()));
-
       return new SimpleGrantedAuthority(role.toString());
    }
 
@@ -175,13 +176,14 @@ public class User {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         User user = (User) o;
-        return id.equals(user.id) && Objects.equals(dni, user.dni) && Objects.equals(name, user.name) && Objects.equals(lastname, user.lastname)
-                && Objects.equals(telephone, user.telephone) && Objects.equals(username, user.username) && Objects.equals(address, user.address) && Objects.equals(email, user.email)
-                && role == user.role && Objects.equals(vacation, user.vacation) && Objects.equals(documents, user.documents);
+        return Objects.equals(id, user.id) && Objects.equals(dni, user.dni)
+                && Objects.equals(name, user.name) && Objects.equals(lastname, user.lastname)
+                && Objects.equals(telephone, user.telephone) && Objects.equals(username, user.username)
+                && Objects.equals(email, user.email) && role == user.role;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, dni, name, lastname, telephone, username, address, email, role, vacation, documents);
+        return Objects.hash(id, dni, name, lastname, telephone, username, email, role);
     }
 }

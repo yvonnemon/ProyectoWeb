@@ -3,12 +3,13 @@ package com.yvonne.proyecto.model.dto;
 import com.yvonne.proyecto.model.Role;
 
 public class UserDto {
+    private Integer id;
+
     private String username;
+
     private String password;
 
     private String fullName;
-
-    private Integer id;
 
     private String dni;
 
@@ -19,6 +20,8 @@ public class UserDto {
     private Integer telephone;
 
     private String email;
+
+    private String address;
 
     private Role role;
 
@@ -44,6 +47,14 @@ public class UserDto {
 
     public void setDni(String dni) {
         this.dni = dni;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
     }
 
     public String getName() {

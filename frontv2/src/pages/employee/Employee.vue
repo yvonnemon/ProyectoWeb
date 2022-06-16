@@ -100,7 +100,6 @@
               v-model="address"
               label="Dirección"
               stack-label
-              @keypress="userrandom"
               class="form-input col-sm-6 col-xs-12"
               :rules="[val => !!val || 'Campo necesario']"
             />
@@ -127,7 +126,6 @@
 </template>
 
 <script>
-import jwt_decode from "jwt-decode";
 const axios = require("axios");
 export default {
   data() {
@@ -223,6 +221,7 @@ export default {
         username: this.user,
         password: this.password,
         email: this.email,
+        address: this.address,
         role: rol
       };
 
