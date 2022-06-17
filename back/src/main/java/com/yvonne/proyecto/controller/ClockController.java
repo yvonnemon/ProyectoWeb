@@ -31,7 +31,6 @@ public class ClockController {
     private UserManager userManager;
 
     @GetMapping("/all")
-    @Secured("ADMIN")
     @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<List<Clockin>> getAll() {
         try {
@@ -46,7 +45,6 @@ public class ClockController {
     }
 
     @GetMapping("/userclockin")
-    @Secured("EMPLOYEE")
     @PreAuthorize("hasAuthority('EMPLOYEE')")
     public ResponseEntity<List<Clockin>> getAllFromUser(HttpServletRequest request) {
         try {
@@ -63,11 +61,10 @@ public class ClockController {
 
 
     @PostMapping(value = "/insert")
-    @Secured("EMPLOYEE")
     @PreAuthorize("hasAuthority('EMPLOYEE')")
     public ResponseEntity create( HttpServletRequest request) {
         try {
-            //nuevo item
+            //nuevo item asignado al usuario del token
             Clockin clockin = new Clockin();
             clockin.setUser(TokenManager.getUserFromRequest(request));
             clockin.setEndDate(null);
@@ -78,10 +75,10 @@ public class ClockController {
         }
     }
     @PutMapping(value = "/update")
-    @Secured("EMPLOYEE")
     @PreAuthorize("hasAuthority('EMPLOYEE')")
     public ResponseEntity<String> update(HttpServletRequest request) {
         try {
+            //va a updatear el la ultima entrada del usuario del token
             boolean update = clockManager.update(TokenManager.getUserFromRequest(request));
             if (update) {
                 return ResponseEntity.status(HttpStatus.OK).body("Usuario actualizado");

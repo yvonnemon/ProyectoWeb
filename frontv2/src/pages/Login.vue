@@ -60,14 +60,12 @@ export default {
   },
   async created() {
     sessionStorage.removeItem("Session");
-    sessionStorage.removeItem("gtoken");
   },
   mounted() {
     this.init();
   },
   methods: {
     login: async function(mail, nombre, apellido) {
-     // console.log(user.ts);
       let alert = false;
       console.log("login to back");
       let data = {};
@@ -153,8 +151,6 @@ export default {
         onsuccess: this.onSignIn
       });
       console.log("render gapi");
-
-      //console.log(window.gapi);
     }
   }
 };

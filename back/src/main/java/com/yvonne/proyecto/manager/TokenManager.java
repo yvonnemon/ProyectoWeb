@@ -73,6 +73,7 @@ public class TokenManager implements Serializable {
     }
 
     public static User getUserFromToken(String token) {
+        //por si acaso lo valido
         if(validateToken(token)){
             User user;
 

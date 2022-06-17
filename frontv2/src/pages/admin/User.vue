@@ -448,7 +448,6 @@ export default {
       this.telephone = data.telephone;
       this.user = data.username;
       this.address = data.address;
-      // this.selectedRol = data.role;
 
       if (data.role == "ADMIN") {
         this.selectedRol = "Administrador";

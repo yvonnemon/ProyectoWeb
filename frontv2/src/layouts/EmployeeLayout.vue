@@ -66,15 +66,7 @@ export default {
   methods: {
     logout: async function() {
       console.log("logout");
-      //var token = gapi.auth.getToken();
       sessionStorage.removeItem("Session");
-      /*if(gapi){
-      let auth2 = gapi.auth2.getAuthInstance();
-      await auth2.signOut().then(function() {
-        console.log("User signed out.");
-      });
-
-      }*/
 
       this.$router.push("/");
     }

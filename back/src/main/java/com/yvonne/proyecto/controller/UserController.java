@@ -34,14 +34,12 @@ public class UserController {
     private Gson gson;
 
     @GetMapping("/users")
-    @Secured("ADMIN")
     @PreAuthorize("hasAuthority('ADMIN')")
     public List<User> getAllUsers() {
         return userManager.getAll();
     }
 
     @GetMapping("/employee")
-    @Secured("ADMIN")
     @PreAuthorize("hasAuthority('ADMIN')")
     public List<UserDto> getAllEmployee() {
         return userManager.getAllEmployee();
@@ -64,7 +62,6 @@ public class UserController {
 
 
     @PostMapping(value = "/insert", consumes = MediaType.APPLICATION_JSON_VALUE)
-    @Secured("ADMIN")
     @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity createUser(@RequestBody UserDto data) {
         try {
@@ -99,7 +96,6 @@ public class UserController {
     }
 
     @DeleteMapping("/delete")
-    @Secured("ADMIN")
     @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<String> deleteUser(@RequestBody String id) {
 
@@ -108,7 +104,6 @@ public class UserController {
         String x = jsonObject.get("id").toString();
 
         if (userManager.getById(Integer.parseInt(x)) != null) {
-
             try {
                 userManager.delete(userManager.getById(Integer.parseInt(x)));
                 return ResponseEntity.status(HttpStatus.OK).body("Usuario borrado");

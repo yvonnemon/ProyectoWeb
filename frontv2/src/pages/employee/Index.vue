@@ -159,7 +159,6 @@ export default {
       }).then(response => {
         this.dates = response.data;
         console.log(this.dates);
-       // this.vacationRanges(this.dates);
         })
         .catch(function(error) {
           console.log(error);

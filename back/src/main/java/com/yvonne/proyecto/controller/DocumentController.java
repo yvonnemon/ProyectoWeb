@@ -35,7 +35,6 @@ public class DocumentController {
     private DocumentManager documentManager;
 
     @GetMapping("/documents")
-    @Secured("ADMIN")
     @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<List<Document>> getAll() {
         try {
@@ -50,7 +49,6 @@ public class DocumentController {
     }
 
     @GetMapping("/admin")
-    @Secured("ADMIN")
     @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<List<Document>> getLasts(HttpServletRequest request) {
 
@@ -98,7 +96,6 @@ public class DocumentController {
     }
 
     @PostMapping(value = "/insert", consumes = MediaType.APPLICATION_JSON_VALUE)
-    @Secured("ADMIN")
     @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity create(@RequestBody DocumentDto data) {
 
@@ -114,7 +111,6 @@ public class DocumentController {
 
 
     @DeleteMapping("/delete")
-    @Secured("ADMIN")
     @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<String> delete(@RequestBody DocumentDto doc) throws Exception {
 

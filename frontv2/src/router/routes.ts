@@ -37,7 +37,7 @@ const routes: RouteConfig[] = [
       { path: 'vacation', component: () => import('src/pages/employee/Vacation.vue') },
       { path: 'document', component: () => import('src/pages/employee/Document.vue') },
       { path: 'clock', component: () => import('src/pages/employee/Clock.vue') },
-    ],    //TODO esto no funciona
+    ],    
      beforeEnter: (from, to, next) => {
       if(!sessionStorage.getItem("Session")){
         console.log("hola");

@@ -193,8 +193,6 @@ export default {
       this.user = data.username;
       this.address = data.address;
 
-      // this.selectedRol = data.role;
-
       if (data.role == "ADMIN") {
         this.selectedRol = "Administrador";
       } else {
@@ -245,7 +243,6 @@ export default {
         console.log("delete error?");
         this.showNotif();
       }
-      //this.onFormReset();
     },
 
     editar: function(){

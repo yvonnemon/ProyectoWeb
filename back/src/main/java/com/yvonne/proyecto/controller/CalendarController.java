@@ -32,7 +32,6 @@ public class CalendarController {
     private static final Logger LOG = LogManager.getLogger(CalendarController.class);
 
     @GetMapping("/vacations")
-    @Secured("ADMIN")
     @PreAuthorize("hasAuthority('ADMIN')")
     public List<Calendar> getAllVacations() {
         return calendarManager.getAll();
@@ -44,7 +43,6 @@ public class CalendarController {
     }
 
     @GetMapping("/pending")
-    @Secured("ADMIN")
     @PreAuthorize("hasAuthority('ADMIN')")
     public List<Calendar> getPending() {
         return calendarManager.getPending();
@@ -67,6 +65,7 @@ public class CalendarController {
     }
 
     @GetMapping("/users")
+    @PreAuthorize("hasAuthority('EMPLOYEE')")
     public ResponseEntity<List<Calendar>> getAllFromUser(HttpServletRequest request) {
 
         try {
@@ -83,6 +82,7 @@ public class CalendarController {
     }
 
     @PostMapping("/insert")
+    @PreAuthorize("hasAuthority('EMPLOYEE')")
     public ResponseEntity<String> insertVacation(@RequestBody CalendarDto data, HttpServletRequest request) {
 
         try {
@@ -98,6 +98,7 @@ public class CalendarController {
     }
 
     @PutMapping("/update")
+    @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('EMPLOYEE')")
     public ResponseEntity<String> updateStatus(@RequestBody CalendarDto data, HttpServletRequest request) {
 
         try {
@@ -116,15 +117,16 @@ public class CalendarController {
     }
 
     @DeleteMapping("/delete")
+    @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('EMPLOYEE')")
     public ResponseEntity<String> delete(@RequestBody CalendarDto data) {
 
         try {
             calendarManager.delete(data);
-            return ResponseEntity.status(HttpStatus.OK).body("Usuario borrado");
+            return ResponseEntity.status(HttpStatus.OK).body("Vacaciones eliminadas");
         } catch (Exception e) {
             LOG.error("ERROR: no se pudieron borrar las vacaciones" + e.getMessage(), e);
 
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Hubo un error borrando el usuario");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Hubo un error borrando las vacacioness");
         }
     }
 }
